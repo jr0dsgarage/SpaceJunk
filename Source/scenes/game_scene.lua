@@ -28,9 +28,9 @@ function FlyingObjectSprite.new(x, y, size, speed, img)
 end
 
 function FlyingObjectSprite:updateScale()
-    -- Allow sprites to get much bigger as they grow
+    -- Make sprites start off very small and grow larger
     local baseSize = 32
-    local scale = math.max(0.25, self.size / (baseSize / 2)) -- scale up to 2x at size=32, 4x at size=64, etc.
+    local scale = math.max(0.05, self.size / (baseSize * 2)) -- start at 0.05x, grow up to 0.5x at size=32, 1x at size=64
     self.sprite:setScale(scale)
 end
 
@@ -139,8 +139,8 @@ end
 function game_scene:spawnFlyingObject()
     local x = math.random(0, self.screenWidth)
     local y = math.random(0, self.screenHeight - 32)
-    local size = 8 -- was 1, now 8 for visibility
-    local speed = math.random(1, 3) / 10
+    local size = 8 
+    local speed = math.random(1, 3) / 5
     local obj = FlyingObjectSprite.new(x, y, size, speed, self.flyingObjectImg)
     table.insert(self.flyingObjects, obj)
 end
@@ -211,7 +211,7 @@ function game_scene:update()
                 value = s,
                 time = playdate.getCurrentTimeMilliseconds()
             })
-        elseif obj.size > self.maxObjectSize then
+        elseif obj.size > self.maxObjectSize * 6 then -- allow objects to get much larger before despawning
             obj:remove()
             table.remove(self.flyingObjects, i)
             self:spawnFlyingObject()
