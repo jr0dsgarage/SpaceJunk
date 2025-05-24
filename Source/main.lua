@@ -36,7 +36,7 @@ local maxObjectSize = maxBeamRadius / 3
 function spawnFlyingObject()
     table.insert(flyingObjects, {
         x = math.random(0, screenWidth),
-        y = math.random(0, screenHeight),
+        y = math.random(0, screenHeight - 32),
         size = 1,
         speed = math.random(1, 3) / 10 -- How fast it grows
     })
