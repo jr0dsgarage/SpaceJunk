@@ -7,6 +7,9 @@ import "Corelibs/ui"
 local ui = import "ui"
 local gfx <const> = playdate.graphics
 
+local snd = playdate.sound
+local captureSynth = snd.synth.new(snd.kWaveSquare)
+
 local screenWidth, screenHeight = playdate.display.getWidth(), playdate.display.getHeight() 
 
 local beamRadius = 20 -- Initial Beam radius, will be adjusted by the crank
@@ -134,6 +137,14 @@ function playdate.update()
             s2 = math.max(0, math.min(100, s2))
             local s = s1 + s2
             score = score + s
+            -- Play sound with pitch based on score (higher score = higher pitch) and volume based on object size (smaller = quieter)
+            local minFreq = 220 -- Hz (A3)
+            local maxFreq = 880 -- Hz (A5)
+            local freq = minFreq + ((s - 1) / 199) * (maxFreq - minFreq) -- s ranges from 1 to 200
+            local minObjSize = 1
+            local norm = (obj.size - minObjSize) / (maxObjectSize - minObjSize)
+            local volume = 0.05 + 0.20 * (norm * norm) -- Squared scaling, min 0.05, max 0.25
+            captureSynth:playNote(freq, volume, 0.5)
             -- Add a score popup at the object's position
             table.insert(scorePopups, {
                 x = obj.x,
