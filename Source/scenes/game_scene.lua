@@ -51,6 +51,11 @@ function FlyingObjectSprite:remove()
     self.sprite:remove()
 end
 
+function FlyingObjectSprite:getRadius()
+    -- Returns the current on-screen radius of the sprite
+    return math.max(1, (self.size / (32 * 2)) * 16) -- baseSize=32, so half of that is 16
+end
+
 function game_scene:enter()
     -- Initialize or reset game state here
     self.screenWidth, self.screenHeight = playdate.display.getWidth(), playdate.display.getHeight()
@@ -171,11 +176,11 @@ function game_scene:update()
     for i = #self.flyingObjects, 1, -1 do
         local obj = self.flyingObjects[i]
         obj:update()
-        -- Check if object is inside the beam and beam is larger than object
         local dx = obj.x - self.beamX
         local dy = obj.y - self.beamY
         local dist = math.sqrt(dx * dx + dy * dy)
-        if dist < self.beamRadius and self.beamRadius > obj.size then
+        local objRadius = obj:getRadius()
+        if dist < self.beamRadius and self.beamRadius > objRadius then
             obj:remove()
             table.remove(self.flyingObjects, i)
             self:spawnFlyingObject()
@@ -183,7 +188,7 @@ function game_scene:update()
             -- Score calculation
             local s1 = 1
             if self.beamRadius ~= self.maxBeamRadius then
-                local diffNorm = math.abs(self.beamRadius - obj.size) / (self.maxBeamRadius - obj.size)
+                local diffNorm = math.abs(self.beamRadius - objRadius) / (self.maxBeamRadius - objRadius)
                 s1 = 1 - (diffNorm^4)
             end
             s1 = math.max(0, math.min(1, s1))
@@ -192,7 +197,7 @@ function game_scene:update()
             s2 = math.max(0, math.min(1, s2))
             -- s3 rewards small object size (1 for smallest, 0 for largest)
             local minObjSize = 1
-            local s3 = 1 - ((obj.size - minObjSize) / (self.maxObjectSize - minObjSize))
+            local s3 = 1 - ((objRadius - minObjSize) / (self.maxObjectSize - minObjSize))
             s3 = math.max(0, math.min(1, s3))
             -- Final score: product, scaled to 0-100
             local s = math.floor(100 * s1 * s2 * s3)
@@ -202,7 +207,7 @@ function game_scene:update()
             local minFreq = 220 -- A2 (220 Hz)
             local maxFreq = 880 -- A4 (880 Hz)
             local freq = minFreq + ((s - 1) / 99) * (maxFreq - minFreq)
-            local norm = (obj.size - minObjSize) / (self.maxObjectSize - minObjSize)
+            local norm = (objRadius - minObjSize) / (self.maxObjectSize - minObjSize)
             local volume = 0.05 + 0.20 * (norm * norm)
             captureSynth:playNote(freq, volume, 0.5)
             table.insert(self.scorePopups, {
