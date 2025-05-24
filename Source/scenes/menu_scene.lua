@@ -1,5 +1,6 @@
 -- scenes/menu_scene.lua
 local gfx <const> = playdate.graphics
+local ui = _G.ui
 local menu_scene = {}
 
 function menu_scene:enter()
@@ -13,12 +14,17 @@ end
 function menu_scene:draw()
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, 400, 240)
+    -- Title
+    if not ui.titleText_font then print("WARNING: ui.titleText_font is nil") end
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
-    
-    gfx.setFont(gfx.getSystemFont())
+    gfx.setFont(ui.titleText_font)
     gfx.drawTextAligned("SPACE JUNK", 200, 80, kTextAlignment.center)
-    gfx.setFont(ui.cyberballFont)
+    -- Subtitle
+    if not ui.altText_font then print("WARNING: ui.altText_font is nil") end
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    gfx.setColor(gfx.kColorWhite)
+    gfx.setFont(ui.altText_font)
     gfx.drawTextAligned("PRESS A TO START", 200, 140, kTextAlignment.center)
 end
 

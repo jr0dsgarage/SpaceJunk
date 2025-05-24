@@ -29,8 +29,8 @@ end
 
 function FlyingObjectSprite:updateScale()
     -- Make sprites start off very small and grow larger
-    local baseSize = 32
-    local scale = math.max(0.05, self.size / (baseSize * 2)) -- start at 0.05x, grow up to 0.5x at size=32, 1x at size=64
+    local baseSize = 32 -- matches your sprite's native size
+    local scale = math.max(0.05, self.size / baseSize)
     self.sprite:setScale(scale)
 end
 
@@ -53,7 +53,33 @@ end
 
 function FlyingObjectSprite:getRadius()
     -- Returns the current on-screen radius of the sprite
-    return math.max(1, (self.size / (32 * 2)) * 16) -- baseSize=32, so half of that is 16
+    local baseSize = 32 -- matches your sprite's native size
+    local scale = math.max(0.05, self.size / baseSize)
+    return (baseSize / 2) * scale
+end
+
+local BeamSprite = {}
+BeamSprite.__index = BeamSprite
+
+function BeamSprite.new(scene)
+    local self = setmetatable({}, BeamSprite)
+    self.scene = scene
+    local sprite = gfx.sprite.new()
+    sprite:setCenter(0, 0)
+    sprite:moveTo(0, 0)
+    sprite:setZIndex(200) -- above flying objects
+    sprite:setSize(scene.screenWidth, scene.screenHeight)
+    sprite.draw = function(_)
+        local cx, cy = math.floor(scene.beamX + 0.5), math.floor(scene.beamY + 0.5)
+        local innerRadius = math.floor(scene.beamRadius + 0.5)
+        local outerRadius = math.floor(scene.beamRadius + (scene.beamRadius / 10) + 0.5)
+        gfx.setColor(gfx.kColorWhite)
+        gfx.drawCircleAtPoint(cx, cy, innerRadius)
+        gfx.drawCircleAtPoint(cx, cy, outerRadius)
+    end
+    sprite:add()
+    self.sprite = sprite
+    return self
 end
 
 function game_scene:enter()
@@ -80,7 +106,7 @@ function game_scene:enter()
     self.flyingObjectImg = gfx.image.new("sprites/flyingObject_1.png")
     self.flyingObjects = {}
     self.maxFlyingObjects = 3
-    self.maxObjectSize = self.maxBeamRadius / 3
+    self.maxObjectSize = self.maxBeamRadius  -- 4x as long lifespan
     for i = 1, self.maxFlyingObjects do
         self:spawnFlyingObject()
     end
@@ -113,12 +139,6 @@ function game_scene:enter()
                 gfx.drawLine(px, py - 2, px, py + 2)
             end
         end
-        -- Beam
-        local cx, cy = math.floor(self.beamX + 0.5), math.floor(self.beamY + 0.5)
-        local innerRadius = math.floor(self.beamRadius + 0.5)
-        local outerRadius = math.floor(self.beamRadius + (self.beamRadius / 10) + 0.5)
-        gfx.drawCircleAtPoint(cx, cy, innerRadius)
-        gfx.drawCircleAtPoint(cx, cy, outerRadius)
         -- Score popups
         local now = playdate.getCurrentTimeMilliseconds()
         for i = #self.scorePopups, 1, -1 do
@@ -139,6 +159,9 @@ function game_scene:enter()
         ui.drawScore(self.caught, self.missed, self.score)
     end
     self.bgSprite:add()
+    -- Add beam sprite above flying objects
+    if self.beamSprite then self.beamSprite.sprite:remove() end
+    self.beamSprite = BeamSprite.new(self)
 end
 
 function game_scene:spawnFlyingObject()
@@ -147,7 +170,13 @@ function game_scene:spawnFlyingObject()
     local size = 8 
     local speed = math.random(1, 3) / 5
     local obj = FlyingObjectSprite.new(x, y, size, speed, self.flyingObjectImg)
-    table.insert(self.flyingObjects, obj)
+    -- Insert at the front of the list so older objects are at the end
+    table.insert(self.flyingObjects, 1, obj)
+    -- Update z-indices so older objects are always on top
+    for i = 1, #self.flyingObjects do
+        -- Oldest (last in list) gets highest z, newest (first) gets lowest
+        self.flyingObjects[i].sprite:setZIndex(100 + i)
+    end
 end
 
 function game_scene:update()
@@ -167,6 +196,7 @@ function game_scene:update()
     end
     self.beamX = math.max(0, math.min(self.screenWidth, self.beamX))
     self.beamY = math.max(0, math.min(self.screenHeight - 32, self.beamY))
+
     -- Crank
     local crankPos = playdate.getCrankPosition()
     local t = 1 - math.abs((crankPos % 360) / 180 - 1)
@@ -186,37 +216,19 @@ function game_scene:update()
             self:spawnFlyingObject()
             self.caught = self.caught + 1
             -- Score calculation
-            local s1 = 1
-            if self.beamRadius ~= self.maxBeamRadius then
-                local diffNorm = math.abs(self.beamRadius - objRadius) / (self.maxBeamRadius - objRadius)
-                s1 = 1 - (diffNorm^4)
-            end
-            s1 = math.max(0, math.min(1, s1))
-            -- s2 rewards small beam size (1 for smallest, 0 for largest)
-            local s2 = 1 - ((self.beamRadius - self.minBeamRadius) / (self.maxBeamRadius - self.minBeamRadius))
-            s2 = math.max(0, math.min(1, s2))
-            -- s3 rewards small object size (1 for smallest, 0 for largest)
-            local minObjSize = 1
-            local s3 = 1 - ((objRadius - minObjSize) / (self.maxObjectSize - minObjSize))
-            s3 = math.max(0, math.min(1, s3))
-            -- Final score: product, scaled to 0-100
-            local s = math.floor(100 * s1 * s2 * s3)
-            s = math.max(1, s)
-            self.score = self.score + s
-            -- Sound
-            local minFreq = 220 -- A2 (220 Hz)
-            local maxFreq = 880 -- A4 (880 Hz)
-            local freq = minFreq + ((s - 1) / 99) * (maxFreq - minFreq)
-            local norm = (objRadius - minObjSize) / (self.maxObjectSize - minObjSize)
-            local volume = 0.05 + 0.20 * (norm * norm)
-            captureSynth:playNote(freq, volume, 0.5)
-            table.insert(self.scorePopups, {
-                x = obj.x,
-                y = obj.y,
-                value = s,
-                time = playdate.getCurrentTimeMilliseconds()
-            })
-        elseif obj.size > self.maxObjectSize * 6 then -- allow objects to get much larger before despawning
+            local precision = 1 - (self.beamRadius - objRadius) / self.beamRadius
+            local score = math.floor(100 * precision * (1 + objRadius / self.maxObjectSize))
+            self.score = self.score + score
+            table.insert(self.scorePopups,
+                { x = obj.x, y = obj.y, value = score, time = playdate.getCurrentTimeMilliseconds() })
+            captureSynth:playNote(440 + 200 * precision, 0.2, 0.2)
+        end
+    end
+    
+    -- Missed objects
+    for i = #self.flyingObjects, 1, -1 do
+        local obj = self.flyingObjects[i]
+        if obj.size > self.maxObjectSize then
             obj:remove()
             table.remove(self.flyingObjects, i)
             self:spawnFlyingObject()
@@ -225,6 +237,8 @@ function game_scene:update()
     end
     -- At the end of update, force background sprite to redraw
     if self.bgSprite then self.bgSprite:markDirty() end
+    -- Update beam sprite to redraw above flying objects
+    if self.beamSprite and self.beamSprite.sprite then self.beamSprite.sprite:markDirty() end
 end
 
 return game_scene

@@ -1,6 +1,7 @@
 local gfx <const> = playdate.graphics
 
-local cyberballFont = gfx.font.new("/fonts/Cyberball")
+local rains3xFont = gfx.font.new("fonts/font-rains-3x")
+local fullCircleFont = gfx.font.new("fonts/font-full-circle")
 
 local function drawScore(caught, missed, score)
     -- Draw one large black rectangle behind all label+value pairs
@@ -10,7 +11,7 @@ local function drawScore(caught, missed, score)
 
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
-    gfx.setFont(cyberballFont)
+    gfx.setFont(fullCircleFont)
     -- Draw labels
     gfx.drawTextAligned("CAUGHT", 0, 214, kTextAlignment.left)
     gfx.drawTextAligned("SCORE", 200, 214, kTextAlignment.center)
@@ -23,5 +24,6 @@ end
 
 return {
     drawScore = drawScore,
-    cyberballFont = cyberballFont
+    titleText_font = rains3xFont,
+    altText_font = fullCircleFont,
 }
