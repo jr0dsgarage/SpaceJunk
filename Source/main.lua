@@ -46,6 +46,10 @@ end
 
 local caught = 0
 local missed = 0
+local score = 0
+
+-- Table to hold score popups
+local scorePopups = {}
 
 function playdate.update()
     gfx.clear(gfx.kColorBlack)
@@ -62,7 +66,9 @@ function playdate.update()
         if dots[i].size == 1 then
             gfx.drawPixel(px, py)
         else
-            gfx.fillCircleAtPoint(px, py, dots[i].size)
+            -- Draw a cross for larger dots
+            gfx.drawLine(px - 2, py, px + 2, py)   -- horizontal line
+            gfx.drawLine(px, py - 2, px, py + 2)   -- vertical line
         end
     end
 
@@ -116,6 +122,20 @@ function playdate.update()
             table.remove(flyingObjects, i)
             spawnFlyingObject()
             caught = caught + 1
+            -- Calculate score based on how close beamRadius is to obj.size
+            local s = 1
+            if beamRadius ~= maxBeamRadius then
+                s = math.floor(1 + (100 - 1) * (1 - (math.abs(beamRadius - obj.size) / (maxBeamRadius - obj.size))))
+            end
+            s = math.max(1, math.min(100, s))
+            score = score + s
+            -- Add a score popup at the object's position
+            table.insert(scorePopups, {
+                x = obj.x,
+                y = obj.y,
+                value = s,
+                time = playdate.getCurrentTimeMilliseconds()
+            })
         -- Remove and respawn if too big (missed)
         elseif obj.size > maxObjectSize then
             table.remove(flyingObjects, i)
@@ -124,12 +144,25 @@ function playdate.update()
         end
     end
 
+    -- Draw score popups and remove expired ones
+    local now = playdate.getCurrentTimeMilliseconds()
+    for i = #scorePopups, 1, -1 do
+        local popup = scorePopups[i]
+        if now - popup.time < 1000 then
+            gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+            gfx.setColor(gfx.kColorWhite)
+            gfx.drawTextAligned("+" .. tostring(popup.value), popup.x, popup.y, kTextAlignment.center)
+        else
+            table.remove(scorePopups, i)
+        end
+    end
+
     -- Show crank alert if crank is docked
     if playdate.isCrankDocked() then
         playdate.ui.crankIndicator:draw()
     end
 
-    ui.drawScore(caught, missed)
+    ui.drawScore(caught, missed, score)
 
     playdate.timer.updateTimers()
 end
