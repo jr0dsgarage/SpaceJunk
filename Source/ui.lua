@@ -1,0 +1,24 @@
+local gfx <const> = playdate.graphics
+
+local cyberballFont = gfx.font.new("/fonts/Cyberball")
+
+local function drawScore(caught, missed)
+    -- Draw one large black rectangle behind both label+value pairs
+    gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(0, 210, 400, 32) -- Full width of the screen
+
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    gfx.setColor(gfx.kColorWhite)
+    gfx.setFont(cyberballFont)
+    -- Draw labels
+    gfx.drawTextAligned("CAUGHT", 0, 214, kTextAlignment.left)
+    gfx.drawTextAligned("MISSED", 400, 214, kTextAlignment.right)
+    -- Draw values below labels
+    gfx.drawTextAligned(tostring(caught), 0, 230, kTextAlignment.left)
+    gfx.drawTextAligned(tostring(missed), 400, 230, kTextAlignment.right)
+end
+
+return {
+    drawScore = drawScore
+}
