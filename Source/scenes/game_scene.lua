@@ -90,8 +90,8 @@ function game_scene:update()
             local s = s1 + s2
             self.score = self.score + s
             -- Sound
-            local minFreq = 220
-            local maxFreq = 880
+            local minFreq = 220 -- A2 (220 Hz)
+            local maxFreq = 880 -- A4 (880 Hz)
             local freq = minFreq + ((s - 1) / 199) * (maxFreq - minFreq)
             local norm = (obj.size - minObjSize) / (self.maxObjectSize - minObjSize)
             local volume = 0.05 + 0.20 * (norm * norm)
