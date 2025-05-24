@@ -12,6 +12,7 @@ local game_scene = import "scenes/game_scene"
 function playdate.update()
     scene_manager.update()
     scene_manager.draw()
+    playdate.graphics.sprite.update()
     playdate.timer.updateTimers()
 end
 
