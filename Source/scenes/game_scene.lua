@@ -12,6 +12,7 @@ function game_scene:enter()
     self.beamX, self.beamY = self.screenWidth / 2, self.screenHeight / 2
     self.minBeamRadius = 5
     self.maxBeamRadius = 75
+
     -- Stars
     self.numStars = 50
     self.stars = {}
@@ -23,6 +24,7 @@ function game_scene:enter()
             size = math.random(1, 2)
         })
     end
+    
     -- Flying objects
     self.flyingObjects = {}
     self.maxFlyingObjects = 3
@@ -66,6 +68,7 @@ function game_scene:update()
     local crankPos = playdate.getCrankPosition()
     local t = 1 - math.abs((crankPos % 360) / 180 - 1)
     self.beamRadius = self.minBeamRadius + (self.maxBeamRadius - self.minBeamRadius) * t
+
     -- Flying objects
     for i = #self.flyingObjects, 1, -1 do
         local obj = self.flyingObjects[i]
@@ -81,18 +84,25 @@ function game_scene:update()
             -- Score calculation
             local s1 = 1
             if self.beamRadius ~= self.maxBeamRadius then
-                s1 = math.floor(1 + (100 - 1) * (1 - (math.abs(self.beamRadius - obj.size) / (self.maxBeamRadius - obj.size))))
+                local diffNorm = math.abs(self.beamRadius - obj.size) / (self.maxBeamRadius - obj.size)
+                s1 = 1 - (diffNorm^4)
             end
-            s1 = math.max(1, math.min(100, s1))
+            s1 = math.max(0, math.min(1, s1))
+            -- s2 rewards small beam size (1 for smallest, 0 for largest)
+            local s2 = 1 - ((self.beamRadius - self.minBeamRadius) / (self.maxBeamRadius - self.minBeamRadius))
+            s2 = math.max(0, math.min(1, s2))
+            -- s3 rewards small object size (1 for smallest, 0 for largest)
             local minObjSize = 1
-            local s2 = math.floor(100 * (1 - ((obj.size - minObjSize) / (self.maxObjectSize - minObjSize))))
-            s2 = math.max(0, math.min(100, s2))
-            local s = s1 + s2
+            local s3 = 1 - ((obj.size - minObjSize) / (self.maxObjectSize - minObjSize))
+            s3 = math.max(0, math.min(1, s3))
+            -- Final score: product, scaled to 0-100
+            local s = math.floor(100 * s1 * s2 * s3)
+            s = math.max(1, s)
             self.score = self.score + s
             -- Sound
             local minFreq = 220 -- A2 (220 Hz)
             local maxFreq = 880 -- A4 (880 Hz)
-            local freq = minFreq + ((s - 1) / 199) * (maxFreq - minFreq)
+            local freq = minFreq + ((s - 1) / 99) * (maxFreq - minFreq)
             local norm = (obj.size - minObjSize) / (self.maxObjectSize - minObjSize)
             local volume = 0.05 + 0.20 * (norm * norm)
             captureSynth:playNote(freq, volume, 0.5)
@@ -112,6 +122,7 @@ end
 
 function game_scene:draw()
     gfx.clear(gfx.kColorBlack)
+
     -- Stars
     gfx.setColor(gfx.kColorWhite)
     local maxOffset = 3
@@ -127,18 +138,21 @@ function game_scene:draw()
             gfx.drawLine(px, py - 2, px, py + 2)
         end
     end
+
     -- Beam
     local cx, cy = math.floor(self.beamX + 0.5), math.floor(self.beamY + 0.5)
     local innerRadius = math.floor(self.beamRadius + 0.5)
     local outerRadius = math.floor(self.beamRadius + (self.beamRadius / 10) + 0.5)
     gfx.drawCircleAtPoint(cx, cy, innerRadius)
     gfx.drawCircleAtPoint(cx, cy, outerRadius)
+
     -- Flying objects
     for i = 1, #self.flyingObjects do
         local obj = self.flyingObjects[i]
         gfx.setColor(gfx.kColorWhite)
         gfx.fillCircleAtPoint(obj.x, obj.y, obj.size)
     end
+
     -- Score popups
     local now = playdate.getCurrentTimeMilliseconds()
     for i = #self.scorePopups, 1, -1 do
@@ -151,10 +165,13 @@ function game_scene:draw()
             table.remove(self.scorePopups, i)
         end
     end
+
     -- Crank alert
     if playdate.isCrankDocked() then
         playdate.ui.crankIndicator:draw()
     end
+
+    -- Draw score
     ui.drawScore(self.caught, self.missed, self.score)
 end
 
