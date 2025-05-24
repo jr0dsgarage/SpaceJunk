@@ -103,8 +103,6 @@ function playdate.update()
 
     -- Update circle radius based on crank position (0° = large, 180° = small)
     local crankPos = playdate.getCrankPosition() -- 0 to 359
-    print("Crank position:", crankPos, "degrees\n")
-
 
     -- Map 0°/360° to maxRadius, 180° to minRadius
     local t = 1 - math.abs((crankPos % 360) / 180 - 1) -- t: 1 at 0°/360°, 0 at 180°
