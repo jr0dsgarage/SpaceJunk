@@ -2,6 +2,7 @@ import "Corelibs/object"
 import "Corelibs/graphics"
 import "Corelibs/sprites"
 import "Corelibs/timer"
+import "Corelibs/ui"
 
 local gfx <const> = playdate.graphics
 
@@ -78,4 +79,9 @@ function playdate.update()
     circleRadius = math.max(5, math.min(100, circleRadius - crankChange * scale))
 
     playdate.timer.updateTimers()
+
+    -- Show crank alert if crank is docked
+    if playdate.isCrankDocked() then
+        playdate.ui.crankIndicator:draw()
+    end
 end
