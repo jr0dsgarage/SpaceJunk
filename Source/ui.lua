@@ -22,5 +22,6 @@ local function drawScore(caught, missed, score)
 end
 
 return {
-    drawScore = drawScore
+    drawScore = drawScore,
+    cyberballFont = cyberballFont
 }
