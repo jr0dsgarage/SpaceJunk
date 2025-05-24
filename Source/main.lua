@@ -121,7 +121,7 @@ function playdate.update()
         local dx = obj.x - beamX
         local dy = obj.y - beamY
         local dist = math.sqrt(dx * dx + dy * dy)
-        if dist < beamRadius then
+        if dist < beamRadius and beamRadius > obj.size then
             table.remove(flyingObjects, i)
             spawnFlyingObject()
             caught = caught + 1
