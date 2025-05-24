@@ -7,12 +7,12 @@ import "Corelibs/ui"
 local ui = import "ui"
 local gfx <const> = playdate.graphics
 
--- Load Cyberball font
-local cyberballFont = gfx.font.new("/fonts/Cyberball") -- Path is relative to Source
+local screenWidth, screenHeight = playdate.display.getWidth(), playdate.display.getHeight() 
 
 local beamRadius = 20
-local screenWidth, screenHeight = 400, 240
-local beamX, beamY = screenWidth/2, screenHeight/2 -- Initial circle position
+local beamX, beamY = screenWidth / 2, screenHeight / 2 -- Initial circle position
+local minBeamRadius = 5
+local maxBeamRadius = 100
 
 -- Add this: generate random dots
 local numDots = 50
@@ -92,10 +92,14 @@ function playdate.update()
     beamX = math.max(0, math.min(screenWidth, beamX))
     beamY = math.max(0, math.min(screenHeight, beamY))
 
-    -- Update circle radius based on crank (logarithmic feel)
-    local crankChange = playdate.getCrankChange()
-    local scale = math.max(0.1, math.log(beamRadius) / 10)
-    beamRadius = math.max(5, math.min(100, beamRadius - crankChange * scale))
+    -- Update circle radius based on crank position (0° = large, 180° = small)
+    local crankPos = playdate.getCrankPosition() -- 0 to 359
+    print("Crank position:", crankPos, "degrees\n")
+
+
+    -- Map 0°/360° to maxRadius, 180° to minRadius
+    local t = 1 - math.abs((crankPos % 360) / 180 - 1) -- t: 1 at 0°/360°, 0 at 180°
+    beamRadius = minBeamRadius + (maxBeamRadius - minBeamRadius) * t
 
     -- Draw and update flying objects
     for i = #flyingObjects, 1, -1 do
@@ -125,7 +129,6 @@ function playdate.update()
         playdate.ui.crankIndicator:draw()
     end
 
-   
     ui.drawScore(caught, missed)
 
     playdate.timer.updateTimers()
