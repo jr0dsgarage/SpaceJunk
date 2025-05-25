@@ -16,7 +16,7 @@ local SoundManager = _G.SoundManager
 local FlyingObjectSpawner = _G.FlyingObjectSpawner
 local TimerBar = import "timer_bar.lua"
 
-local gameDuration = 2 * 1000 -- 60 seconds in milliseconds
+local gameDuration = 60 * 1000 -- 60 seconds in milliseconds
 
 function game_scene:resetGameState()
     self.caught = 0
@@ -34,7 +34,7 @@ function game_scene:enter()
     self.beamX, self.beamY = self.screenWidth / 2, self.screenHeight / 2
     self.minBeamRadius = 5
     self.maxBeamRadius = 75
-    self._scoreSceneSwitched = false -- Reset this flag on enter
+    self._scoreSceneSwitched = false
 
     -- Stars
     self.starfield = Starfield.new(self.screenWidth, self.screenHeight, 50)
@@ -46,14 +46,13 @@ function game_scene:enter()
     }
     self.maxFlyingObjects = 3
     self.flyingObjectSpawner = FlyingObjectSpawner.new(self.flyingObjectImgs, self.screenWidth, self.screenHeight, self.maxFlyingObjects)
-    self.maxObjectSize = self.maxBeamRadius  -- 4x as long lifespan
+    self.maxObjectSize = self.maxBeamRadius
     for i = 1, self.maxFlyingObjects do
         self.flyingObjectSpawner:spawnFlyingObject()
     end
     self:resetGameState()
 
     -- Create a background sprite for custom drawing
-    if self.bgSprite then self.bgSprite:remove() end
     self.bgSprite = gfx.sprite.new()
     self.bgSprite:setCenter(0, 0)
     self.bgSprite:moveTo(0, 0)
@@ -61,22 +60,17 @@ function game_scene:enter()
     self.bgSprite:setSize(self.screenWidth, self.screenHeight)
     self.bgSprite.draw = function(_)
         gfx.clear(gfx.kColorBlack)
-        -- Stars
         self.starfield:draw(self.beamX, self.beamY, self.screenWidth, self.screenHeight)
-        -- Score popups
         self.scorePopups:draw()
-        -- Draw score
         ui.drawScore(self.caught, self.missed, self.score)
     end
     self.bgSprite:add()
-    -- Add beam sprite above flying objects
-    if self.beamSprite then self.beamSprite.sprite:remove() end
-    self.beamSprite = BeamSprite.new(self)
-    -- Add a foreground sprite for the crank indicator
-    if self.crankIndicator then self.crankIndicator:remove() end
-    self.crankIndicator = CrankIndicatorSprite.new(self.screenWidth, self.screenHeight)
 
-    -- Sound manager
+    self.beamSprite = BeamSprite.new(self)
+    self.crankIndicator = CrankIndicatorSprite.new(self.screenWidth, self.screenHeight)
+    if self.crankIndicator and self.crankIndicator.setZIndex then
+        self.crankIndicator:setZIndex(10002)
+    end
     self.soundManager = SoundManager.new()
 end
 
@@ -174,7 +168,7 @@ function game_scene:draw()
 end
 
 function game_scene:leave()
-    if self.bgSprite then self.bgSprite:remove() end
+    -- No need to remove sprites or reset state; scene_manager handles cleanup
 end
 
 function game_scene:usesSprites()
