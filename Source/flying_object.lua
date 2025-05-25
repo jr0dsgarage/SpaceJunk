@@ -1,4 +1,5 @@
 -- Source/flying_object.lua
+
 local gfx <const> = playdate.graphics
 
 local FlyingObjectSprite = {}

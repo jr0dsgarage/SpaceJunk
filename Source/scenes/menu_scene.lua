@@ -1,6 +1,6 @@
 -- scenes/menu_scene.lua
+-- Use global modules if needed (ui is already _G.ui)
 local gfx <const> = playdate.graphics
-local ui = _G.ui
 local menu_scene = {}
 
 function menu_scene:enter()
