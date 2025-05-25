@@ -5,58 +5,7 @@ local captureSynth = snd.synth.new(snd.kWaveSquare)
 
 local game_scene = {}
 
-local FlyingObjectSprite = {}
-FlyingObjectSprite.__index = FlyingObjectSprite
-
-function FlyingObjectSprite.new(x, y, size, speed, img)
-    local self = setmetatable({}, FlyingObjectSprite)
-    self.x = x
-    self.y = y
-    self.size = size
-    self.speed = speed
-    self.rotation = math.random() * 360 -- random initial rotation in degrees
-    self.rotationSpeed = (math.random() - 0.5) * 4 -- random speed between -2 and 2 degrees per frame
-    self.sprite = gfx.sprite.new(img)
-    self.sprite:setCenter(0.5, 0.5)
-    self.sprite:moveTo(x, y)
-    self.sprite:setZIndex(100)
-    self.sprite:setImageDrawMode(gfx.kDrawModeCopy)
-    self.sprite:add()
-    self:updateScale()
-    self.sprite:setRotation(self.rotation)
-    return self
-end
-
-function FlyingObjectSprite:updateScale()
-    -- Make sprites start off very small and grow larger
-    local baseSize = 32 -- matches your sprite's native size
-    local scale = math.max(0.05, self.size / baseSize)
-    self.sprite:setScale(scale)
-end
-
-function FlyingObjectSprite:update()
-    self.size = self.size + self.speed
-    self:updateScale()
-    self.rotation = (self.rotation + self.rotationSpeed) % 360
-    self.sprite:setRotation(self.rotation)
-end
-
-function FlyingObjectSprite:moveTo(x, y)
-    self.x = x
-    self.y = y
-    self.sprite:moveTo(x, y)
-end
-
-function FlyingObjectSprite:remove()
-    self.sprite:remove()
-end
-
-function FlyingObjectSprite:getRadius()
-    -- Returns the current on-screen radius of the sprite
-    local baseSize = 32 -- matches your sprite's native size
-    local scale = math.max(0.05, self.size / baseSize)
-    return (baseSize / 2) * scale
-end
+local FlyingObjectSprite = import "flying_object.lua"
 
 local BeamSprite = {}
 BeamSprite.__index = BeamSprite
@@ -103,7 +52,10 @@ function game_scene:enter()
     end
     
     -- Flying objects
-    self.flyingObjectImg = gfx.image.new("sprites/flyingObject_1.png")
+    self.flyingObjectImgs = {
+        gfx.image.new("sprites/asteroid.png"),
+        gfx.image.new("sprites/bottle.png")
+    }
     self.flyingObjects = {}
     self.maxFlyingObjects = 3
     self.maxObjectSize = self.maxBeamRadius  -- 4x as long lifespan
@@ -169,12 +121,13 @@ function game_scene:spawnFlyingObject()
     local y = math.random(0, self.screenHeight - 32)
     local size = 8 
     local speed = math.random(1, 3) / 5
-    local obj = FlyingObjectSprite.new(x, y, size, speed, self.flyingObjectImg)
+    -- Pick a random image from the list
+    local img = self.flyingObjectImgs[math.random(1, #self.flyingObjectImgs)]
+    local obj = FlyingObjectSprite.new(x, y, size, speed, img)
     -- Insert at the front of the list so older objects are at the end
     table.insert(self.flyingObjects, 1, obj)
     -- Update z-indices so older objects are always on top
     for i = 1, #self.flyingObjects do
-        -- Oldest (last in list) gets highest z, newest (first) gets lowest
         self.flyingObjects[i].sprite:setZIndex(100 + i)
     end
 end
