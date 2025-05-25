@@ -15,13 +15,11 @@ function menu_scene:draw()
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, 400, 240)
     -- Title
-    if not ui.titleText_font then print("WARNING: ui.titleText_font is nil") end
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
     gfx.setFont(ui.titleText_font)
     gfx.drawTextAligned("SPACE JUNK", 200, 80, kTextAlignment.center)
     -- Subtitle
-    if not ui.altText_font then print("WARNING: ui.altText_font is nil") end
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
     gfx.setFont(ui.altText_font)
