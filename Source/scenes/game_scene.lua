@@ -14,7 +14,8 @@ local ScorePopups = _G.ScorePopups
 local CrankIndicatorSprite = _G.CrankIndicatorSprite
 local SoundManager = _G.SoundManager
 local FlyingObjectSpawner = _G.FlyingObjectSpawner
-local TimerBar = import "timer_bar.lua"
+local TimerBar = import "ui/timer_bar.lua"
+local ScoreboardBar = import "ui/scoreboard_bar.lua"
 
 local gameDuration = 60 * 1000 -- 60 seconds in milliseconds
 

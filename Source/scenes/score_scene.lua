@@ -1,6 +1,8 @@
 -- scenes/score_scene.lua
 local gfx <const> = playdate.graphics
 local score_scene = {}
+local TimerBar = import "ui/timer_bar.lua"
+local ScoreboardBar = import "ui/scoreboard_bar.lua"
 
 function score_scene:enter(finalScore, caught, missed)
     self.finalScore = finalScore or 0

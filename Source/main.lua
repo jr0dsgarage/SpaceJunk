@@ -12,7 +12,7 @@ _G.ScorePopups = import "score_popup.lua"
 _G.CrankIndicatorSprite = import "crank_indicator_sprite.lua"
 _G.SoundManager = import "sound_manager.lua"
 _G.FlyingObjectSpawner = import "flying_object_spawner.lua"
-_G.ui = import "ui"
+_G.ui = import "ui/ui.lua"
 
 -- Import scene management and scenes
 local scene_manager = import "scenes/scene_manager"
