@@ -18,4 +18,12 @@ function SoundManager:playCapture(precision)
     self.captureSynth:playNote(freq, 0.2, 0.2)
 end
 
+function SoundManager:playMiss()
+    -- Play a low frequency, crunchy sound for missed objects
+    -- Use a short, low note with a bit of noise
+    local synth = playdate.sound.synth.new(playdate.sound.kWaveNoise)
+    synth:setADSR(0.01, 0.05, 0, 0.1)
+    synth:playNote(80, 0.15, 0.2) -- low frequency, short duration
+end
+
 return SoundManager

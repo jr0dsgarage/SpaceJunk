@@ -133,6 +133,7 @@ function game_scene:update()
             self.flyingObjectSpawner:removeObjectAt(i)
             self:spawnFlyingObject()
             self.missed = self.missed + 1
+            self.soundManager:playMiss()
         end
     end
 
