@@ -6,22 +6,12 @@ function score_scene:enter(finalScore, caught, missed)
     self.finalScore = finalScore or 0
     self.caught = caught or 0
     self.missed = missed or 0
-    -- Create a full-screen sprite for drawing
-    if self.bgSprite then self.bgSprite:remove() end
-    local gfx <const> = playdate.graphics
-    self.bgSprite = gfx.sprite.new()
-    self.bgSprite:setCenter(0, 0)
-    self.bgSprite:moveTo(0, 0)
-    self.bgSprite:setZIndex(-100)
-    self.bgSprite:setSize(400, 240)
-    self.bgSprite.draw = function(_)
-        score_scene:draw()
-    end
-    self.bgSprite:add()
+    self.screenWidth, self.screenHeight = playdate.display.getWidth(), playdate.display.getHeight()
+    self.starfield = _G.Starfield.new(self.screenWidth, self.screenHeight, 50)
 end
 
 function score_scene:leave()
-    if self.bgSprite then self.bgSprite:remove() end
+    self.starfield = nil
 end
 
 function score_scene:update()
@@ -29,20 +19,45 @@ function score_scene:update()
 end
 
 function score_scene:draw()
-    local gfx <const> = playdate.graphics
-    gfx.clear(gfx.kColorBlack)
-    if not ui or not ui.titleText_font or not ui.altText_font then
-        gfx.drawText("ERROR: UI/FONTS NOT LOADED", 20, 120)
-        return
+    -- Fill background and draw starfield
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(0, 0, 400, 240)
+    if self.starfield then
+        self.starfield:draw(200, 120, 400, 240)
     end
-    gfx.setFont(ui.titleText_font)
+
+    -- Title background and text (match menu)
+    local titleY = 80
+    local titleRectW, titleRectH = 240, 38
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(self.screenWidth/2 - titleRectW/2, titleY - 16, titleRectW, titleRectH)
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
-    gfx.drawTextAligned("GAME OVER", 200, 60, kTextAlignment.center)
+    gfx.setFont(ui.titleText_font)
+    gfx.drawTextAligned("GAME OVER", 200, titleY, kTextAlignment.center)
+
+    -- Score/Stats background and text (match subtitle style)
+    local stats = string.format("  SCORE: %d\nCAUGHT: %d\n MISSED: %d", self.finalScore, self.caught, self.missed)
+    local statsW, statsH = gfx.getTextSize(stats)
+    local statsRectW, statsRectH = statsW + 24, statsH + 8
+    local statsY = 140
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(200 - statsRectW/2, statsY - 4, statsRectW, statsRectH)
+    gfx.setColor(gfx.kColorWhite)
     gfx.setFont(ui.altText_font)
-    gfx.drawTextAligned("SCORE: " .. tostring(self.finalScore), 200, 120, kTextAlignment.center)
-    gfx.drawTextAligned("CAUGHT: " .. tostring(self.caught), 200, 150, kTextAlignment.center)
-    gfx.drawTextAligned("MISSED: " .. tostring(self.missed), 200, 170, kTextAlignment.center)
-    gfx.drawTextAligned("A: Play Again    B: Main Menu", 200, 210, kTextAlignment.center)
+    gfx.drawTextAligned(stats, 200, statsY, kTextAlignment.center)
+
+    -- Instructions background and text
+    local instr = "B: Main Menu    A: Play Again"
+    local instrW, instrH = gfx.getTextSize(instr)
+    local instrRectW, instrRectH = instrW + 24, instrH + 8
+    local instrY = 200
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(200 - instrRectW/2, instrY - 4, instrRectW, instrRectH)
+    gfx.setColor(gfx.kColorWhite)
+    gfx.setFont(ui.altText_font)
+    gfx.drawTextAligned(instr, 200, instrY, kTextAlignment.center)
 end
 
 function score_scene:AButtonDown()

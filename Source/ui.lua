@@ -3,27 +3,43 @@ local gfx <const> = playdate.graphics
 local rains3xFont = gfx.font.new("fonts/font-rains-3x")
 local fullCircleFont = gfx.font.new("fonts/font-full-circle")
 
-local function drawScore(caught, missed, score)
-    -- Draw one large black rectangle behind all label+value pairs
-    gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(0, 205, 400, 42) 
+local TimerBar = import "timer_bar.lua"
+local ScoreboardBar = import "scoreboard_bar.lua"
 
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setFont(fullCircleFont)
-    -- Draw labels
-    gfx.drawTextAligned("CAUGHT", 0, 206, kTextAlignment.left)      
-    gfx.drawTextAligned("SCORE", 200, 206, kTextAlignment.center)
-    gfx.drawTextAligned("MISSED", 400, 206, kTextAlignment.right)
-    -- Draw values below labels
-    gfx.drawTextAligned(tostring(caught), 0, 224, kTextAlignment.left)      
-    gfx.drawTextAligned(tostring(score), 200, 224, kTextAlignment.center)
-    gfx.drawTextAligned(tostring(missed), 400, 224, kTextAlignment.right)
+local timerBar = nil
+local scoreboardBar = nil
+local lastTimerValue = nil
+
+local function drawTimerBar(timeLeft)
+    if not timerBar then
+        timerBar = TimerBar.new(60, 0, 0, 400, 16)
+        timerBar:add()
+        lastTimerValue = 60
+    end
+    if timeLeft ~= lastTimerValue then
+        timerBar.startTime = playdate.getCurrentTimeMilliseconds() - (60 - timeLeft) * 1000
+        lastTimerValue = timeLeft
+    end
+end
+
+local function drawScore(caught, missed, score)
+    if not scoreboardBar then
+        scoreboardBar = ScoreboardBar.new(0, 205, 400, 42)
+        scoreboardBar:add()
+    end
+    scoreboardBar:setValues(caught, missed, score)
+end
+
+local function reset()
+    timerBar = nil
+    scoreboardBar = nil
+    lastTimerValue = nil
 end
 
 return {
     drawScore = drawScore,
+    drawTimerBar = drawTimerBar,
+    reset = reset,
     titleText_font = rains3xFont,
     altText_font = fullCircleFont,
 }

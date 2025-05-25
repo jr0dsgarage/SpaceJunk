@@ -16,7 +16,7 @@ local SoundManager = _G.SoundManager
 local FlyingObjectSpawner = _G.FlyingObjectSpawner
 local TimerBar = import "timer_bar.lua"
 
-local gameDuration = 60000 -- 1 minute in milliseconds
+local gameDuration = 2 * 1000 -- 60 seconds in milliseconds
 
 function game_scene:resetGameState()
     self.caught = 0
@@ -78,9 +78,6 @@ function game_scene:enter()
 
     -- Sound manager
     self.soundManager = SoundManager.new()
-    if self.timerBar then self.timerBar:remove() end
-    self.timerBar = TimerBar.new(60, 0, 0, 400, 16)
-    self.timerBar:add()
 end
 
 function game_scene:spawnFlyingObject()
@@ -159,7 +156,6 @@ function game_scene:update()
     local now = playdate.getCurrentTimeMilliseconds()
     local elapsed = now - self.startTime
     self.timeLeft = math.max(0, math.ceil((gameDuration - elapsed) / 1000))
-    if self.timerBar then self.timerBar:getTimeLeft() end
     if elapsed >= gameDuration then
         self.gameOver = true
         return
@@ -167,7 +163,9 @@ function game_scene:update()
 end
 
 function game_scene:draw()
-    -- TimerBar is now a sprite, so no need to call draw() here
+    -- Draw UI elements (timer bar and score bar) via ui.lua
+    ui.drawTimerBar(self.timeLeft or 60)
+    ui.drawScore(self.caught, self.missed, self.score)
     -- Draw timer at top right
     gfx.setFont(ui.altText_font)
     gfx.setColor(gfx.kColorWhite)
@@ -177,17 +175,10 @@ end
 
 function game_scene:leave()
     if self.bgSprite then self.bgSprite:remove() end
-    if self.beamSprite and self.beamSprite.sprite then self.beamSprite.sprite:remove() end
-    if self.crankIndicator then self.crankIndicator:remove() end
-    if self.flyingObjectSpawner and self.flyingObjectSpawner.flyingObjects then
-        for i, obj in ipairs(self.flyingObjectSpawner.flyingObjects) do
-            if obj.sprite then obj.sprite:remove() end
-        end
-    end
-    if self.scorePopups and self.scorePopups.popups then
-        self.scorePopups.popups = {}
-    end
-    if self.timerBar then self.timerBar:remove() end
+end
+
+function game_scene:usesSprites()
+    return true
 end
 
 return game_scene

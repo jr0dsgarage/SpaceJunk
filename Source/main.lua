@@ -23,12 +23,18 @@ local score_scene = import "scenes/score_scene"
 function playdate.update()
     scene_manager.update()
     scene_manager.draw()
-    playdate.graphics.sprite.update()
+    if scene_manager.usesSprites and scene_manager.usesSprites() then
+        playdate.graphics.sprite.update()
+    end
     playdate.timer.updateTimers()
 end
 
 function playdate.AButtonDown()
     scene_manager.AButtonDown()
+end
+
+function playdate.BButtonDown()
+    scene_manager.BButtonDown()
 end
 
 -- Start with the menu scene

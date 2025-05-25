@@ -9,12 +9,16 @@ function menu_scene:enter()
     self.starfield = _G.Starfield.new(self.screenWidth, self.screenHeight, 50)
 end
 
+function menu_scene:leave()
+end
+
 function menu_scene:update()
     -- Nothing to update for static menu
 end
 
 function menu_scene:draw()
     -- Fill background and draw starfield
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, 400, 240)
     if self.starfield then

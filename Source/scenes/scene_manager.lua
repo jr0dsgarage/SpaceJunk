@@ -3,7 +3,13 @@ local scene_manager = {}
 
 local currentScene = nil
 
+function scene_manager.clear()
+    playdate.graphics.sprite.removeAll()
+    if _G.ui and _G.ui.reset then _G.ui.reset() end
+end
+
 function scene_manager.setScene(scene, ...)
+    scene_manager.clear()
     if currentScene and currentScene.leave then
         currentScene:leave()
     end
@@ -35,6 +41,10 @@ function scene_manager.BButtonDown()
     if currentScene and currentScene.BButtonDown then
         currentScene:BButtonDown()
     end
+end
+
+function scene_manager.usesSprites()
+    return currentScene and currentScene.usesSprites and currentScene:usesSprites()
 end
 
 return scene_manager
