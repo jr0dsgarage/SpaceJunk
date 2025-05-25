@@ -95,10 +95,12 @@ function game_scene:enter()
         local now = playdate.getCurrentTimeMilliseconds()
         for i = #self.scorePopups, 1, -1 do
             local popup = self.scorePopups[i]
+            local popupY = popup.y
+            if popupY > 195 then popupY = 190 end
             if now - popup.time < 1000 then
                 gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
                 gfx.setColor(gfx.kColorWhite)
-                gfx.drawTextAligned("" .. tostring(popup.value), popup.x, popup.y, kTextAlignment.center)
+                gfx.drawTextAligned("" .. tostring(popup.value), popup.x, popupY, kTextAlignment.center)
             else
                 table.remove(self.scorePopups, i)
             end
@@ -107,9 +109,11 @@ function game_scene:enter()
         ui.drawScore(self.caught, self.missed, self.score)
     end
     self.bgSprite:add()
+
     -- Add beam sprite above flying objects
     if self.beamSprite then self.beamSprite.sprite:remove() end
     self.beamSprite = BeamSprite.new(self)
+
     -- Add a foreground sprite for the crank indicator
     if self.crankSprite then self.crankSprite:remove() end
     self.crankSprite = gfx.sprite.new()
@@ -186,7 +190,9 @@ function game_scene:update()
             self.caught = self.caught + 1
             -- Score calculation
             local precision = 1 - (self.beamRadius - objRadius) / self.beamRadius
-            local score = math.floor(100 * precision * (1 + objRadius / self.maxObjectSize))
+            -- New: scale down score for larger objects (inverse relationship)
+            local sizeFactor = 1 - (objRadius / self.maxObjectSize) -- smaller objects get higher factor
+            local score = math.floor(100 * precision * sizeFactor)
             self.score = self.score + score
             table.insert(self.scorePopups,
                 { x = obj.x, y = obj.y, value = score, time = playdate.getCurrentTimeMilliseconds() })
