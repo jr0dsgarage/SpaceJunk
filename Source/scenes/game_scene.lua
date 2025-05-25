@@ -14,12 +14,17 @@ local ScorePopups = _G.ScorePopups
 local CrankIndicatorSprite = _G.CrankIndicatorSprite
 local SoundManager = _G.SoundManager
 local FlyingObjectSpawner = _G.FlyingObjectSpawner
+local TimerBar = import "timer_bar.lua"
+
+local gameDuration = 60000 -- 1 minute in milliseconds
 
 function game_scene:resetGameState()
     self.caught = 0
     self.missed = 0
     self.score = 0
     self.scorePopups = ScorePopups.new()
+    self.startTime = playdate.getCurrentTimeMilliseconds()
+    self.gameOver = false
 end
 
 function game_scene:enter()
@@ -29,6 +34,7 @@ function game_scene:enter()
     self.beamX, self.beamY = self.screenWidth / 2, self.screenHeight / 2
     self.minBeamRadius = 5
     self.maxBeamRadius = 75
+    self._scoreSceneSwitched = false -- Reset this flag on enter
 
     -- Stars
     self.starfield = Starfield.new(self.screenWidth, self.screenHeight, 50)
@@ -63,17 +69,18 @@ function game_scene:enter()
         ui.drawScore(self.caught, self.missed, self.score)
     end
     self.bgSprite:add()
-
     -- Add beam sprite above flying objects
     if self.beamSprite then self.beamSprite.sprite:remove() end
     self.beamSprite = BeamSprite.new(self)
-
     -- Add a foreground sprite for the crank indicator
     if self.crankIndicator then self.crankIndicator:remove() end
     self.crankIndicator = CrankIndicatorSprite.new(self.screenWidth, self.screenHeight)
 
     -- Sound manager
     self.soundManager = SoundManager.new()
+    if self.timerBar then self.timerBar:remove() end
+    self.timerBar = TimerBar.new(60, 0, 0, 400, 16)
+    self.timerBar:add()
 end
 
 function game_scene:spawnFlyingObject()
@@ -81,6 +88,13 @@ function game_scene:spawnFlyingObject()
 end
 
 function game_scene:update()
+    if self.gameOver then
+        if rawget(_G, "switchToScoreScene") and not self._scoreSceneSwitched then
+            self._scoreSceneSwitched = true
+            _G.switchToScoreScene(self.score, self.caught, self.missed)
+        end
+        return
+    end
     -- Movement
     local moveSpeed = math.max(5, math.floor(self.beamRadius / 5))
     if playdate.buttonIsPressed(playdate.kButtonUp) then
@@ -139,9 +153,41 @@ function game_scene:update()
 
     -- At the end of update, force background sprite to redraw
     if self.bgSprite then self.bgSprite:markDirty() end
-    
-    -- Update beam sprite to redraw above flying objects
     if self.beamSprite and self.beamSprite.sprite then self.beamSprite.sprite:markDirty() end
+
+    -- Timer logic
+    local now = playdate.getCurrentTimeMilliseconds()
+    local elapsed = now - self.startTime
+    self.timeLeft = math.max(0, math.ceil((gameDuration - elapsed) / 1000))
+    if self.timerBar then self.timerBar:getTimeLeft() end
+    if elapsed >= gameDuration then
+        self.gameOver = true
+        return
+    end
+end
+
+function game_scene:draw()
+    -- TimerBar is now a sprite, so no need to call draw() here
+    -- Draw timer at top right
+    gfx.setFont(ui.altText_font)
+    gfx.setColor(gfx.kColorWhite)
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    gfx.drawTextAligned(string.format("%02d:%02d", math.floor(self.timeLeft/60), self.timeLeft%60), 390, 10, kTextAlignment.right)
+end
+
+function game_scene:leave()
+    if self.bgSprite then self.bgSprite:remove() end
+    if self.beamSprite and self.beamSprite.sprite then self.beamSprite.sprite:remove() end
+    if self.crankIndicator then self.crankIndicator:remove() end
+    if self.flyingObjectSpawner and self.flyingObjectSpawner.flyingObjects then
+        for i, obj in ipairs(self.flyingObjectSpawner.flyingObjects) do
+            if obj.sprite then obj.sprite:remove() end
+        end
+    end
+    if self.scorePopups and self.scorePopups.popups then
+        self.scorePopups.popups = {}
+    end
+    if self.timerBar then self.timerBar:remove() end
 end
 
 return game_scene

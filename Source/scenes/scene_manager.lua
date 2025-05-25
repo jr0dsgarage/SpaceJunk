@@ -3,10 +3,13 @@ local scene_manager = {}
 
 local currentScene = nil
 
-function scene_manager.setScene(scene)
+function scene_manager.setScene(scene, ...)
+    if currentScene and currentScene.leave then
+        currentScene:leave()
+    end
     currentScene = scene
     if currentScene and currentScene.enter then
-        currentScene:enter()
+        currentScene:enter(...)
     end
 end
 
@@ -25,6 +28,12 @@ end
 function scene_manager.AButtonDown()
     if currentScene and currentScene.AButtonDown then
         currentScene:AButtonDown()
+    end
+end
+
+function scene_manager.BButtonDown()
+    if currentScene and currentScene.BButtonDown then
+        currentScene:BButtonDown()
     end
 end
 
