@@ -103,10 +103,6 @@ function game_scene:enter()
                 table.remove(self.scorePopups, i)
             end
         end
-        -- Crank alert
-        if playdate.isCrankDocked() then
-            playdate.ui.crankIndicator:draw()
-        end
         -- Draw score
         ui.drawScore(self.caught, self.missed, self.score)
     end
@@ -114,6 +110,26 @@ function game_scene:enter()
     -- Add beam sprite above flying objects
     if self.beamSprite then self.beamSprite.sprite:remove() end
     self.beamSprite = BeamSprite.new(self)
+    -- Add a foreground sprite for the crank indicator
+    if self.crankSprite then self.crankSprite:remove() end
+    self.crankSprite = gfx.sprite.new()
+    self.crankSprite:setCenter(0, 0)
+    self.crankSprite:moveTo(0, 0)
+    self.crankSprite:setZIndex(9999) -- topmost
+    self.crankSprite:setSize(self.screenWidth, self.screenHeight)
+    self.crankSprite.draw = function(_)
+        if playdate.isCrankDocked() then
+            local prevDrawMode = gfx.getImageDrawMode and gfx.getImageDrawMode() or nil
+            gfx.setImageDrawMode(gfx.kDrawModeInverted)
+            playdate.ui.crankIndicator:draw()
+            if prevDrawMode then
+                gfx.setImageDrawMode(prevDrawMode)
+            else
+                gfx.setImageDrawMode(gfx.kDrawModeCopy)
+            end
+        end
+    end
+    self.crankSprite:add()
 end
 
 function game_scene:spawnFlyingObject()
