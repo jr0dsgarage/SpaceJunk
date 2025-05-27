@@ -5,8 +5,7 @@ local ScoreboardBar = import "ui/scoreboard_bar.lua"
 
 function menu_scene:enter()
     -- Called when entering the menu scene
-    self.screenWidth, self.screenHeight = playdate.display.getWidth(), playdate.display.getHeight()
-    _G.sharedStarfield = _G.Starfield.new(self.screenWidth, self.screenHeight, 50)
+    _G.sharedStarfield = _G.Starfield.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, 50)
     self.starfield = _G.sharedStarfield
 end
 
@@ -30,7 +29,7 @@ function menu_scene:draw()
     local titleY = 80
     local titleRectW, titleRectH = 240, 38
     gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(self.screenWidth/2 - titleRectW/2, titleY - 16, titleRectW, titleRectH)
+    gfx.fillRect(_G.SCREEN_WIDTH/2 - titleRectW/2, titleY - 16, titleRectW, titleRectH)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
     gfx.setFont(ui.titleText_font)

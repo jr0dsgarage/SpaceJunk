@@ -24,9 +24,8 @@ end
 
 function game_scene:enter()
     -- Initialize or reset game state here
-    self.screenWidth, self.screenHeight = playdate.display.getWidth(), playdate.display.getHeight()
     self.beamRadius = 20
-    self.beamX, self.beamY = self.screenWidth / 2, self.screenHeight / 2
+    self.beamX, self.beamY = _G.SCREEN_WIDTH / 2, _G.SCREEN_HEIGHT / 2
     self.minBeamRadius = 5
     self.maxBeamRadius = 75
     self._scoreSceneSwitched = false
@@ -44,7 +43,7 @@ function game_scene:enter()
         gfx.image.new("sprites/bottle.png")
     }
     self.maxFlyingObjects = 3
-    self.flyingObjectSpawner = FlyingObjectSpawner.new(self.flyingObjectImgs, self.screenWidth, self.screenHeight, self.maxFlyingObjects)
+    self.flyingObjectSpawner = FlyingObjectSpawner.new(self.flyingObjectImgs, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, self.maxFlyingObjects)
     self.maxObjectSize = self.maxBeamRadius
     for i = 1, self.maxFlyingObjects do
         self.flyingObjectSpawner:spawnFlyingObject()
@@ -56,12 +55,12 @@ function game_scene:enter()
     self.bgSprite:setCenter(0, 0)
     self.bgSprite:moveTo(0, 0)
     self.bgSprite:setZIndex(-100)
-    self.bgSprite:setSize(self.screenWidth, self.screenHeight)
-    self.cracksImage = gfx.image.new(self.screenWidth, self.screenHeight)
+    self.bgSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    self.cracksImage = gfx.image.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     self.cracks = {}
     self.bgSprite.draw = function(_)
         gfx.clear(gfx.kColorBlack)
-        self.starfield:draw(self.beamX, self.beamY, self.screenWidth, self.screenHeight)
+        self.starfield:draw(self.beamX, self.beamY, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
         self.scorePopups:draw()
     end
     self.bgSprite:add()
@@ -71,12 +70,12 @@ function game_scene:enter()
     self.cracksSprite:setCenter(0, 0)
     self.cracksSprite:moveTo(0, 0)
     self.cracksSprite:setZIndex(5000)
-    self.cracksSprite:setSize(self.screenWidth, self.screenHeight)
+    self.cracksSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     self.cracksSprite:add()
 
     -- Beam and crank indicator
     self.beamSprite = BeamSprite.new(self)
-    self.crankIndicator = CrankIndicatorSprite.new(self.screenWidth, self.screenHeight)
+    self.crankIndicator = CrankIndicatorSprite.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Capture synth setup
     self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
@@ -108,8 +107,8 @@ function game_scene:update()
     if playdate.buttonIsPressed(playdate.kButtonRight) then
         self.beamX = self.beamX + moveSpeed
     end
-    self.beamX = math.max(0, math.min(self.screenWidth, self.beamX))
-    self.beamY = math.max(0, math.min(self.screenHeight - 32, self.beamY))
+    self.beamX = math.max(0, math.min(_G.SCREEN_WIDTH, self.beamX))
+    self.beamY = math.max(0, math.min(_G.SCREEN_HEIGHT - 32, self.beamY))
 
     -- Crank
     local crankPos = playdate.getCrankPosition()

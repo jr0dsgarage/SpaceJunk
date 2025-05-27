@@ -8,10 +8,12 @@ function score_scene:enter(finalScore, caught, missed)
     self.finalScore = finalScore or 0
     self.caught = caught or 0
     self.missed = missed or 0
-    self.screenWidth, self.screenHeight = playdate.display.getWidth(), playdate.display.getHeight()
-    
-    -- Stars
-    self.starfield = _G.sharedStarfield
+    if _G.sharedStarfield then
+        self.starfield = _G.sharedStarfield
+    else
+        self.starfield = _G.Starfield.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, 50)
+        _G.sharedStarfield = self.starfield
+    end
 end
 
 function score_scene:leave()
@@ -35,7 +37,7 @@ function score_scene:draw()
     local titleY = 80
     local titleRectW, titleRectH = 240, 38
     gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(self.screenWidth/2 - titleRectW/2, titleY - 16, titleRectW, titleRectH)
+    gfx.fillRect(_G.SCREEN_WIDTH/2 - titleRectW/2, titleY - 16, titleRectW, titleRectH)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
     gfx.setFont(ui.titleText_font)

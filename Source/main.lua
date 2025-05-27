@@ -4,6 +4,9 @@ import "Corelibs/sprites"
 import "Corelibs/timer"
 import "Corelibs/ui"
 
+-- Global screen dimensions
+_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT = playdate.display.getWidth(), playdate.display.getHeight()
+
 -- Attach all modules to _G for global access
 _G.FlyingObjectSprite = import "graphics/flying_object.lua"
 _G.BeamSprite = import "ui/beam_sprite.lua"

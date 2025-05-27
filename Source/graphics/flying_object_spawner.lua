@@ -7,8 +7,8 @@ FlyingObjectSpawner.__index = FlyingObjectSpawner
 function FlyingObjectSpawner.new(flyingObjectImgs, screenWidth, screenHeight, maxFlyingObjects)
     local self = setmetatable({}, FlyingObjectSpawner)
     self.flyingObjectImgs = flyingObjectImgs
-    self.screenWidth = screenWidth
-    self.screenHeight = screenHeight
+    self.screenWidth =  _G.SCREEN_WIDTH
+    self.screenHeight = _G.SCREEN_HEIGHT
     self.maxFlyingObjects = maxFlyingObjects or 3
     self.flyingObjects = {}
     return self
@@ -16,7 +16,7 @@ end
 
 function FlyingObjectSpawner:spawnFlyingObject()
     local x = math.random(0, self.screenWidth)
-    local y = math.random(_G.TimerBarHeight, self.screenHeight - _G.ScoreboardBarHeight) -- leave space for timer and scoreboard
+    local y = math.random(_G.TIMERBAR_HEIGHT, self.screenHeight - _G.SCOREBOARD_HEIGHT) -- leave space for timer and scoreboard
     local size = 8
     local speed = math.random(1, 3) / 5
     local img = self.flyingObjectImgs[math.random(1, #self.flyingObjectImgs)]    local obj = FlyingObjectSprite.new(x, y, size, speed, img)
