@@ -16,11 +16,9 @@ _G.ZINDEX = {
     CRACKS = 5000,
 }
 
--- Ensure these are defined before using them elsewhere
-do
-    _G.TIMERBAR_HEIGHT = 16
-    _G.SCOREBOARD_HEIGHT = 42
-end
+-- Global constants for game dimensions
+_G.TIMERBAR_HEIGHT = 16
+_G.SCOREBOARD_HEIGHT = 42
 
 -- Attach all modules to _G for global access
 _G.ui = import "ui/ui.lua"

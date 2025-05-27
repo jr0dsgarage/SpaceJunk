@@ -30,7 +30,7 @@ function score_scene:draw()
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, 400, 240)
     if self.starfield then
-        self.starfield:draw(200, 120, 400, 240)
+        self.starfield:draw(_G.SCREEN_WIDTH/2, _G.SCREEN_HEIGHT/2, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     end
 
     -- Title background and text (match menu)

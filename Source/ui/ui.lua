@@ -36,10 +36,20 @@ local function reset()
     lastTimerValue = nil
 end
 
+local function pauseTimerBar()
+    if timerBar and timerBar.pause then timerBar:pause() end
+end
+
+local function resumeTimerBar()
+    if timerBar and timerBar.resume then timerBar:resume() end
+end
+
 return {
     drawScore = drawScore,
     drawTimerBar = drawTimerBar,
     reset = reset,
+    pauseTimerBar = pauseTimerBar,
+    resumeTimerBar = resumeTimerBar,
     titleText_font = rains3xFont,
     altText_font = fullCircleFont,
 }

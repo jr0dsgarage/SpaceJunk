@@ -12,7 +12,7 @@ function CrankIndicatorSprite.new(screenWidth, screenHeight)
     sprite:setSize(screenWidth, screenHeight)
     sprite.draw = function(_)
         if playdate.isCrankDocked() then
-            playdate.ui.crankIndicator:draw()
+            playdate.ui.crankIndicator:draw(0,-42)
         end
     end
     sprite:add()
