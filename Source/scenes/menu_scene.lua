@@ -8,7 +8,8 @@ local ScoreboardBar = import "ui/scoreboard_bar.lua"
 function menu_scene:enter()
     -- Called when entering the menu scene
     self.screenWidth, self.screenHeight = playdate.display.getWidth(), playdate.display.getHeight()
-    self.starfield = _G.Starfield.new(self.screenWidth, self.screenHeight, 50)
+    _G.sharedStarfield = _G.Starfield.new(self.screenWidth, self.screenHeight, 50)
+    self.starfield = _G.sharedStarfield
 end
 
 function menu_scene:leave()

@@ -18,7 +18,7 @@ function ScoreboardBar.new(x, y, width, height)
     self.sprite = gfx.sprite.new()
     self.sprite:setCenter(0, 0)
     self.sprite:moveTo(self.x, self.y)
-    self.sprite:setZIndex(10000)
+    self.sprite:setZIndex(9999) -- below crank indicator
     self.sprite:setSize(self.width, self.height)
     self.sprite.draw = function(_)
         self:drawBar()
@@ -42,20 +42,16 @@ end
 
 function ScoreboardBar:drawBar()
     local gfx <const> = playdate.graphics
-    -- Draw black background
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, self.width, self.height)
-    -- Draw labels and values
     if ui and ui.altText_font then
         gfx.setFont(ui.altText_font)
     end
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
-    -- Draw labels
     gfx.drawTextAligned("CAUGHT", 0, 1, kTextAlignment.left)
     gfx.drawTextAligned("SCORE", 200, 1, kTextAlignment.center)
     gfx.drawTextAligned("MISSED", 400, 1, kTextAlignment.right)
-    -- Draw values below labels
     gfx.drawTextAligned(tostring(self.caught), 0, 19, kTextAlignment.left)
     gfx.drawTextAligned(tostring(self.score), 200, 19, kTextAlignment.center)
     gfx.drawTextAligned(tostring(self.missed), 400, 19, kTextAlignment.right)

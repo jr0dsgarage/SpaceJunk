@@ -10,7 +10,7 @@ function CrankIndicatorSprite.new(screenWidth, screenHeight)
     local sprite = gfx.sprite.new()
     sprite:setCenter(0, 0)
     sprite:moveTo(0, 0)
-    sprite:setZIndex(9999) -- topmost
+    sprite:setZIndex(10000) -- above scoreboard
     sprite:setSize(screenWidth, screenHeight)
     sprite.draw = function(_)
         if playdate.isCrankDocked() then

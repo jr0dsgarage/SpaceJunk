@@ -9,7 +9,9 @@ function score_scene:enter(finalScore, caught, missed)
     self.caught = caught or 0
     self.missed = missed or 0
     self.screenWidth, self.screenHeight = playdate.display.getWidth(), playdate.display.getHeight()
-    self.starfield = _G.Starfield.new(self.screenWidth, self.screenHeight, 50)
+    
+    -- Stars
+    self.starfield = _G.sharedStarfield
 end
 
 function score_scene:leave()

@@ -1,21 +1,15 @@
--- scenes/game_scene.lua
-
--- Use global references instead of imports
 local gfx <const> = playdate.graphics
 local snd = playdate.sound
 local captureSynth = snd.synth.new(snd.kWaveSquare)
 
 local game_scene = {}
 
-local FlyingObjectSprite = _G.FlyingObjectSprite
 local BeamSprite = _G.BeamSprite
 local Starfield = _G.Starfield
 local ScorePopups = _G.ScorePopups
 local CrankIndicatorSprite = _G.CrankIndicatorSprite
 local SoundManager = _G.SoundManager
 local FlyingObjectSpawner = _G.FlyingObjectSpawner
-local TimerBar = import "ui/timer_bar.lua"
-local ScoreboardBar = import "ui/scoreboard_bar.lua"
 
 local gameDuration = 60 * 1000 -- 60 seconds in milliseconds
 
@@ -36,9 +30,13 @@ function game_scene:enter()
     self.minBeamRadius = 5
     self.maxBeamRadius = 75
     self._scoreSceneSwitched = false
+    self.soundManager = SoundManager.new()
+
+    self.bgMusicPlayer = playdate.sound.fileplayer.new("audio/starz.mp3")
+        self.bgMusicPlayer:play(0) -- loop forever
 
     -- Stars
-    self.starfield = Starfield.new(self.screenWidth, self.screenHeight, 50)
+    self.starfield = _G.sharedStarfield
     
     -- Flying objects
     self.flyingObjectImgs = {
@@ -63,16 +61,15 @@ function game_scene:enter()
         gfx.clear(gfx.kColorBlack)
         self.starfield:draw(self.beamX, self.beamY, self.screenWidth, self.screenHeight)
         self.scorePopups:draw()
-        ui.drawScore(self.caught, self.missed, self.score)
     end
     self.bgSprite:add()
 
+    -- Beam and crank indicator
     self.beamSprite = BeamSprite.new(self)
     self.crankIndicator = CrankIndicatorSprite.new(self.screenWidth, self.screenHeight)
-    if self.crankIndicator and self.crankIndicator.setZIndex then
-        self.crankIndicator:setZIndex(10002)
-    end
-    self.soundManager = SoundManager.new()
+
+    -- Capture synth setup
+    self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
 end
 
 function game_scene:spawnFlyingObject()
@@ -123,12 +120,20 @@ function game_scene:update()
             self.caught = self.caught + 1
             -- Score calculation
             local precision = 1 - (self.beamRadius - objRadius) / self.beamRadius
-            -- New: scale down score for larger objects (inverse relationship)
-            local sizeFactor = 1 - (objRadius / self.maxObjectSize) -- smaller objects get higher factor
+            local sizeFactor = 1 - (objRadius / self.maxObjectSize)
             local score = math.floor(100 * precision * sizeFactor)
             self.score = self.score + score
             self.scorePopups:add(obj.x, obj.y, score)
-            self.soundManager:playCapture(precision)
+            -- Play a note from the C major scale based on score (lower score = lower note)
+            if self.cMajorNotes then
+                local minScore, maxScore = 0, 100
+                local clampedScore = math.max(minScore, math.min(maxScore, score))
+                local scaleIdx = math.floor(((clampedScore - minScore) / (maxScore - minScore)) * (#self.cMajorNotes - 1) + 1)
+                local note = self.cMajorNotes[scaleIdx]
+                captureSynth:playNote(note, 0.2, 0.2)
+            else
+                self.soundManager:playCapture(precision)
+            end
         end
     end
 
@@ -158,10 +163,8 @@ function game_scene:update()
 end
 
 function game_scene:draw()
-    -- Draw UI elements (timer bar and score bar) via ui.lua
     ui.drawTimerBar(self.timeLeft or 60)
     ui.drawScore(self.caught, self.missed, self.score)
-    -- Draw timer at top right
     gfx.setFont(ui.altText_font)
     gfx.setColor(gfx.kColorWhite)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
@@ -169,7 +172,10 @@ function game_scene:draw()
 end
 
 function game_scene:leave()
-    -- No need to remove sprites or reset state; scene_manager handles cleanup
+    if self.bgMusicPlayer then
+        self.bgMusicPlayer:stop()
+        self.bgMusicPlayer = nil
+    end
 end
 
 function game_scene:usesSprites()

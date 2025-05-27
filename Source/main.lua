@@ -5,13 +5,14 @@ import "Corelibs/timer"
 import "Corelibs/ui"
 
 -- Attach all modules to _G for global access
-_G.FlyingObjectSprite = import "flying_object.lua"
-_G.BeamSprite = import "beam_sprite.lua"
-_G.Starfield = import "starfield.lua"
-_G.ScorePopups = import "score_popup.lua"
-_G.CrankIndicatorSprite = import "crank_indicator_sprite.lua"
-_G.SoundManager = import "sound_manager.lua"
-_G.FlyingObjectSpawner = import "flying_object_spawner.lua"
+_G.FlyingObjectSprite = import "graphics/flying_object.lua"
+_G.BeamSprite = import "ui/beam_sprite.lua"
+_G.CrankIndicatorSprite = import "ui/crank_indicator_sprite.lua"
+_G.Starfield = import "graphics/starfield.lua"
+_G.ScorePopups = import "ui/score_popup.lua"
+
+_G.SoundManager = import "audio/sound_manager.lua"
+_G.FlyingObjectSpawner = import "graphics/flying_object_spawner.lua"
 _G.ui = import "ui/ui.lua"
 
 -- Import scene management and scenes

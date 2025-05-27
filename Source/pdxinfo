@@ -1,5 +1,7 @@
 name=SpaceJunk
-description=Space Junk
+description=A game where you collect space junk for points.
+category=Games
+tags=game,space,arcade
 author=Jarrod Kozeal
 version=1.0
 bundleID=com.j__r0d.spacejunk

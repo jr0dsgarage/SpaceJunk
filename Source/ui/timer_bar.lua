@@ -20,7 +20,7 @@ function TimerBar.new(durationSeconds, x, y, width, height)
     self.sprite = playdate.graphics.sprite.new()
     self.sprite:setCenter(0, 0)
     self.sprite:moveTo(self.x, self.y)
-    self.sprite:setZIndex(10000) -- topmost
+    self.sprite:setZIndex(9999) -- topmost
     self.sprite:setSize(self.width, self.height)
     self.sprite.draw = function(_)
         self:drawBar()
