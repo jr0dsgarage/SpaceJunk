@@ -12,14 +12,7 @@ function CrankIndicatorSprite.new(screenWidth, screenHeight)
     sprite:setSize(screenWidth, screenHeight)
     sprite.draw = function(_)
         if playdate.isCrankDocked() then
-            local prevDrawMode = gfx.getImageDrawMode and gfx.getImageDrawMode() or nil
-            gfx.setImageDrawMode(gfx.kDrawModeInverted)
             playdate.ui.crankIndicator:draw()
-            if prevDrawMode then
-                gfx.setImageDrawMode(prevDrawMode)
-            else
-                gfx.setImageDrawMode(gfx.kDrawModeCopy)
-            end
         end
     end
     sprite:add()
