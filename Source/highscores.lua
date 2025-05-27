@@ -1,5 +1,5 @@
 local HIGHSCORE_FILE = "highscores"
-local MAX_SCORES = 5
+local MAX_SCORES = 10
 local highscores = {}
 
 function highscores.load()
