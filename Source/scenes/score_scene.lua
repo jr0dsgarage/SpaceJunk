@@ -46,8 +46,10 @@ function score_scene:leave()
 end
 
 function score_scene:update()
-    if self.enteringInitials then
+    if self.isNewHighScore then
         self.blinkTimer = (self.blinkTimer or 0) + 1
+    end
+    if self.enteringInitials then
         local crankChange = playdate.getCrankChange()
         local up = playdate.buttonJustPressed(playdate.kButtonUp)
         local down = playdate.buttonJustPressed(playdate.kButtonDown)
@@ -136,12 +138,29 @@ function score_scene:draw()
     gfx.drawTextAligned("GAME OVER", 200, titleY, kTextAlignment.center)
     if self.isNewHighScore then
         gfx.setFont(ui.altText_font)
-        gfx.drawTextAligned("New High Score!", 200, titleY + 28, kTextAlignment.center)
+        local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
+        local nhsText = "New High Score!"
+        local nhsW, nhsH = gfx.getTextSize(nhsText)
+        local nhsY = titleY + 28
+        if blink then
+            -- Draw black rectangle behind the text
+            local rectW, rectH = nhsW + 12, nhsH + 6
+            gfx.setColor(gfx.kColorBlack)
+            gfx.fillRect(200 - rectW/2, nhsY - 2, rectW, rectH)
+            gfx.setColor(gfx.kColorWhite)
+            gfx.drawTextAligned(nhsText, 200, nhsY, kTextAlignment.center)
+        end
         -- Show initials below 'New High Score!' if initials have been entered
         if not self.enteringInitials then
             gfx.setFont(ui.altText_font)
             local initialsStr = table.concat(self.initials)
-            gfx.drawTextAligned(initialsStr, 200, titleY + 44, kTextAlignment.center)
+            local initialsY = titleY + 44
+            local initialsW, initialsH = gfx.getTextSize(initialsStr)
+            local rectW, rectH = initialsW + 2, initialsH + 2
+            gfx.setColor(gfx.kColorBlack)
+            gfx.fillRect(200 - rectW/2, initialsY, rectW, rectH)
+            gfx.setColor(gfx.kColorWhite)
+            gfx.drawTextAligned(initialsStr, 200, initialsY, kTextAlignment.center)
         end
     end
     -- Score/Stats background and text (match subtitle style)

@@ -9,7 +9,7 @@ function highscore_scene:enter()
         _G.sharedStarfield = self.starfield
     end
     self.scores = _G.HighScores and _G.HighScores.load() or {}
-    self.scrollOffset = 0 -- float, 0 = top of list
+    self.scrollOffset = 0
     self.maxVisible = 5
     self.scoreHeight = 30
     self.listY0 = 80
@@ -22,8 +22,14 @@ function highscore_scene:draw()
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    -- Parallax starfield: move stars vertically based on scrollOffset
+    local parallaxY = 0
+    if self.scrollOffset and self.maxScroll and self.maxScroll > 0 then
+        -- Map scrollOffset (0..maxScroll) to a parallax range, e.g., -16 to +16 px
+        parallaxY = (self.scrollOffset / self.maxScroll - 0.5) * 32 -- center at 0
+    end
     if self.starfield then
-        self.starfield:draw(_G.SCREEN_WIDTH/2, _G.SCREEN_HEIGHT/2, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+        self.starfield:draw(_G.SCREEN_WIDTH/2, _G.SCREEN_HEIGHT/2 + parallaxY, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, parallaxY)
     end
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     -- Draw black rectangle behind the HIGH SCORES title
@@ -87,9 +93,18 @@ function highscore_scene:update()
     -- Crank-based scrolling
     local crankChange = playdate.getCrankChange()
     if math.abs(crankChange) > 0 then
-        self.scrollOffset = self.scrollOffset - crankChange * 0.05 -- adjust sensitivity as needed
+        self.scrollOffset = self.scrollOffset - crankChange * 0.04
         self.scrollOffset = math.max(0, math.min(self.scrollOffset, self.maxScroll))
     end
+    -- Always update starfield parallax, not just on crank
+    if self.starfield and self.starfield.setParallaxOffset then
+        local parallaxY = 0
+        if self.maxScroll > 0 then
+            parallaxY = (self.scrollOffset / self.maxScroll - 0.5) * 32
+        end
+        self.starfield:setParallaxOffset(0, parallaxY)
+    end
+    
     -- Reset high scores: hold A+B for 2 seconds, then confirm
     self.resetTimer = self.resetTimer or 0
     if not self.confirmingReset then
