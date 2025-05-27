@@ -4,13 +4,15 @@ local gfx <const> = playdate.graphics
 
 local ScoreboardBar = {}
 ScoreboardBar.__index = ScoreboardBar
+_G.ScoreboardBarHeight = 42
 
 function ScoreboardBar.new(x, y, width, height)
     local self = setmetatable({}, ScoreboardBar)
     self.x = x or 0
     self.y = y or 205
     self.width = width or 400
-    self.height = height or 42
+    self.height = _G.ScoreboardBarHeight
+    -- Initialize score values
     self.caught = 0
     self.missed = 0
     self.score = 0

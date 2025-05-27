@@ -16,7 +16,7 @@ end
 
 function FlyingObjectSpawner:spawnFlyingObject()
     local x = math.random(0, self.screenWidth)
-    local y = math.random(0, self.screenHeight - 32)
+    local y = math.random(_G.TimerBarHeight, self.screenHeight - _G.ScoreboardBarHeight) -- leave space for timer and scoreboard
     local size = 8
     local speed = math.random(1, 3) / 5
     local img = self.flyingObjectImgs[math.random(1, #self.flyingObjectImgs)]    local obj = FlyingObjectSprite.new(x, y, size, speed, img)
