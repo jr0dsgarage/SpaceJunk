@@ -24,6 +24,7 @@ function game_scene:enter()
     self._scoreSceneSwitched = false
     self.soundManager = SoundManager.new()
 
+    -- Background music
     self.bgMusicPlayer = playdate.sound.fileplayer.new("audio/starz.mp3")
         self.bgMusicPlayer:play(0) -- loop forever
 
@@ -41,9 +42,11 @@ function game_scene:enter()
     for i = 1, self.maxFlyingObjects do
         self.flyingObjectSpawner:spawnFlyingObject()
     end
+
+    -- Reset game state
     self:resetGameState()
 
-    -- Create a background sprite for custom drawing
+    -- Background sprite for drawing the starfield and score popups
     self.bgSprite = gfx.sprite.new()
     self.bgSprite:setCenter(0, 0)
     self.bgSprite:moveTo(0, 0)
@@ -69,6 +72,7 @@ function game_scene:enter()
     -- Beam and crank indicator
     self.beamSprite = BeamSprite.new(self)
     self.crankIndicator = CrankIndicatorSprite.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+
     -- Capture synth setup
     self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
 end
@@ -80,29 +84,22 @@ end
 function game_scene:update()
     -- Pause the game if the crank is docked
     if playdate.isCrankDocked() then
-        -- Pause music if playing
         if self.bgMusicPlayer and self.bgMusicPlayer:isPlaying() then
             self.bgMusicPlayer:pause()
         end
-        -- Pause timer bar
         if _G.ui and _G.ui.pauseTimerBar then _G.ui.pauseTimerBar() end
-        -- Store the time when paused, if not already stored
         if not self.pauseTime then
             self.pauseTime = playdate.getCurrentTimeMilliseconds()
         end
-        -- Draw the crank indicator so it animates while paused
         if self.crankIndicator then
             playdate.ui.crankIndicator:draw(0, -42)
         end
         return
     else
-        -- Resume music if paused
         if self.bgMusicPlayer and not self.bgMusicPlayer:isPlaying() then
             self.bgMusicPlayer:play(0)
         end
-        -- Resume timer bar
         if _G.ui and _G.ui.resumeTimerBar then _G.ui.resumeTimerBar() end
-        -- Adjust startTime to account for pause duration
         if self.pauseTime then
             local pausedDuration = playdate.getCurrentTimeMilliseconds() - self.pauseTime
             self.startTime = self.startTime + pausedDuration
