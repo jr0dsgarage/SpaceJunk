@@ -1,5 +1,3 @@
--- scenes/menu_scene.lua
--- Use global modules if needed (ui is already _G.ui)
 local gfx <const> = playdate.graphics
 local menu_scene = {}
 local TimerBar = import "ui/timer_bar.lua"

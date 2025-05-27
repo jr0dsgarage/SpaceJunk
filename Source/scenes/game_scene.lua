@@ -57,12 +57,22 @@ function game_scene:enter()
     self.bgSprite:moveTo(0, 0)
     self.bgSprite:setZIndex(-100)
     self.bgSprite:setSize(self.screenWidth, self.screenHeight)
+    self.cracksImage = gfx.image.new(self.screenWidth, self.screenHeight)
+    self.cracks = {}
     self.bgSprite.draw = function(_)
         gfx.clear(gfx.kColorBlack)
         self.starfield:draw(self.beamX, self.beamY, self.screenWidth, self.screenHeight)
         self.scorePopups:draw()
     end
     self.bgSprite:add()
+
+    -- Cracks sprite for drawing cracks above all other sprites
+    self.cracksSprite = gfx.sprite.new(self.cracksImage)
+    self.cracksSprite:setCenter(0, 0)
+    self.cracksSprite:moveTo(0, 0)
+    self.cracksSprite:setZIndex(5000)
+    self.cracksSprite:setSize(self.screenWidth, self.screenHeight)
+    self.cracksSprite:add()
 
     -- Beam and crank indicator
     self.beamSprite = BeamSprite.new(self)
@@ -145,6 +155,15 @@ function game_scene:update()
             self:spawnFlyingObject()
             self.missed = self.missed + 1
             self.soundManager:playMiss()
+            self.scorePopups:add(obj.x, obj.y, 0)
+            -- Draw the crack permanently to cracksImage
+            if self.cracksImage then
+                gfx.pushContext(self.cracksImage)
+                self.flyingObjectSpawner:drawCrack(obj.x, obj.y)
+                gfx.popContext()
+                -- Update cracksSprite image
+                self.cracksSprite:setImage(self.cracksImage)
+            end
         end
     end
 

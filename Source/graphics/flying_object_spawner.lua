@@ -1,5 +1,3 @@
--- Source/flying_object_spawner.lua
--- Use global reference for FlyingObjectSprite
 local FlyingObjectSprite = _G.FlyingObjectSprite
 local gfx <const> = playdate.graphics
 
@@ -38,6 +36,29 @@ function FlyingObjectSpawner:removeObjectAt(index)
     if obj then obj:remove() end
     table.remove(self.flyingObjects, index)
     self:updateZIndices()
+end
+
+function FlyingObjectSpawner:drawCrack(x, y)
+    local function drawBranch(x, y, angle, length, depth)
+        if depth > 3 or length < 2 then return end
+        local rad = math.rad(angle)
+        local x2 = x + math.cos(rad) * length
+        local y2 = y + math.sin(rad) * length
+        gfx.drawLine(x, y, x2, y2)
+        -- Each branch can branch 0-2 times (randomly)
+        local numSubBranches = math.random(0, 2)
+        for i = 1, numSubBranches do
+            local subAngle = angle + math.random(-50, 50)
+            local subLength = length * (0.4 + math.random() * 0.3) -- 40-70% of parent
+            drawBranch(x2, y2, subAngle, math.min(subLength, 4), depth + 1)
+        end
+    end
+    local numMainBranches = math.random(3, 5)
+    for i = 1, numMainBranches do
+        local angle = math.random(0, 359)
+        local length = math.random(6, 10)
+        drawBranch(x, y, angle, length, 1)
+    end
 end
 
 return FlyingObjectSpawner
