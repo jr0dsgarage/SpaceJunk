@@ -14,6 +14,19 @@ function score_scene:enter(finalScore, caught, missed)
         self.starfield = _G.Starfield.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, 50)
         _G.sharedStarfield = self.starfield
     end
+    -- Add score to high scores and track if it's a new high score
+    self.isNewHighScore = false
+    if _G.HighScores then
+        local scoresBefore = _G.HighScores.load()
+        _G.HighScores.add(self.finalScore or 0)
+        local scoresAfter = _G.HighScores.load()
+        for i = 1, #scoresAfter do
+            if scoresAfter[i] ~= scoresBefore[i] then
+                self.isNewHighScore = (self.finalScore == scoresAfter[i])
+                break
+            end
+        end
+    end
 end
 
 function score_scene:leave()
@@ -42,6 +55,11 @@ function score_scene:draw()
     gfx.setColor(gfx.kColorWhite)
     gfx.setFont(ui.titleText_font)
     gfx.drawTextAligned("GAME OVER", 200, titleY, kTextAlignment.center)
+    -- Show New High Score! if applicable
+    if self.isNewHighScore then
+        gfx.setFont(ui.altText_font)
+        gfx.drawTextAligned("New High Score!", 200, titleY + 28, kTextAlignment.center)
+    end
 
     -- Score/Stats background and text (match subtitle style)
     local stats = string.format("  SCORE: %d\nCAUGHT: %d\n MISSED: %d", self.finalScore, self.caught, self.missed)
