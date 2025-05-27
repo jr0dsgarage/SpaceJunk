@@ -29,6 +29,7 @@ _G.Starfield = import "graphics/starfield.lua"
 _G.FlyingObjectSpawner = import "graphics/flying_object_spawner.lua"
 _G.FlyingObjectSprite = import "graphics/flying_object.lua"
 _G.SoundManager = import "audio/sound_manager.lua"
+_G.HighScores = import "highscores.lua"
 
 
 -- Import scene management and scenes
@@ -36,6 +37,7 @@ local scene_manager = import "scenes/scene_manager"
 local menu_scene = import "scenes/menu_scene"
 local game_scene = import "scenes/game_scene"
 local score_scene = import "scenes/score_scene"
+local highscore_scene = import "scenes/highscore_scene.lua"
 
 function playdate.update()
     scene_manager.update()
@@ -67,5 +69,9 @@ end
 
 function _G.switchToScoreScene(score, caught, missed)
     scene_manager.setScene(score_scene, score, caught, missed)
+end
+
+function _G.switchToHighScoreScene()
+    scene_manager.setScene(highscore_scene)
 end
 
