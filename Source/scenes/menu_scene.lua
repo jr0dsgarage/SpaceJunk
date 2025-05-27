@@ -55,25 +55,16 @@ function menu_scene:draw()
     gfx.drawCircleAtPoint(aX + 2, aY, charWidth * 0.45)
     gfx.setLineWidth(1)
 
-    -- High score subtitle background and text
-    local highscoreSubtitle = "PRESS   B   FOR HIGH SCORES"
+    -- Move high score subtitle to the bottom, remove circle, and update text
+    local highscoreSubtitle = "B: High Scores"
     local highscoreSubtitleW, highscoreSubtitleH = gfx.getTextSize(highscoreSubtitle)
     local highscoreSubtitleRectW, highscoreSubtitleRectH = highscoreSubtitleW + 24, highscoreSubtitleH + 8
-    local highscoreSubtitleY = startSubtitleY + startSubtitleRectH + 16
+    local highscoreSubtitleY = 220
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(200 - highscoreSubtitleRectW/2, highscoreSubtitleY - 4, highscoreSubtitleRectW, highscoreSubtitleRectH)
     gfx.setColor(gfx.kColorWhite)
     gfx.setFont(ui.altText_font)
     gfx.drawTextAligned(highscoreSubtitle, 200, highscoreSubtitleY, kTextAlignment.center)
-
-    -- Draw a circle around the 'B' in the high score subtitle
-    local bIndex = 9 -- position of 'B' in the string (1-based)
-    local bCharWidth = highscoreSubtitleW / #highscoreSubtitle
-    local bX = 200 - (highscoreSubtitleW / 2) + (bIndex - 1) * bCharWidth + bCharWidth * 1.465
-    local bY = highscoreSubtitleY + ui.altText_font:getHeight() / 2
-    gfx.setLineWidth(2)
-    gfx.drawCircleAtPoint(bX - 8, bY, bCharWidth *1.2)
-    gfx.setLineWidth(1)
 end
 
 function menu_scene:AButtonDown()
