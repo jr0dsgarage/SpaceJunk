@@ -4,7 +4,7 @@ local captureSynth = snd.synth.new(snd.kWaveSquare)
 
 local game_scene = {}
 
-local gameDuration = 60 * 1000 -- 60 seconds in milliseconds
+local gameDuration = 2 * 1000 -- 60 seconds in milliseconds
 
 function game_scene:resetGameState()
     self.caught = 0
