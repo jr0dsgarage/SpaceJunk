@@ -4,13 +4,6 @@ local captureSynth = snd.synth.new(snd.kWaveSquare)
 
 local game_scene = {}
 
-local BeamSprite = _G.BeamSprite
-local Starfield = _G.Starfield
-local ScorePopups = _G.ScorePopups
-local CrankIndicatorSprite = _G.CrankIndicatorSprite
-local SoundManager = _G.SoundManager
-local FlyingObjectSpawner = _G.FlyingObjectSpawner
-
 local gameDuration = 60 * 1000 -- 60 seconds in milliseconds
 
 function game_scene:resetGameState()
@@ -54,7 +47,7 @@ function game_scene:enter()
     self.bgSprite = gfx.sprite.new()
     self.bgSprite:setCenter(0, 0)
     self.bgSprite:moveTo(0, 0)
-    self.bgSprite:setZIndex(-100)
+    self.bgSprite:setZIndex(_G.ZINDEX.BACKGROUND)
     self.bgSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     self.cracksImage = gfx.image.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     self.cracks = {}
@@ -69,7 +62,7 @@ function game_scene:enter()
     self.cracksSprite = gfx.sprite.new(self.cracksImage)
     self.cracksSprite:setCenter(0, 0)
     self.cracksSprite:moveTo(0, 0)
-    self.cracksSprite:setZIndex(5000)
+    self.cracksSprite:setZIndex(_G.ZINDEX.CRACKS)
     self.cracksSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     self.cracksSprite:add()
 

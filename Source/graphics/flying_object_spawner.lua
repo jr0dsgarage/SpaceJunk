@@ -1,4 +1,3 @@
-local FlyingObjectSprite = _G.FlyingObjectSprite
 local gfx <const> = playdate.graphics
 
 local FlyingObjectSpawner = {}
@@ -19,7 +18,8 @@ function FlyingObjectSpawner:spawnFlyingObject()
     local y = math.random(_G.TIMERBAR_HEIGHT, self.screenHeight - _G.SCOREBOARD_HEIGHT) -- leave space for timer and scoreboard
     local size = 8
     local speed = math.random(1, 3) / 5
-    local img = self.flyingObjectImgs[math.random(1, #self.flyingObjectImgs)]    local obj = FlyingObjectSprite.new(x, y, size, speed, img)
+    local img = self.flyingObjectImgs[math.random(1, #self.flyingObjectImgs)]
+    local obj = _G.FlyingObjectSprite.new(x, y, size, speed, img)
     table.insert(self.flyingObjects, 1, obj)
     self:updateZIndices()
     return obj
@@ -27,7 +27,7 @@ end
 
 function FlyingObjectSpawner:updateZIndices()
     for i = 1, #self.flyingObjects do
-        self.flyingObjects[i].sprite:setZIndex(100 + i)
+        self.flyingObjects[i].sprite:setZIndex(_G.ZINDEX.FLYING_OBJECT_BASE  + i)
     end
 end
 

@@ -7,16 +7,31 @@ import "Corelibs/ui"
 -- Global screen dimensions
 _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT = playdate.display.getWidth(), playdate.display.getHeight()
 
+-- Global z-indexes for layering
+_G.ZINDEX = {
+    BACKGROUND = -100,
+    FLYING_OBJECT_BASE = 100, -- flying objects will be 100 + i
+    SCOREBOARD = 9999,
+    CRANK_INDICATOR = 10000,
+    CRACKS = 5000,
+}
+
+-- Ensure these are defined before using them elsewhere
+do
+    _G.TIMERBAR_HEIGHT = 16
+    _G.SCOREBOARD_HEIGHT = 42
+end
+
 -- Attach all modules to _G for global access
-_G.FlyingObjectSprite = import "graphics/flying_object.lua"
+_G.ui = import "ui/ui.lua"
 _G.BeamSprite = import "ui/beam_sprite.lua"
+_G.ScorePopups = import "ui/score_popup.lua"
 _G.CrankIndicatorSprite = import "ui/crank_indicator_sprite.lua"
 _G.Starfield = import "graphics/starfield.lua"
-_G.ScorePopups = import "ui/score_popup.lua"
-
-_G.SoundManager = import "audio/sound_manager.lua"
 _G.FlyingObjectSpawner = import "graphics/flying_object_spawner.lua"
-_G.ui = import "ui/ui.lua"
+_G.FlyingObjectSprite = import "graphics/flying_object.lua"
+_G.SoundManager = import "audio/sound_manager.lua"
+
 
 -- Import scene management and scenes
 local scene_manager = import "scenes/scene_manager"

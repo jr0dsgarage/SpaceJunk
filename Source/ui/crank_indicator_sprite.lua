@@ -1,5 +1,3 @@
--- Source/crank_indicator_sprite.lua
-
 local gfx <const> = playdate.graphics
 
 local CrankIndicatorSprite = {}
@@ -10,7 +8,7 @@ function CrankIndicatorSprite.new(screenWidth, screenHeight)
     local sprite = gfx.sprite.new()
     sprite:setCenter(0, 0)
     sprite:moveTo(0, 0)
-    sprite:setZIndex(10000) -- above scoreboard
+    sprite:setZIndex(_G.ZINDEX.CRANK_INDICATOR)
     sprite:setSize(screenWidth, screenHeight)
     sprite.draw = function(_)
         if playdate.isCrankDocked() then

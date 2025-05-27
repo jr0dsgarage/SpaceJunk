@@ -4,7 +4,6 @@ local gfx <const> = playdate.graphics
 
 local TimerBar = {}
 TimerBar.__index = TimerBar
-_G.TIMERBAR_HEIGHT = 16
 
 function TimerBar.new(durationSeconds, x, y, width, height)
     local self = setmetatable({}, TimerBar)

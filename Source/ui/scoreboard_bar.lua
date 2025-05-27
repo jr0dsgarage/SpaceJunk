@@ -4,7 +4,6 @@ local gfx <const> = playdate.graphics
 
 local ScoreboardBar = {}
 ScoreboardBar.__index = ScoreboardBar
-_G.SCOREBOARD_HEIGHT = 42
 
 function ScoreboardBar.new(x, y, width, height)
     local self = setmetatable({}, ScoreboardBar)
@@ -20,7 +19,7 @@ function ScoreboardBar.new(x, y, width, height)
     self.sprite = gfx.sprite.new()
     self.sprite:setCenter(0, 0)
     self.sprite:moveTo(self.x, self.y)
-    self.sprite:setZIndex(9999) -- below crank indicator
+    self.sprite:setZIndex(_G.ZINDEX.SCOREBOARD) -- below crank indicator
     self.sprite:setSize(self.width, self.height)
     self.sprite.draw = function(_)
         self:drawBar()
