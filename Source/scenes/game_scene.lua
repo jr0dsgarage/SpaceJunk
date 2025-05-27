@@ -92,7 +92,7 @@ function game_scene:update()
             self.pauseTime = playdate.getCurrentTimeMilliseconds()
         end
         if self.crankIndicator then
-            playdate.ui.crankIndicator:draw(0, -42)
+            self.crankIndicator:drawIndicator()
         end
         return
     else

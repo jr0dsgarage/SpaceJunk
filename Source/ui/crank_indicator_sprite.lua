@@ -12,12 +12,18 @@ function CrankIndicatorSprite.new(screenWidth, screenHeight)
     sprite:setSize(screenWidth, screenHeight)
     sprite.draw = function(_)
         if playdate.isCrankDocked() then
-            playdate.ui.crankIndicator:draw(0,-42)
+            self:drawIndicator()
         end
     end
     sprite:add()
     self.sprite = sprite
     return self
+end
+
+function CrankIndicatorSprite:drawIndicator()
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    gfx.setColor(gfx.kColorBlack)
+    playdate.ui.crankIndicator:draw(0, -42)
 end
 
 function CrankIndicatorSprite:remove()
