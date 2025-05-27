@@ -163,12 +163,8 @@ function game_scene:update()
 end
 
 function game_scene:draw()
-    ui.drawTimerBar(self.timeLeft or 60)
+    ui.drawTimerBar(self.timeLeft or gameDuration / 1000)
     ui.drawScore(self.caught, self.missed, self.score)
-    gfx.setFont(ui.altText_font)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawTextAligned(string.format("%02d:%02d", math.floor(self.timeLeft/60), self.timeLeft%60), 390, 10, kTextAlignment.right)
 end
 
 function game_scene:leave()

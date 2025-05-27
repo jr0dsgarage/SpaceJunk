@@ -83,7 +83,7 @@ function TimerBar:drawBar()
     if ui and ui.altText_font then
         gfx.setFont(ui.altText_font)
     end
-    gfx.setColor(gfx.kColorWhite)
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.drawText("Time:", 0, 0)
     -- Line parameters for the timer bar
     local lineX = 48
@@ -103,7 +103,6 @@ function TimerBar:drawBar()
             gfx.fillRect(sx, sy, rectWidth, rectHeight)
         end
     end
-    gfx.setLineWidth(1)
 end
 
 return TimerBar
