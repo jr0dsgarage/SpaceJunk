@@ -40,6 +40,15 @@ local menu_scene = import "scenes/menu_scene"
 local game_scene = import "scenes/game_scene"
 local score_scene = import "scenes/score_scene"
 local highscore_scene = import "scenes/highscore_scene.lua"
+local slide_transition_scene = import "scenes/slide_transition_scene.lua"
+
+-- Make scene_manager global for transition scene usage
+_G.scene_manager = scene_manager
+-- Make slide_transition_scene global for use in menu_scene
+_G.slide_transition_scene = slide_transition_scene
+-- Make menu_scene and highscore_scene global for use in slide_transition_scene
+_G.menu_scene = menu_scene
+_G.highscore_scene = highscore_scene
 
 function playdate.update()
     scene_manager.update()

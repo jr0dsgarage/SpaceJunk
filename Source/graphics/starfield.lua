@@ -11,6 +11,8 @@ function Starfield.new(width, height, numStars)
     self.height = height
     self.numStars = numStars or 50
     self.stars = {}
+    self.parallaxX = 0
+    self.parallaxY = 0
     math.randomseed(playdate.getSecondsSinceEpoch())
     for i = 1, self.numStars do
         table.insert(self.stars, {
@@ -22,13 +24,12 @@ function Starfield.new(width, height, numStars)
     return self
 end
 
--- Add this method to allow external parallax offset control
 function Starfield:setParallaxOffset(px, py)
     self.parallaxX = px or 0
     self.parallaxY = py or 0
 end
 
-function Starfield:draw(centerX, centerY, screenWidth, screenHeight)
+function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX)
     gfx.setColor(gfx.kColorWhite)
     local maxOffset = 3
     local dx, dy = 0, 0
@@ -36,9 +37,11 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight)
         dx = math.max(-maxOffset, math.min(maxOffset, (centerX - screenWidth/2) * 0.01))
         dy = math.max(-maxOffset, math.min(maxOffset, (centerY - screenHeight/2) * 0.01))
     end
-    -- Add parallax offsets if set
     dx = dx + (self.parallaxX or 0)
     dy = dy + (self.parallaxY or 0)
+    if parallaxX then
+        dx = dx + parallaxX
+    end
     for i = 1, #self.stars do
         local px = self.stars[i].x - dx * self.stars[i].size
         local py = self.stars[i].y - dy * (self.stars[i].size == 1 and 1 or 1.5)
