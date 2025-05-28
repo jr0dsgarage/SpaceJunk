@@ -7,18 +7,15 @@ local game_scene = {}
 -- Constants for game configuration and layout
 local GAME_DURATION_MS = 60 * 1000 -- 60 seconds in milliseconds
 local INITIAL_BEAM_RADIUS = 20
-local MIN_BEAM_RADIUS = 5
+local MIN_BEAM_RADIUS = 10
 local MAX_BEAM_RADIUS = 75
 local MAX_FLYING_OBJECTS = 3
 local MAX_OBJECT_SIZE = MAX_BEAM_RADIUS
 local MOVE_SPEED_MIN = 5
 local MOVE_SPEED_DIV = 5
-local CRANK_UNDOCKED_PAUSE = 0.04
 local CRANK_INDICATOR_HEIGHT = 32
 local NOTE_DURATION = 0.2
 local NOTE_VELOCITY = 0.2
-local SCORE_MIN = 0
-local SCORE_MAX = 100
 
 function game_scene:resetGameState()
     self.caught = 0
@@ -105,27 +102,42 @@ function game_scene:spawnFlyingObject()
     return self.flyingObjectSpawner:spawnFlyingObject()
 end
 
+local function calculateScore(beamRadius, objRadius)
+    -- Calculate beam and object percent (0 = min, 1 = max)
+    local beamPercent = (beamRadius - MIN_BEAM_RADIUS) / (MAX_BEAM_RADIUS - MIN_BEAM_RADIUS)
+    local objPercent = (objRadius - MIN_BEAM_RADIUS) / (MAX_BEAM_RADIUS - MIN_BEAM_RADIUS)
+    -- Score is max when beam matches object and both are small, min when beam is much larger than object
+    local match = 1 - math.abs(beamPercent - objPercent)
+    -- Promote catching early: scale by (1 - objPercent) so smaller/earlier objects are worth more
+    local earlyBonus = 1 - objPercent
+    -- At 50% beam and 50% object, score should be 100
+    local baseScore = 150
+    local minScore, maxScore = 1, 250
+    local score = math.floor(baseScore * match * earlyBonus + minScore)
+    -- Clamp to min/max
+    return math.max(minScore, math.min(maxScore, score)), match, earlyBonus, minScore, maxScore
+end
+
 local function handleObjectRemoval(self, i, obj, caught)
     self.flyingObjectSpawner:removeObjectAt(i)
     self:spawnFlyingObject()
     if caught then
         self.caught = self.caught + 1
-        -- Score calculation
-        local precision = 1 - (self.beamRadius - obj:getRadius()) / self.beamRadius
-        local sizeFactor = 1 - (obj:getRadius() / self.maxObjectSize)
-        local score = math.floor(100 * precision * sizeFactor)
+        local objRadius = obj:getRadius()
+        local beamRadius = self.beamRadius
+        local score, match, earlyBonus, minScore, maxScore = calculateScore(beamRadius, objRadius)
         self.score = self.score + score
         self.scorePopups:add(obj.x, obj.y, score)
         -- Play a note from the C major scale based on score (lower score = lower note)
         if self.cMajorNotes then
-            local clampedScore = math.max(SCORE_MIN, math.min(SCORE_MAX, score))
-            local scaleIdx = math.floor(((clampedScore - SCORE_MIN) / (SCORE_MAX - SCORE_MIN)) * (#self.cMajorNotes - 1) + 1)
+            local clampedScore = math.max(minScore, math.min(maxScore, score))
+            local scaleIdx = math.floor(((clampedScore - minScore) / (maxScore - minScore)) * (#self.cMajorNotes - 1) + 1)
             local note = self.cMajorNotes[scaleIdx]
             if captureSynth and note then
                 captureSynth:playNote(note, NOTE_DURATION, NOTE_VELOCITY)
             end
         elseif self.soundManager and self.soundManager.playCapture then
-            self.soundManager:playCapture(precision)
+            self.soundManager:playCapture(match * earlyBonus)
         end
     else
         self.missed = self.missed + 1
