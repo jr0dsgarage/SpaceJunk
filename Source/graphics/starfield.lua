@@ -29,7 +29,18 @@ function Starfield:setParallaxOffset(px, py)
     self.parallaxY = py or 0
 end
 
-function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX)
+function Starfield:scrollParallaxY(dy, screenHeight)
+    local maxY = ((self.height or ((screenHeight or 240) * 3)) - (screenHeight or 240)) / 2
+    local newY = (self.parallaxY or 0) + dy
+    if maxY > 0 then
+        newY = math.max(-maxY, math.min(newY, maxY))
+    else
+        newY = 0
+    end
+    self:setParallaxOffset(self.parallaxX or 0, newY)
+end
+
+function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, parallaxY)
     gfx.setColor(gfx.kColorWhite)
     local maxOffset = 3
     local dx, dy = 0, 0
@@ -37,11 +48,8 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX)
         dx = math.max(-maxOffset, math.min(maxOffset, (centerX - screenWidth/2) * 0.01))
         dy = math.max(-maxOffset, math.min(maxOffset, (centerY - screenHeight/2) * 0.01))
     end
-    dx = dx + (self.parallaxX or 0)
-    dy = dy + (self.parallaxY or 0)
-    if parallaxX then
-        dx = dx + parallaxX
-    end
+    dx = dx + (parallaxX or self.parallaxX or 0)
+    dy = dy + (parallaxY or self.parallaxY or 0)
     for i = 1, #self.stars do
         local px = self.stars[i].x - dx * self.stars[i].size
         local py = self.stars[i].y - dy * (self.stars[i].size == 1 and 1 or 1.5)

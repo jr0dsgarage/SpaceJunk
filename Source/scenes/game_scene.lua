@@ -47,22 +47,9 @@ function game_scene:enter()
         self.bgMusicPlayer = nil
     end
 
-    -- Stars
+    -- Use the globally initialized starfield and preserve its offset
     self.starfield = _G.sharedStarfield
-    if self.starfield and self.starfield.setParallaxOffset then
-        self.starfield:setParallaxOffset(0, 0)
-    end
-    -- Draw the starfield once to the background when entering the scene
-    if self.bgSprite then
-        self.bgSprite.draw = function(_)
-            gfx.clear(gfx.kColorBlack)
-            if self.starfield and self.starfield.draw then
-                -- Only draw the starfield once, with the current parallax offset
-                self.starfield:draw((_G.SCREEN_WIDTH or 400)/2, (_G.SCREEN_HEIGHT or 240)/2, 3*(_G.SCREEN_WIDTH or 400), (_G.SCREEN_HEIGHT or 240))
-            end
-            self.scorePopups:draw()
-        end
-    end
+    -- Do NOT reset starfield parallax here; preserve position between scenes
 
     -- Flying objects
     self.flyingObjectImgs = _G.spriteLoader.tableLoad()

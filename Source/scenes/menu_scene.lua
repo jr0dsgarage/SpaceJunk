@@ -10,22 +10,15 @@ local INSTR_Y = 220
 local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 
 function menu_scene:enter()
-    -- Called when entering the menu scene
-    if not _G.sharedStarfield then
-        _G.sharedStarfield = _G.Starfield.new((_G.SCREEN_WIDTH or 400) * 3, _G.SCREEN_HEIGHT or 240, 150)
-    end
+    -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
-    -- Reset starfield vertical parallax so it starts at the top
-    if self.starfield and self.starfield.setParallaxOffset then
-        self.starfield:setParallaxOffset(self.starfield.parallaxX or 0, 0)
-    end
 end
 
 function menu_scene:leave()
 end
 
 function menu_scene:update()
-    -- Nothing to update for static menu
+    -- No per-scene parallax logic needed; handled globally
 end
 
 -- Add support for drawing at an x offset for transition animations

@@ -16,10 +16,7 @@ local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
 
 function highscore_scene:enter()
-    -- Only create a new starfield if one does not already exist
-    if not _G.sharedStarfield then
-        _G.sharedStarfield = _G.Starfield.new((_G.SCREEN_WIDTH or 400) * 3, _G.SCREEN_HEIGHT or 240, 150)
-    end
+    -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
     self.scores = _G.HighScores and _G.HighScores.load() or {}
     self.scrollOffset = 0
@@ -107,22 +104,12 @@ function drawResetMessage()
 end
 
 function highscore_scene:update()
-    -- Crank-based scrolling
+    -- Crank-based scrolling for the score list
     local crankChange = playdate.getCrankChange()
     if math.abs(crankChange) > 0 then
         self.scrollOffset = self.scrollOffset - crankChange * 0.04
         self.scrollOffset = math.max(0, math.min(self.scrollOffset, self.maxScroll))
     end
-    -- Always update starfield parallax, not just on crank
-    --[[
-    if self.starfield and self.starfield.setParallaxOffset then
-        local parallaxY = 0
-        if self.maxScroll > 0 then
-            parallaxY = (self.scrollOffset / self.maxScroll - 0.5) * 32
-        end
-        self.starfield:setParallaxOffset(0, parallaxY)
-    end
-    ]]
     -- Reset high scores: hold A+B for 2 seconds, then confirm
     self.resetTimer = self.resetTimer or 0
     if not self.confirmingReset then
