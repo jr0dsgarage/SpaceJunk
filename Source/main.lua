@@ -58,6 +58,14 @@ function playdate.BButtonDown()
     scene_manager.BButtonDown()
 end
 
+function playdate.rightButtonDown()
+    scene_manager.rightButtonDown()
+end
+
+function playdate.leftButtonDown()
+    scene_manager.leftButtonDown()
+end
+
 -- Start with the menu scene
 scene_manager.setScene(menu_scene)
 

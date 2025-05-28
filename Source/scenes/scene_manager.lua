@@ -43,6 +43,18 @@ function scene_manager.BButtonDown()
     end
 end
 
+function scene_manager.rightButtonDown()
+    if currentScene and currentScene.rightButtonDown then
+        currentScene:rightButtonDown()
+    end
+end
+
+function scene_manager.leftButtonDown()
+    if currentScene and currentScene.leftButtonDown then
+        currentScene:leftButtonDown()
+    end
+end
+
 function scene_manager.usesSprites()
     return currentScene and currentScene.usesSprites and currentScene:usesSprites()
 end

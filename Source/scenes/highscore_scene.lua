@@ -75,7 +75,7 @@ function highscore_scene:draw()
     end
     gfx.setImageDrawMode(gfx.kDrawModeCopy) -- Reset draw mode after text
     -- Draw bottom instructions: left and right aligned, with black rectangles using drawBanner
-    _G.drawBanner.drawAligned("B: Back to Menu", INSTR_LEFT_X, INSTR_Y, kTextAlignment.left, ui.altText_font)
+    _G.drawBanner.drawAligned("< Back to Menu", INSTR_LEFT_X, INSTR_Y, kTextAlignment.left, ui.altText_font)
     _G.drawBanner.drawAligned("Crank: Show more scores!", INSTR_RIGHT_X, INSTR_Y, kTextAlignment.right, ui.altText_font)
     -- Draw reset confirmation or reset message if needed
     if self.confirmingReset then
@@ -150,13 +150,23 @@ function highscore_scene:AButtonDown()
     end
 end
 
-function highscore_scene:BButtonDown()
+
+function highscore_scene:leftButtonDown()
     if self.confirmingReset then
         self.confirmingReset = false
         self.resetTimer = 0
         return
     end
     if _G.switchToMenuScene then _G.switchToMenuScene() end
+end
+
+function highscore_scene:BButtonDown()
+    if self.confirmingReset then
+        self.confirmingReset = false
+        self.resetTimer = 0
+        self.showResetMsg = 0 -- Clear any reset message
+        return
+    end
 end
 
 return highscore_scene

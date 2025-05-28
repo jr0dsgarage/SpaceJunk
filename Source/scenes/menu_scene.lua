@@ -5,7 +5,7 @@ local menu_scene = {}
 local TITLE_Y = 80
 local TITLE_X = 200
 local START_SUBTITLE_Y = 140
-local INSTR_LEFT_X = 0
+local INSTR_RIGHT_X = 400
 local INSTR_Y = 220
 local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 
@@ -50,7 +50,7 @@ function menu_scene:draw()
     gfx.drawCircleAtPoint(aX, aY, aW) 
 
     -- High score subtitle at the bottom
-    _G.drawBanner.drawAligned("B: High Scores", INSTR_LEFT_X , INSTR_Y, ui.altText_font, kTextAlignment.left)
+    _G.drawBanner.drawAligned("High Scores >", INSTR_RIGHT_X, INSTR_Y,  kTextAlignment.right, ui.altText_font)
     gfx.setImageDrawMode(gfx.kDrawModeCopy) -- Reset draw mode after all drawing
 end
 
@@ -61,7 +61,7 @@ function menu_scene:AButtonDown()
     end
 end
 
-function menu_scene:BButtonDown()
+function menu_scene:rightButtonDown()
     if _G.switchToHighScoreScene then
         _G.switchToHighScoreScene()
     end
