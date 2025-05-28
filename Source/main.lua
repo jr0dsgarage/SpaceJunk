@@ -31,6 +31,7 @@ _G.FlyingObjectSprite = import "graphics/flying_object.lua"
 _G.SoundManager = import "audio/sound_manager.lua"
 _G.HighScores = import "io/highscores.lua"
 _G.drawBanner = import "ui/drawBanner.lua"
+_G.spriteLoader = import "graphics/spriteload.lua"
 
 
 -- Import scene management and scenes

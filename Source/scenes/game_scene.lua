@@ -51,12 +51,7 @@ function game_scene:enter()
     self.starfield = _G.sharedStarfield
     
     -- Flying objects
-    local flyingObjectImgs = {}
-    local imgOk1, img1 = pcall(function() return gfx.image.new("sprites/asteroid.png") end)
-    local imgOk2, img2 = pcall(function() return gfx.image.new("sprites/bottle.png") end)
-    if imgOk1 and img1 then table.insert(flyingObjectImgs, img1) else print("[Graphics] Error loading asteroid.png") end
-    if imgOk2 and img2 then table.insert(flyingObjectImgs, img2) else print("[Graphics] Error loading bottle.png") end
-    self.flyingObjectImgs = flyingObjectImgs
+    self.flyingObjectImgs = _G.spriteLoader.tableLoad()
     self.maxFlyingObjects = MAX_FLYING_OBJECTS
     self.flyingObjectSpawner = FlyingObjectSpawner.new(self.flyingObjectImgs, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, self.maxFlyingObjects)
     self.maxObjectSize = MAX_OBJECT_SIZE
