@@ -4,6 +4,15 @@ local score_scene = {}
 local TimerBar = import "ui/timer_bar.lua"
 local ScoreboardBar = import "ui/scoreboard_bar.lua"
 
+-- Constants for layout and spacing
+local INITIALS_X_CENTER = 200
+local INITIALS_X_SPACING = 40
+local INSTR_Y = 200
+local INITIALS_Y_OFFSET = 26
+local LINE_Y_OFFSET = 24
+local TITLE_Y = 80
+local STATS_Y = 140
+
 function score_scene:enter(finalScore, caught, missed)
     self.finalScore = finalScore or 0
     self.caught = caught or 0
@@ -76,47 +85,6 @@ function score_scene:update()
     end
 end
 
-function score_scene:AButtonDown()
-    if self.enteringInitials then
-        if self.initialsIndex < 3 then
-            self.initialsIndex = self.initialsIndex + 1
-            self.initials[self.initialsIndex] = self.initials[self.initialsIndex - 1]
-        else
-            -- Save initials with score
-            if _G.HighScores then
-                local initialsStr = table.concat(self.initials)
-                -- Remove the placeholder blank-initials entry for this score
-                local entries = _G.HighScores.load()
-                for i, entry in ipairs(entries) do
-                    if entry.score == self.finalScore and entry.initials == "   " then
-                        entry.initials = initialsStr
-                        break
-                    end
-                end
-                _G.HighScores.save(entries)
-            end
-            self.enteringInitials = false
-        end
-    else
-        if _G.switchToGameScene then
-            _G.switchToGameScene()
-        end
-    end
-end
-
-function score_scene:BButtonDown()
-    if self.enteringInitials then
-        if self.initialsIndex > 1 then
-            self.initials[self.initialsIndex] = 'A'
-            self.initialsIndex = self.initialsIndex - 1
-        end
-    else
-        if _G.switchToMenuScene then
-            _G.switchToMenuScene()
-        end
-    end
-end
-
 function score_scene:draw()
     -- Fill background and draw starfield
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
@@ -128,75 +96,51 @@ function score_scene:draw()
     -- Move everything up if entering initials
     local yOffset = (self.enteringInitials and self.isNewHighScore) and -40 or 0
     -- Title background and text (match menu)
-    local titleY = 80 + yOffset
-    local titleRectW, titleRectH = 240, 38
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(_G.SCREEN_WIDTH/2 - titleRectW/2, titleY - 16, titleRectW, titleRectH)
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setFont(ui.titleText_font)
-    gfx.drawTextAligned("GAME OVER", 200, titleY, kTextAlignment.center)
+    local titleY = TITLE_Y + yOffset
+    _G.drawBanner.draw("GAME OVER", 200, titleY, ui.titleText_font)
     if self.isNewHighScore then
         gfx.setFont(ui.altText_font)
         local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
         local nhsText = "New High Score!"
-        local nhsW, nhsH = gfx.getTextSize(nhsText)
-        local nhsY = titleY + 28
         if blink then
-            -- Draw black rectangle behind the text
-            local rectW, rectH = nhsW + 12, nhsH + 6
-            gfx.setColor(gfx.kColorBlack)
-            gfx.fillRect(200 - rectW/2, nhsY - 2, rectW, rectH)
-            gfx.setColor(gfx.kColorWhite)
-            gfx.drawTextAligned(nhsText, 200, nhsY, kTextAlignment.center)
+            _G.drawBanner.draw(nhsText, 200, titleY + 28, ui.altText_font)
         end
         -- Show initials below 'New High Score!' if initials have been entered
         if not self.enteringInitials then
-            gfx.setFont(ui.altText_font)
             local initialsStr = table.concat(self.initials)
             local initialsY = titleY + 44
-            local initialsW, initialsH = gfx.getTextSize(initialsStr)
-            local rectW, rectH = initialsW + 2, initialsH + 2
-            gfx.setColor(gfx.kColorBlack)
-            gfx.fillRect(200 - rectW/2, initialsY, rectW, rectH)
-            gfx.setColor(gfx.kColorWhite)
-            gfx.drawTextAligned(initialsStr, 200, initialsY, kTextAlignment.center)
+            _G.drawBanner.draw(initialsStr, 200, initialsY, ui.altText_font)
         end
     end
     -- Score/Stats background and text (match subtitle style)
-    local stats = string.format("  SCORE: %d\nCAUGHT: %d\n MISSED: %d", self.finalScore, self.caught, self.missed)
-    local statsW, statsH = gfx.getTextSize(stats)
-    local statsRectW, statsRectH = statsW + 24, statsH + 8
-    local statsY = 140 + yOffset
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(200 - statsRectW/2, statsY - 4, statsRectW, statsRectH)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setFont(ui.altText_font)
-    gfx.drawTextAligned(stats, 200, statsY, kTextAlignment.center)
+    local statsFont = ui.altText_font
+    local statsY = STATS_Y + yOffset
+    local scoreStr = string.format("SCORE: %d", self.finalScore)
+    local caughtStr = string.format("CAUGHT: %d", self.caught)
+    local missedStr = string.format("MISSED: %d", self.missed)
+    local statsSpacing = statsFont:getHeight() + 2
+    _G.drawBanner.draw(scoreStr, 200, statsY, statsFont)
+    _G.drawBanner.draw(caughtStr, 200, statsY + statsSpacing, statsFont)
+    _G.drawBanner.draw(missedStr, 200, statsY + statsSpacing * 2, statsFont)
     if self.enteringInitials then
         -- Enter initials UI
         local instr = "Enter Initials"
-        local instrW, instrH = gfx.getTextSize(instr)
-        local instrRectW, instrRectH = instrW + 24, instrH + 8
-        local instrY = 200 + yOffset
-        gfx.setColor(gfx.kColorBlack)
-        gfx.fillRect(200 - instrRectW/2, instrY - 4, instrRectW, instrRectH)
-        gfx.setColor(gfx.kColorWhite)
-        gfx.setFont(ui.altText_font)
-        gfx.drawTextAligned(instr, 200, instrY, kTextAlignment.center)
+        local instrY = INSTR_Y + yOffset
+        _G.drawBanner.draw(instr, 200, instrY, ui.altText_font)
         -- Draw initials input
-        local initialsY = instrY + 26 -- was +32, now 6 pixels higher
+        local initialsY = instrY + INITIALS_Y_OFFSET
+        gfx.setImageDrawMode(gfx.kDrawModeFillWhite) -- Ensure initials are drawn in white
         gfx.setFont(ui.titleText_font)
         local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
         for i = 1, 3 do
-            local x = 200 + (i-2)*40
+            local x = INITIALS_X_CENTER + (i-2)*INITIALS_X_SPACING
             local char = self.initials[i]
             gfx.drawTextAligned((char ~= '' and char or '_'), x, initialsY, kTextAlignment.center)
         end
         -- Draw lines under each character
         for i = 1, 3 do
-            local x = 200 + (i-2)*40
-            local lineY = initialsY + 24 -- was +18, now 6 pixels lower
+            local x = INITIALS_X_CENTER + (i-2)*INITIALS_X_SPACING
+            local lineY = initialsY + LINE_Y_OFFSET
             if i == self.initialsIndex and blink then
                 -- Blinking underline
                 gfx.setColor(gfx.kColorWhite)
@@ -210,17 +154,67 @@ function score_scene:draw()
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1.0, gfx.image.kDitherTypeBayer8x8)
         end
+        gfx.setImageDrawMode(gfx.kDrawModeCopy) -- Reset draw mode after initials
     else
         -- Instructions background and text
         local instr = "B: Main Menu    A: Play Again"
-        local instrW, instrH = gfx.getTextSize(instr)
-        local instrRectW, instrRectH = instrW + 24, instrH + 8
-        local instrY = 200
-        gfx.setColor(gfx.kColorBlack)
-        gfx.fillRect(200 - instrRectW/2, instrY - 4, instrRectW, instrRectH)
-        gfx.setColor(gfx.kColorWhite)
-        gfx.setFont(ui.altText_font)
-        gfx.drawTextAligned(instr, 200, instrY, kTextAlignment.center)
+        local instrY = INSTR_Y
+        _G.drawBanner.draw(instr, 200, instrY, ui.altText_font)
+    end
+end
+
+-- Add basic error handling for HighScores
+function score_scene:AButtonDown()
+    if self.enteringInitials then
+        if self.initialsIndex < 3 then
+            self.initialsIndex = self.initialsIndex + 1
+            -- Pre-fill the next initial with the current one 
+            self.initials[self.initialsIndex] = self.initials[self.initialsIndex - 1]
+        else
+            -- Save initials with score
+            if _G.HighScores then
+                local initialsStr = table.concat(self.initials)
+                local ok, entries = pcall(_G.HighScores.load)
+                if ok and entries then
+                    local found = false
+                    for i, entry in ipairs(entries) do
+                        if entry.score == self.finalScore and entry.initials == "   " then
+                            entry.initials = initialsStr
+                            found = true
+                            break
+                        end
+                    end
+                    if found then
+                        local saveOk, err = pcall(_G.HighScores.save, entries)
+                        if not saveOk then
+                            print("[HighScores] Error saving: " .. tostring(err))
+                        end
+                    else
+                        print("[HighScores] Could not find placeholder entry to update initials.")
+                    end
+                else
+                    print("[HighScores] Error loading entries: " .. tostring(entries))
+                end
+            end
+            self.enteringInitials = false
+        end
+    else
+        if _G.switchToGameScene then
+            _G.switchToGameScene()
+        end
+    end
+end
+
+function score_scene:BButtonDown()
+    if self.enteringInitials then
+        if self.initialsIndex > 1 then
+            self.initials[self.initialsIndex] = ' '
+            self.initialsIndex = self.initialsIndex - 1
+        end
+    else
+        if _G.switchToMenuScene then
+            _G.switchToMenuScene()
+        end
     end
 end
 
