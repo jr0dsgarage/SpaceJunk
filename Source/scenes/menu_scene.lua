@@ -1,7 +1,13 @@
 local gfx <const> = playdate.graphics
 local menu_scene = {}
-local TimerBar = import "ui/timer_bar.lua"
-local ScoreboardBar = import "ui/scoreboard_bar.lua"
+
+-- Constants for layout and spacing
+local TITLE_Y = 80
+local TITLE_X = 200
+local START_SUBTITLE_Y = 140
+local INSTR_LEFT_X = 0
+local INSTR_Y = 220
+local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 
 function menu_scene:enter()
     -- Called when entering the menu scene
@@ -26,45 +32,26 @@ function menu_scene:draw()
     end
 
     -- Title background and text
-    local titleY = 80
-    local titleRectW, titleRectH = 240, 38
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(_G.SCREEN_WIDTH/2 - titleRectW/2, titleY - 16, titleRectW, titleRectH)
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setFont(ui.titleText_font)
-    gfx.drawTextAligned("SPACE JUNK", 200, titleY, kTextAlignment.center)
+    _G.drawBanner.draw("SPACE JUNK", TITLE_X, TITLE_Y, ui.titleText_font)
 
     -- Start subtitle background and text
     local startSubtitle = "PRESS   A   TO START"
-    local startSubtitleW, startSubtitleH = gfx.getTextSize(startSubtitle)
-    local startSubtitleRectW, startSubtitleRectH = startSubtitleW + 24, startSubtitleH + 8
-    local startSubtitleY = 140
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(200 - startSubtitleRectW/2, startSubtitleY - 4, startSubtitleRectW, startSubtitleRectH)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setFont(ui.altText_font)
-    gfx.drawTextAligned(startSubtitle, 200, startSubtitleY, kTextAlignment.center)
+    _G.drawBanner.draw(startSubtitle, TITLE_X, START_SUBTITLE_Y, ui.altText_font)
 
-    -- Draw a circle around the 'A' in the start subtitle
-    local aIndex = 9 -- position of 'A' in the string (1-based)
-    local charWidth = startSubtitleW / #startSubtitle
-    local aX = 200 - (startSubtitleW / 2) + (aIndex - 1) * charWidth + charWidth * 1.465
-    local aY = startSubtitleY + ui.altText_font:getHeight() / 2
+    -- Draw a circle around the 'A' in the start subtitle (robust to font/spacing)
+    local prefix = string.sub(startSubtitle, 1, A_CHAR_INDEX - 1)
+    local prefixW, _ = gfx.getTextSize(prefix)
+    local aW, _ = gfx.getTextSize("A")
+    local startSubtitleW, _ = gfx.getTextSize(startSubtitle)
+    local aX = TITLE_X - (startSubtitleW / 2) + prefixW + aW / 2
+    local aY = START_SUBTITLE_Y + ui.altText_font:getHeight() / 2
+    gfx.setColor(gfx.kColorWhite)
     gfx.setLineWidth(2)
-    gfx.drawCircleAtPoint(aX + 2, aY, charWidth * 0.45)
-    gfx.setLineWidth(1)
+    gfx.drawCircleAtPoint(aX, aY, aW) 
 
-    -- Move high score subtitle to the bottom, remove circle, and update text
-    local highscoreSubtitle = "B: High Scores"
-    local highscoreSubtitleW, highscoreSubtitleH = gfx.getTextSize(highscoreSubtitle)
-    local highscoreSubtitleRectW, highscoreSubtitleRectH = highscoreSubtitleW + 24, highscoreSubtitleH + 8
-    local highscoreSubtitleY = 220
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(200 - highscoreSubtitleRectW/2, highscoreSubtitleY - 4, highscoreSubtitleRectW, highscoreSubtitleRectH)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setFont(ui.altText_font)
-    gfx.drawTextAligned(highscoreSubtitle, 200, highscoreSubtitleY, kTextAlignment.center)
+    -- High score subtitle at the bottom
+    _G.drawBanner.drawAligned("B: High Scores", INSTR_LEFT_X , INSTR_Y, ui.altText_font, kTextAlignment.left)
+    gfx.setImageDrawMode(gfx.kDrawModeCopy) -- Reset draw mode after all drawing
 end
 
 function menu_scene:AButtonDown()

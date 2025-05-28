@@ -30,6 +30,7 @@ _G.FlyingObjectSpawner = import "graphics/flying_object_spawner.lua"
 _G.FlyingObjectSprite = import "graphics/flying_object.lua"
 _G.SoundManager = import "audio/sound_manager.lua"
 _G.HighScores = import "highscores.lua"
+_G.drawBanner = import "ui/drawBanner.lua"
 
 
 -- Import scene management and scenes
