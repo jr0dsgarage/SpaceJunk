@@ -49,7 +49,21 @@ function game_scene:enter()
 
     -- Stars
     self.starfield = _G.sharedStarfield
-    
+    if self.starfield and self.starfield.setParallaxOffset then
+        self.starfield:setParallaxOffset(0, 0)
+    end
+    -- Draw the starfield once to the background when entering the scene
+    if self.bgSprite then
+        self.bgSprite.draw = function(_)
+            gfx.clear(gfx.kColorBlack)
+            if self.starfield and self.starfield.draw then
+                -- Only draw the starfield once, with the current parallax offset
+                self.starfield:draw((_G.SCREEN_WIDTH or 400)/2, (_G.SCREEN_HEIGHT or 240)/2, 3*(_G.SCREEN_WIDTH or 400), (_G.SCREEN_HEIGHT or 240))
+            end
+            self.scorePopups:draw()
+        end
+    end
+
     -- Flying objects
     self.flyingObjectImgs = _G.spriteLoader.tableLoad()
     self.maxFlyingObjects = MAX_FLYING_OBJECTS
@@ -72,7 +86,15 @@ function game_scene:enter()
     self.cracks = {}
     self.bgSprite.draw = function(_)
         gfx.clear(gfx.kColorBlack)
-        self.starfield:draw(self.beamX, self.beamY, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+        -- Draw starfield in the same position as menu_scene for seamless transition
+        local baseX = (_G.SCREEN_WIDTH or 400)/2
+        local baseY = (_G.SCREEN_HEIGHT or 240)/2
+        local width = (_G.SCREEN_WIDTH or 400)
+        local height = (_G.SCREEN_HEIGHT or 240)
+        if self.starfield and self.starfield.draw then
+            -- Draw the seamless background
+            self.starfield:draw(baseX, baseY, 3*width, height)
+        end
         self.scorePopups:draw()
     end
     self.bgSprite:add()
@@ -206,6 +228,15 @@ function game_scene:update()
     local crankPos = playdate.getCrankPosition()
     local t = 1 - math.abs((crankPos % 360) / 180 - 1)
     self.beamRadius = self.minBeamRadius + (self.maxBeamRadius - self.minBeamRadius) * t
+
+    -- Parallax starfield based on beam position
+    if self.starfield and self.starfield.setParallaxOffset then
+        local width = _G.SCREEN_WIDTH or 400
+        local height = _G.SCREEN_HEIGHT or 240
+        local px = (self.beamX - width/2) * 0.02 -- less parallax
+        local py = (self.beamY - height/2) * 0.02
+        self.starfield:setParallaxOffset(px, py)
+    end
 
     -- Flying objects (caught)
     for i = #self.flyingObjectSpawner.flyingObjects, 1, -1 do
