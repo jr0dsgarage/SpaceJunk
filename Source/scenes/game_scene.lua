@@ -5,7 +5,7 @@ local captureSynth = snd.synth.new(snd.kWaveSquare)
 local game_scene = {}
 
 -- Constants for game configuration and layout
-local GAME_DURATION_MS = 60 * 1000 -- 60 seconds in milliseconds
+local GAME_DURATION_MS = 2 * 1000 -- 60 seconds in milliseconds
 local INITIAL_BEAM_RADIUS = 20
 local MIN_BEAM_RADIUS = 10
 local MAX_BEAM_RADIUS = 75

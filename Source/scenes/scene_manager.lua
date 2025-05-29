@@ -7,12 +7,10 @@ local currentScene = nil
 
 -- Initialize the global starfield (3x3 screens, centered)
 local function ensureStarfield()
-    local width = _G.SCREEN_WIDTH or 400
-    local height = _G.SCREEN_HEIGHT or 240
     if not _G.sharedStarfield then
-        _G.sharedStarfield = _G.Starfield.new(width * 3, height * 3, 150)
+        _G.sharedStarfield = _G.Starfield.new()
         _G.sharedStarfield.parallaxX = 0
-        _G.sharedStarfield.parallaxY = 120
+        _G.sharedStarfield.parallaxY = 0
     end
 end
 

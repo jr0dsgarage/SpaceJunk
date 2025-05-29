@@ -5,11 +5,15 @@ local gfx <const> = playdate.graphics
 local Starfield = {}
 Starfield.__index = Starfield
 
-function Starfield.new(width, height, numStars)
+local NUM_STARS = 150
+
+function Starfield.new()
+    local width = (_G.SCREEN_WIDTH or 400) * 3
+    local height = (_G.SCREEN_HEIGHT or 240) * 3
     local self = setmetatable({}, Starfield)
     self.width = width
     self.height = height
-    self.numStars = numStars or 50
+    self.numStars = NUM_STARS
     self.stars = {}
     self.parallaxX = 0
     self.parallaxY = 0

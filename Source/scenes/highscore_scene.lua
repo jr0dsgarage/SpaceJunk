@@ -26,9 +26,9 @@ function highscore_scene:enter()
     self.listX = 200
     self.listH = self.maxVisible * self.scoreHeight
     self.maxScroll = math.max(0, (#self.scores - self.maxVisible))
-    -- Center the starfield vertically if not already centered (prevents snapping if returning from game)
-    if self.starfield and self.starfield.height and self.starfield.screenH then
-        local centerY = (self.starfield.height - self.starfield.screenH) / 2
+    -- Center the starfield vertically at 120px offset if not already set
+    if self.starfield and self.starfield.height then
+        local centerY = 120
         if not self.starfield._parallaxYInitialized then
             self.starfield.parallaxY = centerY
             self.starfield._parallaxYInitialized = true

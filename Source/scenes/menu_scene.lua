@@ -12,9 +12,9 @@ local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 function menu_scene:enter()
     -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
-    -- Center the starfield vertically if not already centered (prevents snapping if returning from game)
-    if self.starfield and self.starfield.height and self.starfield.screenH then
-        local centerY = (self.starfield.height - self.starfield.screenH) / 2
+    -- Center the starfield vertically at 120px offset if not already set
+    if self.starfield and self.starfield.height then
+        local centerY = 120
         if not self.starfield._parallaxYInitialized then
             self.starfield.parallaxY = centerY
             self.starfield._parallaxYInitialized = true

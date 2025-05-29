@@ -20,7 +20,7 @@ function score_scene:enter(finalScore, caught, missed)
     if _G.sharedStarfield then
         self.starfield = _G.sharedStarfield
     else
-        self.starfield = _G.Starfield.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, 50)
+        self.starfield = _G.Starfield.new()
         _G.sharedStarfield = self.starfield
     end
     self.isNewHighScore = false
@@ -212,6 +212,11 @@ function score_scene:BButtonDown()
             self.initialsIndex = self.initialsIndex - 1
         end
     else
+        -- Create a new starfield when leaving the score scene
+        if _G.Starfield then
+            _G.sharedStarfield = _G.Starfield.new()
+            _G.sharedStarfield.parallaxY = 120
+        end
         if _G.switchToMenuScene then
             _G.switchToMenuScene()
         end
