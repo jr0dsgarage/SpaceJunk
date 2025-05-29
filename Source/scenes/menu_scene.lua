@@ -1,6 +1,9 @@
 local gfx <const> = playdate.graphics
 local menu_scene = {}
 
+-- Constants for starfield and layout
+local STARFIELD_CENTER_Y = 120
+
 -- Constants for layout and spacing
 local TITLE_Y = 80
 local TITLE_X = 200
@@ -12,9 +15,9 @@ local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 function menu_scene:enter()
     -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
-    -- Center the starfield vertically at 120px offset if not already set
+    -- Center the starfield vertically at STARFIELD_CENTER_Y offset if not already set
     if self.starfield and self.starfield.height then
-        local centerY = 120
+        local centerY = STARFIELD_CENTER_Y
         if not self.starfield._parallaxYInitialized then
             self.starfield.parallaxY = centerY
             self.starfield._parallaxYInitialized = true

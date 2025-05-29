@@ -15,20 +15,25 @@ local RESET_CONFIRM_Y = 136
 local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
 
+-- Constants for starfield and layout
+local STARFIELD_CENTER_Y = 120
+local MAX_VISIBLE = 5
+local SCORE_HEIGHT = 30
+
 function highscore_scene:enter()
     -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
     self.scores = _G.HighScores and _G.HighScores.load() or {}
     self.scrollOffset = 0
-    self.maxVisible = 5
-    self.scoreHeight = 30
-    self.listY0 = 80
-    self.listX = 200
+    self.maxVisible = MAX_VISIBLE
+    self.scoreHeight = SCORE_HEIGHT
+    self.listY0 = LIST_Y0
+    self.listX = LIST_X
     self.listH = self.maxVisible * self.scoreHeight
     self.maxScroll = math.max(0, (#self.scores - self.maxVisible))
-    -- Center the starfield vertically at 120px offset if not already set
+    -- Center the starfield vertically at STARFIELD_CENTER_Y offset if not already set
     if self.starfield and self.starfield.height then
-        local centerY = 120
+        local centerY = STARFIELD_CENTER_Y
         if not self.starfield._parallaxYInitialized then
             self.starfield.parallaxY = centerY
             self.starfield._parallaxYInitialized = true

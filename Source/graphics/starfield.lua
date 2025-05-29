@@ -6,10 +6,13 @@ local Starfield = {}
 Starfield.__index = Starfield
 
 local NUM_STARS = 150
+local GRID_SIZE = 3
+local DEFAULT_SCREEN_WIDTH = 400
+local DEFAULT_SCREEN_HEIGHT = 240
 
 function Starfield.new()
-    local width = (_G.SCREEN_WIDTH or 400) * 3
-    local height = (_G.SCREEN_HEIGHT or 240) * 3
+    local width = (_G.SCREEN_WIDTH or DEFAULT_SCREEN_WIDTH) * GRID_SIZE
+    local height = (_G.SCREEN_HEIGHT or DEFAULT_SCREEN_HEIGHT) * GRID_SIZE
     local self = setmetatable({}, Starfield)
     self.width = width
     self.height = height
