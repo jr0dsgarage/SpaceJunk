@@ -14,15 +14,12 @@ local TITLE_Y = 80
 local STATS_Y = 140
 
 function score_scene:enter(finalScore, caught, missed)
+    self.starfield = _G.sharedStarfield
+    
     self.finalScore = finalScore or 0
     self.caught = caught or 0
     self.missed = missed or 0
-    if _G.sharedStarfield then
-        self.starfield = _G.sharedStarfield
-    else
-        self.starfield = _G.Starfield.new()
-        _G.sharedStarfield = self.starfield
-    end
+    
     self.isNewHighScore = false
     self.enteringInitials = false
     self.initialsChars = {' '} -- Start with space as blank entry
@@ -48,10 +45,6 @@ function score_scene:enter(finalScore, caught, missed)
         self.initialsIndex = 1
         self.blinkTimer = 0
     end
-end
-
-function score_scene:leave()
-    self.starfield = nil
 end
 
 function score_scene:update()
@@ -86,13 +79,6 @@ function score_scene:update()
 end
 
 function score_scene:draw()
-    -- Fill background and draw starfield
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(0, 0, 400, 240)
-    if self.starfield then
-        self.starfield:draw(_G.SCREEN_WIDTH/2, _G.SCREEN_HEIGHT/2, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-    end
     -- Move everything up if entering initials
     local yOffset = (self.enteringInitials and self.isNewHighScore) and -40 or 0
     -- Title background and text (match menu)
