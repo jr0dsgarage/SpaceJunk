@@ -5,7 +5,7 @@ local captureSynth = snd.synth.new(snd.kWaveSquare)
 local game_scene = {}
 
 -- Constants for game configuration and layout
-local GAME_DURATION_MS = 60 * 1000 -- 60 seconds in milliseconds
+local GAME_DURATION_MS = 2 * 1000 -- 60 seconds in milliseconds
 local INITIAL_BEAM_RADIUS = 20
 local MIN_BEAM_RADIUS = 10
 local MAX_BEAM_RADIUS = 75
@@ -47,9 +47,9 @@ function game_scene:enter()
         self.bgMusicPlayer = nil
     end
 
-    -- Stars
+    -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
-    
+
     -- Flying objects
     self.flyingObjectImgs = _G.spriteLoader.tableLoad()
     self.maxFlyingObjects = MAX_FLYING_OBJECTS
@@ -72,7 +72,17 @@ function game_scene:enter()
     self.cracks = {}
     self.bgSprite.draw = function(_)
         gfx.clear(gfx.kColorBlack)
-        self.starfield:draw(self.beamX, self.beamY, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+        -- Draw starfield in the same position as menu_scene for seamless transition
+        local baseX = (_G.SCREEN_WIDTH or 400)/2
+        local baseY = (_G.SCREEN_HEIGHT or 240)/2
+        local width = (_G.SCREEN_WIDTH or 400)
+        local height = (_G.SCREEN_HEIGHT or 240)
+        if self.starfield and self.starfield.draw then
+            -- Calculate gameplay parallax based on beam position
+            local px = (self.beamX - width/2) * 0.02
+            local py = (self.beamY - height/2) * 0.02
+            self.starfield:draw(baseX, baseY, 3*width, height, (self.starfield.parallaxX or 0) + px, (self.starfield.parallaxY or 0) + py)
+        end
         self.scorePopups:draw()
     end
     self.bgSprite:add()

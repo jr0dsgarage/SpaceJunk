@@ -4,7 +4,7 @@ local highscore_scene = {}
 -- Constants for layout and spacing
 local TITLE_Y = 40
 local TITLE_X = 200
-local LIST_W = 180
+local LIST_W = 90
 local LIST_X = 200
 local LIST_Y0 = 80
 local LIST_RECT_Y_OFFSET = -4
@@ -15,72 +15,92 @@ local RESET_CONFIRM_Y = 136
 local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
 
+-- Constants for starfield and layout
+local STARFIELD_CENTER_Y = 120
+local MAX_VISIBLE = 5
+local SCORE_HEIGHT = 30
+
 function highscore_scene:enter()
-    if _G.sharedStarfield then
-        self.starfield = _G.sharedStarfield
-    else
-        self.starfield = _G.Starfield.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, 50)
-        _G.sharedStarfield = self.starfield
-    end
+    -- Use the globally initialized starfield
+    self.starfield = _G.sharedStarfield
     self.scores = _G.HighScores and _G.HighScores.load() or {}
     self.scrollOffset = 0
-    self.maxVisible = 5
-    self.scoreHeight = 30
-    self.listY0 = 80
-    self.listX = 200
+    self.maxVisible = MAX_VISIBLE
+    self.scoreHeight = SCORE_HEIGHT
+    self.listY0 = LIST_Y0
+    self.listX = LIST_X
     self.listH = self.maxVisible * self.scoreHeight
     self.maxScroll = math.max(0, (#self.scores - self.maxVisible))
+    -- Center the starfield vertically at STARFIELD_CENTER_Y offset if not already set
+    if self.starfield and self.starfield.height then
+        local centerY = STARFIELD_CENTER_Y
+        if not self.starfield._parallaxYInitialized then
+            self.starfield.parallaxY = centerY
+            self.starfield._parallaxYInitialized = true
+        end
+    end
+    -- Do NOT set starfield vertical parallax here; let update() handle it for smoothness
 end
 
-function highscore_scene:draw()
+-- Add support for drawing at an x offset for transition animations
+function highscore_scene:draw(xOffset, hideInstructions)
+    xOffset = xOffset or 0
+    -- Defensive: ensure all required fields are set
+    local width = _G.SCREEN_WIDTH or 400
+    local height = _G.SCREEN_HEIGHT or 240
+    local listW = LIST_W or 180
+    local listH = (self.maxVisible and self.scoreHeight) and (self.maxVisible * self.scoreHeight - 2) or 148
+    local listX = LIST_X or 200
+    local listY0 = LIST_Y0 or 80
+    local listRectYOffset = LIST_RECT_Y_OFFSET or -4
+    local titleX = TITLE_X or 200
+    local titleY = TITLE_Y or 40
+    local instrLeftX = INSTR_LEFT_X or 0
+    local instrRightX = INSTR_RIGHT_X or 400
+    local instrY = INSTR_Y or 220
+    local statsFont = ui and ui.altText_font or gfx.getFont()
+    local scores = self.scores or {}
+    local maxVisible = self.maxVisible or 5
+    local scoreHeight = self.scoreHeight or 30
+    local scrollOffset = self.scrollOffset or 0
+    local maxScroll = self.maxScroll or 0
+    local hideThresholdY = titleY + 22
+    local yOffset = -(scrollOffset % 1) * scoreHeight
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    -- Remove any full-screen black fill or color set at the start
+    -- Only draw black rectangles for UI elements (like the high score list background), not the whole screen
+    gfx.setFont(statsFont)
+    local listRectX = listX - listW/2 + xOffset
+    local listRectY = listY0 + listRectYOffset
     gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(0, 0, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-    -- Parallax starfield: move stars vertically based on scrollOffset
-    local parallaxY = 0
-    if self.scrollOffset and self.maxScroll and self.maxScroll > 0 then
-        -- Map scrollOffset (0..maxScroll) to a parallax range, e.g., -16 to +16 px
-        parallaxY = (self.scrollOffset / self.maxScroll - 0.5) * 32 -- center at 0
-    end
-    if self.starfield then
-        self.starfield:draw(_G.SCREEN_WIDTH/2, _G.SCREEN_HEIGHT/2 + parallaxY, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, parallaxY)
-    end
+    gfx.fillRect(listRectX, listRectY, listW, listH)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    -- Draw black rectangle and banner for the HIGH SCORES title using drawBanner
-    _G.drawBanner.draw("HIGH SCORES", TITLE_X, TITLE_Y, ui.titleText_font)
-    gfx.setFont(ui.altText_font)
-    -- Draw one black rectangle behind all high scores (manual, not using drawBanner)
-    local listRectW, listRectH = LIST_W, self.maxVisible * self.scoreHeight - 2
-    local listRectX = LIST_X - listRectW/2
-    local listRectY = LIST_Y0 + LIST_RECT_Y_OFFSET
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(listRectX, listRectY, listRectW, listRectH)
-    -- Draw 5 visible scores, smoothly scrolled, initials then score
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite) -- Ensure text is drawn in white
     gfx.setColor(gfx.kColorWhite)
-    local firstIdx = math.floor(self.scrollOffset) + 1
-    local yOffset = -(self.scrollOffset % 1) * self.scoreHeight
-    local hideThresholdY = TITLE_Y + 22 -- Hide scores above this y (just below title)
-    for i = 0, self.maxVisible - 1 do
+    local firstIdx = math.floor(scrollOffset) + 1
+    for i = 0, maxVisible - 1 do
         local scoreIdx = firstIdx + i
-        local entry = self.scores[scoreIdx]
+        local entry = scores[scoreIdx]
         if entry and entry.score and entry.initials then
-            local y = LIST_Y0 + i * self.scoreHeight + yOffset
+            local y = listY0 + i * scoreHeight + yOffset
             if y > hideThresholdY then
                 local initials = entry.initials or "   "
                 local score = entry.score or 0
-                gfx.drawTextAligned(string.format("%s  %d", initials, score), LIST_X, y, kTextAlignment.center)
+                gfx.drawTextAligned(string.format("%s  %d", initials, score), listX + xOffset, y, kTextAlignment.center)
             end
         end
     end
-    gfx.setImageDrawMode(gfx.kDrawModeCopy) -- Reset draw mode after text
-    -- Draw bottom instructions: left and right aligned, with black rectangles using drawBanner
-    _G.drawBanner.drawAligned("< Back to Menu", INSTR_LEFT_X, INSTR_Y, kTextAlignment.left, ui.altText_font)
-    _G.drawBanner.drawAligned("Crank: Show more scores!", INSTR_RIGHT_X, INSTR_Y, kTextAlignment.right, ui.altText_font)
-    -- Draw reset confirmation or reset message if needed
-    if self.confirmingReset then
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    -- Draw the HIGH SCORES banner
+    if _G.drawBanner and _G.drawBanner.draw then
+        _G.drawBanner.draw("HIGH SCORES", (TITLE_X or 200) + xOffset, (TITLE_Y or 40), ui and ui.titleText_font or nil)
+    end
+    if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
+        _G.drawBanner.drawAligned("< Back to Menu", instrLeftX + xOffset, instrY, kTextAlignment.left, statsFont)
+        _G.drawBanner.drawAligned("Crank: Show more scores!", instrRightX + xOffset, instrY, kTextAlignment.right, statsFont)
+    end
+    if self.confirmingReset and type(drawResetConfirmation) == "function" then
         drawResetConfirmation()
-    elseif self.showResetMsg and self.showResetMsg > 0 then
+    elseif self.showResetMsg and self.showResetMsg > 0 and type(drawResetMessage) == "function" then
         drawResetMessage()
     end
 end
@@ -97,21 +117,12 @@ function drawResetMessage()
 end
 
 function highscore_scene:update()
-    -- Crank-based scrolling
+    -- Crank-based scrolling for the score list
     local crankChange = playdate.getCrankChange()
     if math.abs(crankChange) > 0 then
         self.scrollOffset = self.scrollOffset - crankChange * 0.04
         self.scrollOffset = math.max(0, math.min(self.scrollOffset, self.maxScroll))
     end
-    -- Always update starfield parallax, not just on crank
-    if self.starfield and self.starfield.setParallaxOffset then
-        local parallaxY = 0
-        if self.maxScroll > 0 then
-            parallaxY = (self.scrollOffset / self.maxScroll - 0.5) * 32
-        end
-        self.starfield:setParallaxOffset(0, parallaxY)
-    end
-    
     -- Reset high scores: hold A+B for 2 seconds, then confirm
     self.resetTimer = self.resetTimer or 0
     if not self.confirmingReset then
@@ -157,7 +168,12 @@ function highscore_scene:leftButtonDown()
         self.resetTimer = 0
         return
     end
-    if _G.switchToMenuScene then _G.switchToMenuScene() end
+    -- Trigger slide transition back to menu (right-to-left)
+    if _G.scene_manager and _G.slide_transition_scene then
+        _G.scene_manager.setScene(_G.slide_transition_scene, -1)
+    else
+        if _G.switchToMenuScene then _G.switchToMenuScene() end
+    end
 end
 
 function highscore_scene:BButtonDown()
