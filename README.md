@@ -9,3 +9,6 @@ The size and position of the beam can be controlled with the crank and the d-pad
 
 ## Notes
 - The game is currently in a very early stage.
+
+## Credits
+- Background music made with [PocketBM](https://play.date/games/pocketbm/)
