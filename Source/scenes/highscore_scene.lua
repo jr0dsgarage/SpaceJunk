@@ -72,22 +72,14 @@ function highscore_scene:draw(xOffset, hideInstructions)
         _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y or 220, kTextAlignment.left, ui and ui.altText_font or gfx.getFont())
         _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y or 220, kTextAlignment.right, ui and ui.altText_font or gfx.getFont())
     end
-    if self.confirmingReset and type(drawResetConfirmation) == "function" then
-        drawResetConfirmation()
-    elseif self.showResetMsg and self.showResetMsg > 0 and type(drawResetMessage) == "function" then
-        drawResetMessage()
+    if self.confirmingReset then
+        -- Inline reset confirmation
+        _G.drawBanner.draw("Really reset high scores?", TITLE_X, RESET_CONFIRM_Y, ui.altText_font)
+        _G.drawBanner.draw("B: No     A: Yes", TITLE_X, RESET_CONFIRM2_Y, ui.altText_font)
+    elseif self.showResetMsg and self.showResetMsg > 0 then
+        -- Inline reset message
+        _G.drawBanner.draw("High Scores Reset!", TITLE_X, RESET_MSG_Y, ui.altText_font)
     end
-end
-
--- Helper for reset confirmation
-function drawResetConfirmation()
-    _G.drawBanner.draw("Really reset high scores?", TITLE_X, RESET_CONFIRM_Y, ui.altText_font)
-    _G.drawBanner.draw("B: No     A: Yes", TITLE_X, RESET_CONFIRM2_Y, ui.altText_font)
-end
-
--- Helper for reset message
-function drawResetMessage()
-    _G.drawBanner.draw("High Scores Reset!", TITLE_X, RESET_MSG_Y, ui.altText_font)
 end
 
 function highscore_scene:update()
