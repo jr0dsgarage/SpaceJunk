@@ -41,36 +41,23 @@ end
 -- Add support for drawing at an x offset for transition animations
 function highscore_scene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
-
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
-    gfx.setFont(ui and ui.altText_font or gfx.getFont())
-    local listRectX = (LIST_X or 200) - (LIST_W or 180)/2 + xOffset
-    local listRectY = (LIST_Y0 or 80) + (LIST_RECT_Y_OFFSET or 0)
+    gfx.setFont(ui.altText_font)
+    local listRectX = LIST_X - LIST_W/2 + xOffset
+    local listRectY = LIST_Y0 + LIST_RECT_Y_OFFSET
     gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(listRectX, listRectY, LIST_W or 180, (self.maxVisible and SCORE_HEIGHT) and (self.maxVisible * SCORE_HEIGHT - 2) or 148)
+    gfx.fillRect(listRectX, listRectY, LIST_W, MAX_SCORES_SHOWN * SCORE_HEIGHT - 2)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
-    local firstIdx = math.floor(self.scrollOffset or 0) + 1
-    for i = 0, (MAX_SCORES_SHOWN) - 1 do
-        local scoreIdx = firstIdx + i
-        local entry = (self.scores or {})[scoreIdx]
-        if entry and entry.score and entry.initials then
-            local y = (LIST_Y0 or 80) + i * (SCORE_HEIGHT or 30) - ((self.scrollOffset or 0) % 1) * (SCORE_HEIGHT or 30)
-            if y > (TITLE_Y) + LIST_OFFSET then
-                local initials = entry.initials or "   "
-                local score = entry.score or 0
-                gfx.drawTextAligned(string.format("%s  %d", initials, score), (LIST_X or 200) + xOffset, y, kTextAlignment.center)
-            end
-        end
-    end
+    self:drawScoreList(xOffset)
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
     -- Draw the HIGH SCORES banner
     if _G.drawBanner and _G.drawBanner.draw then
-        _G.drawBanner.draw("HIGH SCORES", (TITLE_X or 200) + xOffset, (TITLE_Y or 40), ui and ui.titleText_font or nil)
+        _G.drawBanner.draw("HIGH SCORES", TITLE_X + xOffset, TITLE_Y, ui.titleText_font)
     end
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y or 220, kTextAlignment.left, ui and ui.altText_font or gfx.getFont())
-        _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y or 220, kTextAlignment.right, ui and ui.altText_font or gfx.getFont())
+        _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, ui.altText_font)
+        _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, ui.altText_font)
     end
     if self.confirmingReset then
         -- Inline reset confirmation
@@ -79,6 +66,23 @@ function highscore_scene:draw(xOffset, hideInstructions)
     elseif self.showResetMsg and self.showResetMsg > 0 then
         -- Inline reset message
         _G.drawBanner.draw("High Scores Reset!", TITLE_X, RESET_MSG_Y, ui.altText_font)
+    end
+end
+
+function highscore_scene:drawScoreList(xOffset)
+    local firstIdx = math.floor(self.scrollOffset or 0) + 1
+    local scores = self.scores or {}
+    for i = 0, MAX_SCORES_SHOWN - 1 do
+        local scoreIdx = firstIdx + i
+        local entry = scores[scoreIdx]
+        if entry and entry.score and entry.initials then
+            local y = LIST_Y0 + i * SCORE_HEIGHT - (self.scrollOffset % 1) * SCORE_HEIGHT
+            if y > TITLE_Y + LIST_OFFSET then
+                local initials = entry.initials or "   "
+                local score = entry.score or 0
+                gfx.drawTextAligned(string.format("%s  %d", initials, score), LIST_X + xOffset, y, kTextAlignment.center)
+            end
+        end
     end
 end
 
