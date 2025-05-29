@@ -56,6 +56,7 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, 
         if self.stars[i].size == 1 then
             gfx.drawPixel(px, py)
         else
+            gfx.setLineWidth(1)
             gfx.drawLine(px - 2, py, px + 2, py)
             gfx.drawLine(px, py - 2, px, py + 2)
         end
