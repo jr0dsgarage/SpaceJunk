@@ -1,7 +1,7 @@
 # Space Junk
 
 ## Description
-Space Junk is a playdate game where you try to capture space junk with your tractor beam.  
+Space Junk is a [Playdate](https://play.date/) game where you try to capture space junk with your tractor beam.  
 
 The size and position of the beam can be controlled with the crank and the d-pad
 
