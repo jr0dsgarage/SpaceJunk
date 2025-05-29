@@ -12,7 +12,7 @@ local function ensureStarfield()
     if not _G.sharedStarfield then
         _G.sharedStarfield = _G.Starfield.new(width * 3, height * 3, 150)
         _G.sharedStarfield.parallaxX = 0
-        _G.sharedStarfield.parallaxY = 0
+        _G.sharedStarfield.parallaxY = 120
     end
 end
 
@@ -39,10 +39,12 @@ function scene_manager.update()
         local crankChange = playdate.getCrankChange()
         if math.abs(crankChange) > 0 then
             local height = _G.SCREEN_HEIGHT or 240
-            local maxOffset = height -- 240 for 240px screen
-            local newY = (_G.sharedStarfield.parallaxY or 0) - crankChange * 0.5
-            if newY < -maxOffset then newY = -maxOffset end
-            if newY > maxOffset then newY = maxOffset end
+            -- Limit max scroll so even with 1.5x multiplier, stars never leave the screen
+            local maxOffset = height / 2
+            local centerY = ((_G.sharedStarfield.height or (height*3)) - height) / 2
+            local newY = (_G.sharedStarfield.parallaxY or centerY) - crankChange * 0.5
+            if newY < centerY - maxOffset then newY = centerY - maxOffset end
+            if newY > centerY + maxOffset then newY = centerY + maxOffset end
             _G.sharedStarfield.parallaxY = newY
         end
     end

@@ -4,7 +4,7 @@ local highscore_scene = {}
 -- Constants for layout and spacing
 local TITLE_Y = 40
 local TITLE_X = 200
-local LIST_W = 180
+local LIST_W = 90
 local LIST_X = 200
 local LIST_Y0 = 80
 local LIST_RECT_Y_OFFSET = -4
@@ -26,6 +26,14 @@ function highscore_scene:enter()
     self.listX = 200
     self.listH = self.maxVisible * self.scoreHeight
     self.maxScroll = math.max(0, (#self.scores - self.maxVisible))
+    -- Center the starfield vertically if not already centered (prevents snapping if returning from game)
+    if self.starfield and self.starfield.height and self.starfield.screenH then
+        local centerY = (self.starfield.height - self.starfield.screenH) / 2
+        if not self.starfield._parallaxYInitialized then
+            self.starfield.parallaxY = centerY
+            self.starfield._parallaxYInitialized = true
+        end
+    end
     -- Do NOT set starfield vertical parallax here; let update() handle it for smoothness
 end
 
