@@ -7,27 +7,27 @@ local TITLE_X = 200
 local LIST_W = 90
 local LIST_X = 200
 local LIST_Y0 = 80
+local LIST_OFFSET = 22
 local LIST_RECT_Y_OFFSET = -4
+local MAX_SCORES_SHOWN = 5
+local SCORE_HEIGHT = 30
 local RESET_CONFIRM_Y = 136
 local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
 
 -- Constants for starfield and layout
 local STARFIELD_CENTER_Y = 120
-local MAX_VISIBLE = 5
-local SCORE_HEIGHT = 30
+
 
 function highscore_scene:enter()
     -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
+
+    -- Initialize/reset scene state
     self.scores = _G.HighScores and _G.HighScores.load() or {}
     self.scrollOffset = 0
-    self.maxVisible = MAX_VISIBLE
-    self.scoreHeight = SCORE_HEIGHT
-    self.listY0 = LIST_Y0
-    self.listX = LIST_X
-    self.listH = self.maxVisible * self.scoreHeight
-    self.maxScroll = math.max(0, (#self.scores - self.maxVisible))
+    self.maxScroll = math.max(0, (#self.scores - MAX_SCORES_SHOWN))
+
     -- Center the starfield vertically at STARFIELD_CENTER_Y offset if not already set
     if self.starfield and self.starfield.height then
         local centerY = STARFIELD_CENTER_Y
@@ -36,51 +36,30 @@ function highscore_scene:enter()
             self.starfield._parallaxYInitialized = true
         end
     end
-    -- Do NOT set starfield vertical parallax here; let update() handle it for smoothness
 end
 
 -- Add support for drawing at an x offset for transition animations
 function highscore_scene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
-    -- Defensive: ensure all required fields are set
-    local listW = LIST_W or 180
-    local listH = (self.maxVisible and self.scoreHeight) and (self.maxVisible * self.scoreHeight - 2) or 148
-    local listX = LIST_X or 200
-    local listY0 = LIST_Y0 or 80
-    local listRectYOffset = LIST_RECT_Y_OFFSET 
-    local titleX = TITLE_X or 200
-    local titleY = TITLE_Y or 40
-    local instrLeftX = _G.INSTR_LEFT_X 
-    local instrRightX = _G.INSTR_RIGHT_X 
-    local instrY = _G.INSTR_Y or 220
-    local statsFont = ui and ui.altText_font or gfx.getFont()
-    local scores = self.scores or {}
-    local maxVisible = self.maxVisible or 5
-    local scoreHeight = self.scoreHeight or 30
-    local scrollOffset = self.scrollOffset or 0
-    local maxScroll = self.maxScroll or 0
-    local hideThresholdY = titleY + 22
-    local yOffset = -(scrollOffset % 1) * scoreHeight
+
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
-    -- Remove any full-screen black fill or color set at the start
-    -- Only draw black rectangles for UI elements (like the high score list background), not the whole screen
-    gfx.setFont(statsFont)
-    local listRectX = listX - listW/2 + xOffset
-    local listRectY = listY0 + listRectYOffset
+    gfx.setFont(ui and ui.altText_font or gfx.getFont())
+    local listRectX = (LIST_X or 200) - (LIST_W or 180)/2 + xOffset
+    local listRectY = (LIST_Y0 or 80) + (LIST_RECT_Y_OFFSET or 0)
     gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(listRectX, listRectY, listW, listH)
+    gfx.fillRect(listRectX, listRectY, LIST_W or 180, (self.maxVisible and SCORE_HEIGHT) and (self.maxVisible * SCORE_HEIGHT - 2) or 148)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
-    local firstIdx = math.floor(scrollOffset) + 1
-    for i = 0, maxVisible - 1 do
+    local firstIdx = math.floor(self.scrollOffset or 0) + 1
+    for i = 0, (MAX_SCORES_SHOWN) - 1 do
         local scoreIdx = firstIdx + i
-        local entry = scores[scoreIdx]
+        local entry = (self.scores or {})[scoreIdx]
         if entry and entry.score and entry.initials then
-            local y = listY0 + i * scoreHeight + yOffset
-            if y > hideThresholdY then
+            local y = (LIST_Y0 or 80) + i * (SCORE_HEIGHT or 30) - ((self.scrollOffset or 0) % 1) * (SCORE_HEIGHT or 30)
+            if y > (TITLE_Y) + LIST_OFFSET then
                 local initials = entry.initials or "   "
                 local score = entry.score or 0
-                gfx.drawTextAligned(string.format("%s  %d", initials, score), listX + xOffset, y, kTextAlignment.center)
+                gfx.drawTextAligned(string.format("%s  %d", initials, score), (LIST_X or 200) + xOffset, y, kTextAlignment.center)
             end
         end
     end
@@ -90,8 +69,8 @@ function highscore_scene:draw(xOffset, hideInstructions)
         _G.drawBanner.draw("HIGH SCORES", (TITLE_X or 200) + xOffset, (TITLE_Y or 40), ui and ui.titleText_font or nil)
     end
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("< Main Menu", instrLeftX + xOffset, instrY, kTextAlignment.left, statsFont)
-        _G.drawBanner.drawAligned("Crank for more scores!", instrRightX + xOffset, instrY, kTextAlignment.right, statsFont)
+        _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y or 220, kTextAlignment.left, ui and ui.altText_font or gfx.getFont())
+        _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y or 220, kTextAlignment.right, ui and ui.altText_font or gfx.getFont())
     end
     if self.confirmingReset and type(drawResetConfirmation) == "function" then
         drawResetConfirmation()
