@@ -5,8 +5,9 @@ local score_scene = {}
 -- Constants for layout and spacing
 local INITIALS_X_CENTER = 200
 local INITIALS_X_SPACING = 40
-local INSTR_Y = 220
 local INITIALS_Y_OFFSET = 26
+local INSTR_LEFT_X = 0
+local INSTR_Y = 220
 local LINE_Y_OFFSET = 24
 local TITLE_Y = 80
 local STATS_Y = 140
@@ -152,7 +153,7 @@ function score_scene:draw()
         -- Instructions background and text, left/right aligned at bottom
         
         if _G.drawBanner and _G.drawBanner.drawAligned then
-            _G.drawBanner.drawAligned("B: Main Menu", 0, INSTR_Y, kTextAlignment.left, ui.altText_font)
+            _G.drawBanner.drawAligned("B: Main Menu", INSTR_LEFT_X, INSTR_Y, kTextAlignment.left, ui.altText_font)
             _G.drawBanner.drawAligned("A: Play Again", SCREEN_WIDTH, INSTR_Y, kTextAlignment.right, ui.altText_font)
         end
     end
