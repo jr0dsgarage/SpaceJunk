@@ -8,9 +8,6 @@ local LIST_W = 90
 local LIST_X = 200
 local LIST_Y0 = 80
 local LIST_RECT_Y_OFFSET = -4
-local INSTR_Y = 220
-local INSTR_LEFT_X = 0
-local INSTR_RIGHT_X = 400
 local RESET_CONFIRM_Y = 136
 local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
@@ -46,18 +43,16 @@ end
 function highscore_scene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
     -- Defensive: ensure all required fields are set
-    local width = _G.SCREEN_WIDTH or 400
-    local height = _G.SCREEN_HEIGHT or 240
     local listW = LIST_W or 180
     local listH = (self.maxVisible and self.scoreHeight) and (self.maxVisible * self.scoreHeight - 2) or 148
     local listX = LIST_X or 200
     local listY0 = LIST_Y0 or 80
-    local listRectYOffset = LIST_RECT_Y_OFFSET or -4
+    local listRectYOffset = LIST_RECT_Y_OFFSET 
     local titleX = TITLE_X or 200
     local titleY = TITLE_Y or 40
-    local instrLeftX = INSTR_LEFT_X or 0
-    local instrRightX = INSTR_RIGHT_X or 400
-    local instrY = INSTR_Y or 220
+    local instrLeftX = _G.INSTR_LEFT_X 
+    local instrRightX = _G.INSTR_RIGHT_X 
+    local instrY = _G.INSTR_Y or 220
     local statsFont = ui and ui.altText_font or gfx.getFont()
     local scores = self.scores or {}
     local maxVisible = self.maxVisible or 5
@@ -95,8 +90,8 @@ function highscore_scene:draw(xOffset, hideInstructions)
         _G.drawBanner.draw("HIGH SCORES", (TITLE_X or 200) + xOffset, (TITLE_Y or 40), ui and ui.titleText_font or nil)
     end
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("< Back to Menu", instrLeftX + xOffset, instrY, kTextAlignment.left, statsFont)
-        _G.drawBanner.drawAligned("Crank: Show more scores!", instrRightX + xOffset, instrY, kTextAlignment.right, statsFont)
+        _G.drawBanner.drawAligned("< Main Menu", instrLeftX + xOffset, instrY, kTextAlignment.left, statsFont)
+        _G.drawBanner.drawAligned("Crank for more scores!", instrRightX + xOffset, instrY, kTextAlignment.right, statsFont)
     end
     if self.confirmingReset and type(drawResetConfirmation) == "function" then
         drawResetConfirmation()

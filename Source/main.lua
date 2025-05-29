@@ -20,6 +20,11 @@ _G.ZINDEX = {
 _G.TIMERBAR_HEIGHT = 16
 _G.SCOREBOARD_HEIGHT = 42
 
+-- Shared layout constants
+_G.INSTR_LEFT_X = 0
+_G.INSTR_RIGHT_X = _G.SCREEN_WIDTH
+_G.INSTR_Y = _G.SCREEN_HEIGHT - 20
+
 -- Attach all modules to _G for global access
 _G.ui = import "ui/ui.lua"
 _G.BeamSprite = import "ui/beam_sprite.lua"

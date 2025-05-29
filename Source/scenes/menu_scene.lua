@@ -8,8 +8,6 @@ local STARFIELD_CENTER_Y = 120
 local TITLE_Y = 80
 local TITLE_X = 200
 local START_SUBTITLE_Y = 140
-local INSTR_RIGHT_X = 400
-local INSTR_Y = 220
 local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 
 function menu_scene:enter()
@@ -40,8 +38,6 @@ function menu_scene:draw(xOffset, hideInstructions)
     local titleX = TITLE_X or 200
     local titleY = TITLE_Y or 80
     local startSubtitleY = START_SUBTITLE_Y or 140
-    local instrRightX = INSTR_RIGHT_X or 400
-    local instrY = INSTR_Y or 220
     local aCharIndex = A_CHAR_INDEX or 9
     local statsFont = ui and ui.altText_font or gfx.getFont()
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
@@ -63,7 +59,7 @@ function menu_scene:draw(xOffset, hideInstructions)
     gfx.setLineWidth(2)
     gfx.drawCircleAtPoint(aX, aY, aW)
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("High Scores >", instrRightX + xOffset, instrY,  kTextAlignment.right, statsFont)
+        _G.drawBanner.drawAligned("High Scores >", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, statsFont)
     end
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
 end
