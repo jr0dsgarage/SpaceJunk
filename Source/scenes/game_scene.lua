@@ -149,7 +149,6 @@ local function handleObjectRemoval(self, i, obj, caught)
         if self.soundManager and self.soundManager.playMiss then
             self.soundManager:playMiss()
         end
-        self.scorePopups:add(obj.x, obj.y, 0)
         -- Draw the crack permanently to cracksImage
         if self.cracksImage and self.flyingObjectSpawner and self.flyingObjectSpawner.drawCrack then
             gfx.pushContext(self.cracksImage)
