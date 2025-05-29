@@ -79,8 +79,10 @@ function game_scene:enter()
         local width = (_G.SCREEN_WIDTH or 400)
         local height = (_G.SCREEN_HEIGHT or 240)
         if self.starfield and self.starfield.draw then
-            -- Draw the seamless background
-            self.starfield:draw(baseX, baseY, 3*width, height)
+            -- Calculate gameplay parallax based on beam position
+            local px = (self.beamX - width/2) * 0.02
+            local py = (self.beamY - height/2) * 0.02
+            self.starfield:draw(baseX, baseY, 3*width, height, (self.starfield.parallaxX or 0) + px, (self.starfield.parallaxY or 0) + py)
         end
         self.scorePopups:draw()
     end
@@ -215,15 +217,6 @@ function game_scene:update()
     local crankPos = playdate.getCrankPosition()
     local t = 1 - math.abs((crankPos % 360) / 180 - 1)
     self.beamRadius = self.minBeamRadius + (self.maxBeamRadius - self.minBeamRadius) * t
-
-    -- Parallax starfield based on beam position
-    if self.starfield and self.starfield.setParallaxOffset then
-        local width = _G.SCREEN_WIDTH or 400
-        local height = _G.SCREEN_HEIGHT or 240
-        local px = (self.beamX - width/2) * 0.02 -- less parallax
-        local py = (self.beamY - height/2) * 0.02
-        self.starfield:setParallaxOffset(px, py)
-    end
 
     -- Flying objects (caught)
     for i = #self.flyingObjectSpawner.flyingObjects, 1, -1 do
