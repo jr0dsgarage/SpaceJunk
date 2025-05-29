@@ -68,8 +68,6 @@ function scene_manager.draw()
         if _G.sharedStarfield and _G.sharedStarfield.draw then
             _G.sharedStarfield:draw(width/2 + offsetX, height/2, 3 * width, height, 0, _G.sharedStarfield.parallaxY or 0)
         end
-        -- Print debug: show current starfield parallaxY
-        print("Starfield Y: " .. tostring(_G.sharedStarfield and _G.sharedStarfield.parallaxY or "nil"))
     end
     if currentScene and currentScene.draw then
         currentScene:draw()
