@@ -47,9 +47,8 @@ function game_scene:enter()
         self.bgMusicPlayer = nil
     end
 
-    -- Use the globally initialized starfield and preserve its offset
+    -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
-    -- Do NOT reset starfield parallax here; preserve position between scenes
 
     -- Flying objects
     self.flyingObjectImgs = _G.spriteLoader.tableLoad()
