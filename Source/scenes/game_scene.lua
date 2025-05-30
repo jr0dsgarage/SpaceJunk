@@ -17,6 +17,7 @@ local CRANK_INDICATOR_HEIGHT = 32
 local NOTE_DURATION = 0.2
 local NOTE_VELOCITY = 0.2
 
+-- Resets the game state variables for a new game session
 function game_scene:resetGameState()
     self.caught = 0
     self.missed = 0
@@ -26,6 +27,7 @@ function game_scene:resetGameState()
     self.gameOver = false
 end
 
+-- Initializes the game scene, sets up objects, music, and background
 function game_scene:enter()
     -- Initialize or reset game state here
     self.beamRadius = INITIAL_BEAM_RADIUS
@@ -103,10 +105,12 @@ function game_scene:enter()
     self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
 end
 
+-- Spawns a new flying object using the spawner
 function game_scene:spawnFlyingObject()
     return self.flyingObjectSpawner:spawnFlyingObject()
 end
 
+-- Calculates the score for catching an object based on beam and object size
 local function calculateScore(beamRadius, objRadius)
     -- Calculate beam and object percent (0 = min, 1 = max)
     local beamPercent = (beamRadius - MIN_BEAM_RADIUS) / (MAX_BEAM_RADIUS - MIN_BEAM_RADIUS)
@@ -115,7 +119,7 @@ local function calculateScore(beamRadius, objRadius)
     local match = 1 - math.abs(beamPercent - objPercent)
     -- Promote catching early: scale by (1 - objPercent) so smaller/earlier objects are worth more
     local earlyBonus = 1 - objPercent
-    -- At 50% beam and 50% object, score should be 100
+    -- At 50% beam and 50% object, score should be 150
     local baseScore = 150
     local minScore, maxScore = 1, 250
     local score = math.floor(baseScore * match * earlyBonus + minScore)
@@ -123,6 +127,7 @@ local function calculateScore(beamRadius, objRadius)
     return math.max(minScore, math.min(maxScore, score)), match, earlyBonus, minScore, maxScore
 end
 
+-- Handles removal of a flying object, updates score or cracks, and plays sounds
 local function handleObjectRemoval(self, i, obj, caught)
     self.flyingObjectSpawner:removeObjectAt(i)
     self:spawnFlyingObject()
@@ -162,6 +167,7 @@ local function handleObjectRemoval(self, i, obj, caught)
     end
 end
 
+-- Updates the game state each frame: movement, collisions, timer, and transitions
 function game_scene:update()
     -- Pause the game if the crank is docked
     if playdate.isCrankDocked() then
@@ -176,7 +182,7 @@ function game_scene:update()
             self.crankIndicator:drawIndicator()
         end
         return
-    else
+    else -- Resume the game when the crank is undocked
         if self.bgMusicPlayer and self.bgMusicPlayer.play and not self.bgMusicPlayer:isPlaying() then
             self.bgMusicPlayer:play(0)
         end
@@ -187,13 +193,14 @@ function game_scene:update()
             self.pauseTime = nil
         end
     end
-    if self.gameOver then
-        if rawget(_G, "switchToScoreScene") and not self._scoreSceneSwitched then
+    if self.gameOver then -- switch to the score scene
+        if _G.switchToScoreScene and not self._scoreSceneSwitched then
             self._scoreSceneSwitched = true
             _G.switchToScoreScene(self.score, self.caught, self.missed)
         end
         return
     end
+
     -- Movement
     local moveSpeed = math.max(MOVE_SPEED_MIN, math.floor(self.beamRadius / MOVE_SPEED_DIV))
     if playdate.buttonIsPressed(playdate.kButtonUp) then
@@ -251,11 +258,13 @@ function game_scene:update()
     end
 end
 
+-- Draws the timer bar and score bar UI for the game scene
 function game_scene:draw()
     if ui and ui.drawTimerBar then ui.drawTimerBar(self.timeLeft or GAME_DURATION_MS / 1000) end
     if ui and ui.drawScore then ui.drawScore(self.caught, self.missed, self.score) end
 end
 
+-- Cleans up resources and stops music when leaving the game scene
 function game_scene:leave()
     if self.bgMusicPlayer then
         self.bgMusicPlayer:stop()
@@ -263,6 +272,7 @@ function game_scene:leave()
     end
 end
 
+-- Indicates that this scene uses Playdate sprites
 function game_scene:usesSprites()
     return true
 end
