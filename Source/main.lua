@@ -47,14 +47,32 @@ local score_scene = import "scenes/score_scene"
 local highscore_scene = import "scenes/highscore_scene.lua"
 local slide_transition_scene = import "scenes/slide_transition_scene.lua"
 
--- Make scene_manager global for transition scene usage
+-- Make scenes global for transition scene usage
 _G.scene_manager = scene_manager
--- Make slide_transition_scene global for use in menu_scene
 _G.slide_transition_scene = slide_transition_scene
--- Make menu_scene and highscore_scene global for use in slide_transition_scene
 _G.menu_scene = menu_scene
 _G.highscore_scene = highscore_scene
 
+
+-- Initialize the playdate system
+function playdate.init()
+    playdate.display.setRefreshRate(30)
+    playdate.display.setScale(2)
+
+    -- Initialize the starfield
+    _G.sharedStarfield = _G.Starfield.new()
+
+    -- Initialize the sound manager
+    _G.SoundManager.init()
+
+    -- Initialize the high scores
+    _G.HighScores.init()
+
+    -- Set up the scene manager
+    scene_manager.init()
+end
+
+-- Update and draw functions for the playdate system
 function playdate.update()
     scene_manager.update()
     scene_manager.draw()
