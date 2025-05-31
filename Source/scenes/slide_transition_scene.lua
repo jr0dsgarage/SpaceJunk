@@ -13,25 +13,42 @@ local TOTAL_FRAMES = math.floor(DURATION * FPS)
 
 function slide_transition_scene:enter(direction)
     self.frame = 0
-    self.direction = direction or 1 -- 1 for right, -1 for left, -2 for instructions
+    self.direction = direction or 1
     self.menu_scene = _G.menu_scene
     self.highscore_scene = _G.highscore_scene
     self.instructions_scene = _G.instructions_scene
     self.starfield = _G.sharedStarfield
     self.width = _G.SCREEN_WIDTH
     self.height = _G.SCREEN_HEIGHT
+
+    -- Map directions to scene pairs for cleaner logic
+    local transitions = {
+        [-2] = {from = self.menu_scene, to = self.instructions_scene},
+        [-3] = {from = self.instructions_scene, to = self.menu_scene},
+        [1]  = {from = self.menu_scene, to = self.highscore_scene},
+        [-1] = {from = self.menu_scene, to = self.highscore_scene}, -- fix: highscore -> menu should slide highscore out to the right
+    }
+    local pair = transitions[self.direction]
+    if pair then
+        self.fromScene = pair.from
+        self.toScene = pair.to
+    else
+        self.fromScene = self.menu_scene
+        self.toScene = self.highscore_scene
+    end
 end
 
 function slide_transition_scene:update()
     self.frame = self.frame + 1
     if self.frame >= TOTAL_FRAMES then
-        if self.direction == 1 then
-            if _G.switchToHighScoreScene then _G.switchToHighScoreScene() end
-        elseif self.direction == -2 then
-            if _G.scene_manager then _G.scene_manager.setScene(_G.instructions_scene) end
-        else
-            if _G.switchToMenuScene then _G.switchToMenuScene() end
-        end
+        local actions = {
+            [-2] = function() if _G.scene_manager then _G.scene_manager.setScene(_G.instructions_scene) end end,
+            [-3] = function() if _G.scene_manager then _G.scene_manager.setScene(_G.menu_scene) end end,
+            [1]  = function() if _G.switchToHighScoreScene then _G.switchToHighScoreScene() end end,
+            [-1] = function() if _G.switchToMenuScene then _G.switchToMenuScene() end end,
+        }
+        local action = actions[self.direction]
+        if action then action() end
     end
 end
 
@@ -40,37 +57,40 @@ function slide_transition_scene:draw()
     local height = self.height or (_G and _G.SCREEN_HEIGHT) or 240
     local t = math.min((self.frame or 0) / (TOTAL_FRAMES or 1), 1)
     local slide = t * width
-    local menuX, highscoreX, instructionsX, starfieldX
-    if self.direction == 1 then
-        -- Menu -> Highscore (left to right)
-        menuX = -slide
-        highscoreX = width - slide
-        instructionsX = -width
-        starfieldX = t * (2 * width)
-    elseif self.direction == -2 then
-        -- Menu -> Instructions (right to left)
-        menuX = slide
-        instructionsX = -width + slide
-        highscoreX = width
+    local fromX, toX, starfieldX
+    if self.direction == -2 then
+        -- Menu -> Instructions (instructions slide in from left)
+        fromX = 0 + (slide)
+        toX = -width + slide
         starfieldX = -t * (2 * width)
-    else
-        -- Highscore -> Menu (right to left)
-        menuX = -width + slide
-        highscoreX = slide
-        instructionsX = -width
+    elseif self.direction == -3 then
+        -- Instructions -> Menu (instructions slide out left)
+        fromX = 0 - slide
+        toX = width - slide
+        starfieldX = t * (2 * width)
+    elseif self.direction == 1 then
+        -- Menu -> Highscore (highscore slides in from right)
+        fromX = -slide
+        toX = width - slide
+        starfieldX = t * (2 * width)
+    elseif self.direction == -1 then
+        -- Highscore -> Menu (highscore slides out right)
+        fromX = -width + slide
+        toX = slide
         starfieldX = (1 - t) * (2 * width)
+    else
+        fromX = 0
+        toX = 0
+        starfieldX = 0
     end
     if self.starfield and self.starfield.draw then
         self.starfield:draw(width/2 + starfieldX, height/2, 3 * width, height)
     end
-    if _G.menu_scene and _G.menu_scene.draw then
-        _G.menu_scene:draw(menuX, true)
+    if self.fromScene and self.fromScene.draw then
+        self.fromScene:draw(fromX, true)
     end
-    if _G.highscore_scene and _G.highscore_scene.draw then
-        _G.highscore_scene:draw(highscoreX, true)
-    end
-    if _G.instructions_scene and _G.instructions_scene.draw then
-        _G.instructions_scene:draw(instructionsX, true)
+    if self.toScene and self.toScene.draw then
+        self.toScene:draw(toX, true)
     end
 end
 
