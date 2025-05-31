@@ -45,7 +45,6 @@ function game_scene:enter()
         self.bgMusicPlayer = bgMusicPlayer
         self.bgMusicPlayer:play(0) -- loop forever
     else
-        print("[Audio] Error loading background music: " .. tostring(bgMusicPlayer))
         self.bgMusicPlayer = nil
     end
 
