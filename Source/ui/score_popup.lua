@@ -8,7 +8,6 @@ ScorePopups.__index = ScorePopups
 local POPUP_BOUNCE_DURATION <const> = 1000 -- ms
 local POPUP_MIN_SPEED <const> = 20 -- px/sec (for lowest score)
 local POPUP_MAX_SPEED <const> = 80 -- px/sec (for highest score)
-local TOP_BAR_HEIGHT <const> = 24 -- px, adjust as needed
 local POPUP_BOUNCE_PEAK <const> = 0.5 -- controls arc height (0-1)
 
 function ScorePopups.new()
@@ -47,7 +46,7 @@ function ScorePopups:draw()
             local drawX = popup.startX + dx
             local drawY = popup.startY + dy + arc
             -- Clamp to not go above top bar
-            if drawY < TOP_BAR_HEIGHT then drawY = TOP_BAR_HEIGHT end
+            if drawY < _G.TIMERBAR_HEIGHT then drawY = _G.TIMERBAR_HEIGHT end
             gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
             gfx.setColor(gfx.kColorWhite)
             gfx.drawTextAligned(tostring(popup.value), drawX, drawY, kTextAlignment.center)
