@@ -46,12 +46,14 @@ local game_scene = import "scenes/game_scene"
 local score_scene = import "scenes/score_scene"
 local highscore_scene = import "scenes/highscore_scene.lua"
 local slide_transition_scene = import "scenes/slide_transition_scene.lua"
+local instructions_scene = import "scenes/instructions_scene.lua"
 
 -- Make scenes global for transition scene usage
 _G.scene_manager = scene_manager
 _G.slide_transition_scene = slide_transition_scene
 _G.menu_scene = menu_scene
 _G.highscore_scene = highscore_scene
+_G.instructions_scene = instructions_scene
 
 
 -- Initialize the playdate system

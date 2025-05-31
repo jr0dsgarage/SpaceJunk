@@ -5,6 +5,7 @@ local slide_transition_scene = {}
 -- Use global menu_scene and highscore_scene for transition
 local menu_scene = _G.menu_scene
 local highscore_scene = _G.highscore_scene
+local instructions_scene = _G.instructions_scene
 
 local DURATION = 0.5 -- seconds
 local FPS = 30
@@ -12,9 +13,10 @@ local TOTAL_FRAMES = math.floor(DURATION * FPS)
 
 function slide_transition_scene:enter(direction)
     self.frame = 0
-    self.direction = direction or 1 -- 1 for right, -1 for left
+    self.direction = direction or 1 -- 1 for right, -1 for left, -2 for instructions
     self.menu_scene = _G.menu_scene
     self.highscore_scene = _G.highscore_scene
+    self.instructions_scene = _G.instructions_scene
     self.starfield = _G.sharedStarfield
     self.width = _G.SCREEN_WIDTH
     self.height = _G.SCREEN_HEIGHT
@@ -25,6 +27,8 @@ function slide_transition_scene:update()
     if self.frame >= TOTAL_FRAMES then
         if self.direction == 1 then
             if _G.switchToHighScoreScene then _G.switchToHighScoreScene() end
+        elseif self.direction == -2 then
+            if _G.scene_manager then _G.scene_manager.setScene(_G.instructions_scene) end
         else
             if _G.switchToMenuScene then _G.switchToMenuScene() end
         end
@@ -36,16 +40,24 @@ function slide_transition_scene:draw()
     local height = self.height or (_G and _G.SCREEN_HEIGHT) or 240
     local t = math.min((self.frame or 0) / (TOTAL_FRAMES or 1), 1)
     local slide = t * width
-    local menuX, highscoreX, starfieldX
+    local menuX, highscoreX, instructionsX, starfieldX
     if self.direction == 1 then
         -- Menu -> Highscore (left to right)
         menuX = -slide
         highscoreX = width - slide
+        instructionsX = -width
         starfieldX = t * (2 * width)
+    elseif self.direction == -2 then
+        -- Menu -> Instructions (right to left)
+        menuX = slide
+        instructionsX = -width + slide
+        highscoreX = width
+        starfieldX = -t * (2 * width)
     else
         -- Highscore -> Menu (right to left)
         menuX = -width + slide
         highscoreX = slide
+        instructionsX = -width
         starfieldX = (1 - t) * (2 * width)
     end
     if self.starfield and self.starfield.draw then
@@ -56,6 +68,9 @@ function slide_transition_scene:draw()
     end
     if _G.highscore_scene and _G.highscore_scene.draw then
         _G.highscore_scene:draw(highscoreX, true)
+    end
+    if _G.instructions_scene and _G.instructions_scene.draw then
+        _G.instructions_scene:draw(instructionsX, true)
     end
 end
 

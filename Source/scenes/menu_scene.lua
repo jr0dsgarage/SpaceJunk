@@ -59,6 +59,7 @@ function menu_scene:draw(xOffset, hideInstructions)
     gfx.setLineWidth(2)
     gfx.drawCircleAtPoint(aX, aY, aW)
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
+        _G.drawBanner.drawAligned("< Instructions", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, statsFont)
         _G.drawBanner.drawAligned("High Scores >", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, statsFont)
     end
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
@@ -72,8 +73,13 @@ function menu_scene:AButtonDown()
 end
 
 function menu_scene:rightButtonDown()
-    -- Trigger slide transition instead of switching directly
+    -- Trigger slide transition to high scores (menu -> highscore, slide right)
     _G.scene_manager.setScene(_G.slide_transition_scene, 1)
+end
+
+function menu_scene:leftButtonDown()
+    -- Trigger slide transition to instructions (menu -> instructions, slide left)
+    _G.scene_manager.setScene(_G.slide_transition_scene, -2)
 end
 
 return menu_scene
