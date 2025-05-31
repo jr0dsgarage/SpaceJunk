@@ -28,10 +28,10 @@ function slide_transition_scene:enter(direction)
         [1]  = {from = self.menu_scene, to = self.highscore_scene},
         [-1] = {from = self.menu_scene, to = self.highscore_scene}, -- fix: highscore -> menu should slide highscore out to the right
     }
-    local pair = transitions[self.direction]
-    if pair then
-        self.fromScene = pair.from
-        self.toScene = pair.to
+    local scene_pair = transitions[self.direction]
+    if scene_pair then
+        self.fromScene = scene_pair.from
+        self.toScene = scene_pair.to
     else
         self.fromScene = self.menu_scene
         self.toScene = self.highscore_scene
@@ -44,8 +44,8 @@ function slide_transition_scene:update()
         local actions = {
             [-2] = function() if _G.scene_manager then _G.scene_manager.setScene(_G.instructions_scene) end end,
             [-3] = function() if _G.scene_manager then _G.scene_manager.setScene(_G.menu_scene) end end,
-            [1]  = function() if _G.switchToHighScoreScene then _G.switchToHighScoreScene() end end,
-            [-1] = function() if _G.switchToMenuScene then _G.switchToMenuScene() end end,
+            [1]  = function() if _G.scene_manager then _G.scene_manager.setScene(_G.highscore_scene) end end,
+            [-1] = function() if _G.scene_manager then _G.scene_manager.setScene(_G.menu_scene) end end,
         }
         local action = actions[self.direction]
         if action then action() end
