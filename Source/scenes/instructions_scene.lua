@@ -40,16 +40,37 @@ function InstructionsScene:draw(xOffset, hideInstructions)
     local paperY = 4
     local paperW = (_G.SCREEN_WIDTH or 400) - 8
     local paperH = (_G.SCREEN_HEIGHT or 240) - 4 - 20
-    -- Draw paper background
-    gfx.setColor(gfx.kColorWhite)
-    gfx.fillRoundRect(paperX, paperY, paperW, paperH, 8)
-    gfx.setColor(gfx.kColorBlack)
-    gfx.setLineWidth(2)
-    gfx.drawRoundRect(paperX, paperY, paperW, paperH, 8)
-    -- Title
-    if _G.drawBanner and _G.drawBanner.draw then
-        _G.drawBanner.draw("Instructions", (_G.SCREEN_WIDTH // 2) + xOffset, paperY + 10, (_G.ui and _G.ui.titleText_font) or nil)
+    -- Calculate bar start and heights
+    local barPadding = 4
+    local titleBarHeight = 0
+    if _G.ui and _G.ui.titleText_font then
+        gfx.setFont(_G.ui.titleText_font)
+        local _, th = gfx.getTextSize("Instructions")
+        titleBarHeight = th
+    else
+        titleBarHeight = 24
     end
+    -- Prepare lines and fonts for PaperBG
+    local lines = {"Instructions"}
+    for i = 1, #instructions do table.insert(lines, instructions[i]) end
+    local fonts = {}
+    fonts[1] = _G.ui and _G.ui.titleText_font or nil
+    for i = 2, #lines do fonts[i] = _G.ui and _G.ui.altText_font or nil end
+    -- Draw paper background and alternating bars using PaperBG class
+    _G.PaperBG.draw(
+        paperX, paperY, paperW, paperH,
+        {
+            lines = lines,
+            fonts = fonts,
+            barPadding = 4,
+            dither = 0.9
+        }
+    )
+    -- Title
+    if _G.ui and _G.ui.titleText_font then
+        gfx.setFont(_G.ui.titleText_font)
+    end
+    gfx.drawTextAligned("Instructions", (_G.SCREEN_WIDTH // 2) + xOffset, paperY + 10, kTextAlignment.center)
     -- Set font for instructions list
     if _G.ui and _G.ui.altText_font then
         gfx.setFont(_G.ui.altText_font)

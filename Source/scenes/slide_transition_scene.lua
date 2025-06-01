@@ -26,7 +26,7 @@ function slide_transition_scene:enter(direction)
         [-2] = {from = self.menu_scene, to = self.instructions_scene},
         [-3] = {from = self.instructions_scene, to = self.menu_scene},
         [1]  = {from = self.menu_scene, to = self.highscore_scene},
-        [-1] = {from = self.menu_scene, to = self.highscore_scene}, -- fix: highscore -> menu should slide highscore out to the right
+        [-1] = {from = self.highscore_scene, to = self.menu_scene}
     }
     local scene_pair = transitions[self.direction]
     if scene_pair then
@@ -58,34 +58,46 @@ function slide_transition_scene:draw()
     local t = math.min((self.frame or 0) / (TOTAL_FRAMES or 1), 1)
     local slide = t * width
     local fromX, toX, starfieldX
-    if self.direction == -2 then
-        -- Menu -> Instructions (instructions slide in from left)
-        fromX = 0 + (slide)
-        toX = -width + slide
-        starfieldX = -t * (2 * width)
-    elseif self.direction == -3 then
-        -- Instructions -> Menu (instructions slide out left)
-        fromX = 0 - slide
-        toX = width - slide
-        starfieldX = t * (2 * width)
-    elseif self.direction == 1 then
-        -- Menu -> Highscore (highscore slides in from right)
-        fromX = -slide
-        toX = width - slide
-        starfieldX = t * (2 * width)
-    elseif self.direction == -1 then
-        -- Highscore -> Menu (highscore slides out right)
-        fromX = -width + slide
-        toX = slide
-        starfieldX = (1 - t) * (2 * width)
+    local drawFuncs = {
+        [-2] = function()
+            -- Menu -> Instructions (instructions slide in from left)
+            fromX = 0 + slide
+            toX = -width + slide
+            starfieldX = -t * (2 * width)
+        end,
+        [-3] = function()
+            -- Instructions -> Menu (instructions slide out left)
+            fromX = 0 - slide
+            toX = width - slide
+            starfieldX = -(2 * width) + t * (2 * width) -- match highscore transition distance
+        end,
+        [1] = function()
+            -- Menu -> Highscore (highscore slides in from right)
+            fromX = -slide
+            toX = width - slide
+            starfieldX = t * (2 * width)
+        end,
+        [-1] = function()
+            -- Highscore -> Menu (highscore slides out right)
+            fromX = -width + slide
+            toX = slide
+            starfieldX = (1 - t) * (2 * width)
+        end
+    }
+    local func = drawFuncs[self.direction]
+    if func then
+        func()
     else
         fromX = 0
         toX = 0
         starfieldX = 0
     end
+    -- Draw starfield behind everything, using same offset logic as highscore transitions
     if self.starfield and self.starfield.draw then
+        -- Always draw starfield at full screen size, centered, with correct parallax
         self.starfield:draw(width/2 + starfieldX, height/2, 3 * width, height)
     end
+    -- Draw scenes (fromScene and toScene) on top of starfield
     if self.fromScene and self.fromScene.draw then
         self.fromScene:draw(fromX, true)
     end

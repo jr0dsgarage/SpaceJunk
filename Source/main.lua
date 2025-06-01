@@ -37,6 +37,7 @@ _G.SoundManager = import "audio/sound_manager.lua"
 _G.HighScores = import "io/highscores.lua"
 _G.drawBanner = import "ui/drawBanner.lua"
 _G.spriteLoader = import "graphics/spriteload.lua"
+_G.PaperBG = import("ui/paper")
 
 
 -- Import scene management and scenes
