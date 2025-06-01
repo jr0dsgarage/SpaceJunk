@@ -56,31 +56,18 @@ function InstructionsScene:draw(xOffset, hideInstructions)
     local fonts = {}
     fonts[1] = _G.ui and _G.ui.titleText_font or nil
     for i = 2, #lines do fonts[i] = _G.ui and _G.ui.altText_font or nil end
-    -- Draw paper background and alternating bars using PaperBG class
+    -- Draw paper background and all text using PaperBG class
     _G.PaperBG.draw(
         paperX, paperY, paperW, paperH,
         {
             lines = lines,
             fonts = fonts,
-            barPadding = 4,
+            barPadding = barPadding,
             dither = 0.9,
             cornerRadius = 8,
             borderWidth = 2,
         }
     )
-    -- Title
-    if _G.ui and _G.ui.titleText_font then
-        gfx.setFont(_G.ui.titleText_font)
-    end
-    gfx.drawTextAligned("Instructions", (_G.SCREEN_WIDTH // 2) + xOffset, paperY + 10, kTextAlignment.center)
-    -- Set font for instructions list
-    if _G.ui and _G.ui.altText_font then
-        gfx.setFont(_G.ui.altText_font)
-    end
-    local y = paperY + 40 - scrollY
-    for i, line in ipairs(instructions) do
-        gfx.drawTextAligned("- " .. line, paperX + 16, y + (i-1)*lineHeight, kTextAlignment.left)
-    end
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
         _G.drawBanner.drawAligned("Main Menu >", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, (_G.ui and _G.ui.altText_font) or nil)
     end

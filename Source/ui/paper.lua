@@ -36,20 +36,31 @@ function Paper.draw(x, y, w, h, options)
     if lineFont then gfx.setFont(lineFont) end
     local lineHeight = lineFont and type(lineFont.getHeight) == "function" and lineFont:getHeight() or 15
     local numLines = #lines - 1
-    local barPadding = barPadding or 0
-
-    -- Draw alternating bars: skip title, draw every other line after
-    local barY = y + titleHeight
-    for i = 1, numLines do
-        if (i % 2) == 1 then -- draw bar for every other line (first instruction, third, ...)
-            print(string.format("Drawing dithered bar %d at y=%.1f, h=%.1f", i, barY - barPadding, lineHeight + 2 * barPadding))
+    barPadding = barPadding or 0
+    local textX = x
+    local textY = y + 10
+    local barX = x
+    local barW = w
+    -- Draw alternating bars and text in a single loop for perfect alignment
+    for i, line in ipairs(lines) do
+        local isTitle = (i == 1)
+        local thisFont = type(fonts) == "table" and fonts[i] or fonts
+        if thisFont then gfx.setFont(thisFont) end
+        local thisHeight = isTitle and titleHeight or lineHeight
+        -- Draw dithered bar for every other instruction line (not title)
+        if not isTitle and ((i-1) % 2 == 1) then
             gfx.setDitherPattern(dither, gfx.image.kDitherTypeBayer8x8)
-            gfx.fillRect(x, barY - barPadding, w, lineHeight + barPadding)
+            gfx.fillRect(barX, textY - barPadding, barW, thisHeight + 2 * barPadding)
             gfx.setDitherPattern(0)
         end
-        barY = barY + lineHeight
+        -- Draw text
+        if isTitle then
+            gfx.drawTextAligned(line, textX + w // 2, textY, kTextAlignment.center)
+        else
+            gfx.drawTextAligned("- " .. line, textX + 16, textY, kTextAlignment.left)
+        end
+        textY = textY + thisHeight
     end
-
     -- Draw border
     gfx.setColor(borderColor)
     gfx.setLineWidth(borderWidth)
