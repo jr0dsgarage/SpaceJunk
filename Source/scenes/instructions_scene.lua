@@ -63,7 +63,9 @@ function InstructionsScene:draw(xOffset, hideInstructions)
             lines = lines,
             fonts = fonts,
             barPadding = 4,
-            dither = 0.9
+            dither = 0.9,
+            cornerRadius = 8,
+            borderWidth = 2,
         }
     )
     -- Title
