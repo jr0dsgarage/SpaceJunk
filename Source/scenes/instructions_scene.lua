@@ -54,7 +54,7 @@ function InstructionsScene:draw(xOffset, hideInstructions)
             lineText = lineText,
             titleFont = titleFont,
             lineFont = lineFont,
-            dither = 0.25,
+            dither = 0.85,
             cornerRadius = 8,
             borderWidth = 2,
         }
