@@ -1,68 +1,76 @@
 -- Source/ui/paper.lua
 local gfx <const> = playdate.graphics
+local sysFont = gfx.getSystemFont(gfx.font.kVariantNormal)
 
 local Paper = {}
 
+-- Helper to draw plain text (no outline)
+local function drawText(font, text, x, y)
+    if not font then return end
+    gfx.setColor(gfx.kColorBlack)
+    font:drawText(text, x, y)
+end
+
 -- Draw a paper background with alternating bars and border, and calculate bar heights from text/objects
 -- x, y, w, h: paper rect
--- options: {lines, fonts, barPadding, dither, cornerRadius, borderWidth, borderColor, fillColor}
+-- options: {titleText, lineText, fonts, dither, cornerRadius, borderWidth, borderColor, fillColor}
 function Paper.draw(x, y, w, h, options)
     options = options or {}
-    local lines = options.lines or {}
-    local fonts = options.fonts or {}
-    local barPadding = options.barPadding 
-    local dither = options.dither 
-    local cornerRadius = options.cornerRadius 
-    local borderWidth = options.borderWidth
-    
-    local borderColor = gfx.kColorBlack
-    local fillColor = gfx.kColorWhite
+    local titleText = options.titleText or ""
+    local lineText = options.lineText or {}
+    local titleFont = options.titleFont
+    local lineFont = options.lineFont
+    local dither = options.dither or 0.75
+    local cornerRadius = options.cornerRadius or 8
+    local borderWidth = options.borderWidth or 2
+    local barPadding = 2
 
-    -- Debug print incoming options
-    print("PaperBG.draw options:")
-    for k, v in pairs(options) do
-        print("  ", k, v)
-    end
-
-    -- Fill paper background
-    gfx.setColor(fillColor)
+    -- Draw paper background
+    gfx.setColor(gfx.kColorWhite)
     gfx.fillRoundRect(x, y, w, h, cornerRadius)
+    
 
-    -- Calculate heights
-    local titleFont = type(fonts) == "table" and fonts[1] or fonts
-    if titleFont then gfx.setFont(titleFont) end
-    local titleHeight = titleFont and type(titleFont.getHeight) == "function" and titleFont:getHeight() or 21
-    local lineFont = type(fonts) == "table" and fonts[2] or fonts
-    if lineFont then gfx.setFont(lineFont) end
-    local lineHeight = lineFont and type(lineFont.getHeight) == "function" and lineFont:getHeight() or 15
-    local numLines = #lines - 1
-    barPadding = barPadding or 0
-    local textX = x
-    local textY = y + 10
-    local barX = x
-    local barW = w
-    -- Draw alternating bars and text in a single loop for perfect alignment
-    for i, line in ipairs(lines) do
-        local isTitle = (i == 1)
-        local thisFont = type(fonts) == "table" and fonts[i] or fonts
-        if thisFont then gfx.setFont(thisFont) end
-        local thisHeight = isTitle and titleHeight or lineHeight
-        -- Draw dithered bar for every other instruction line (not title)
-        if not isTitle and ((i-1) % 2 == 1) then
+    -- Draw title background rectangle
+    local titleHeight = titleFont and titleFont:getHeight()
+    local titleRectY = y + 8
+    local titleRectH = titleHeight + 8
+    gfx.setColor(gfx.kColorWhite)
+    gfx.fillRect(x , titleRectY, w, titleRectH)
+    --gfx.setColor(gfx.kColorBlack)
+    --gfx.setLineWidth(1)
+    --gfx.drawRect(x + 8, titleRectY, w - 16, titleRectH)
+
+    -- Draw title text (no outline)
+    drawText(titleFont, titleText, x + 16, titleRectY + 4)
+
+    -- Start drawing lines below the title rectangle
+    local lineY = titleRectY + titleRectH + 4
+
+    -- Draw instruction lines with alternating dithered bars and black lines
+    for i, text in ipairs(lineText) do
+        local isDithered = (i % 2 == 1)
+        local font = lineFont
+        local lineHeight = font and font:getHeight() or 16
+        -- Draw black line for lined-paper effect
+        gfx.setColor(gfx.kColorBlack)
+        --gfx.setLineWidth(1)
+        --gfx.drawLine(x + 12, lineY, x + w - 12, lineY)
+        -- Draw bar (dithered or white)
+        if isDithered then
             gfx.setDitherPattern(dither, gfx.image.kDitherTypeBayer8x8)
-            gfx.fillRect(barX, textY - barPadding, barW, thisHeight + 2 * barPadding)
-            gfx.setDitherPattern(0)
-        end
-        -- Draw text
-        if isTitle then
-            gfx.drawTextAligned(line, textX + w // 2, textY, kTextAlignment.center)
+            gfx.fillRect(x, lineY + 1, w, lineHeight + barPadding)
+            gfx.setDitherPattern(0.0, gfx.image.kDitherTypeBayer8x8)
         else
-            gfx.drawTextAligned("- " .. line, textX + 16, textY, kTextAlignment.left)
+            gfx.setColor(gfx.kColorWhite)
+            gfx.fillRect(x + 8, lineY + 1, w - 16, lineHeight + barPadding)
         end
-        textY = textY + thisHeight
+        -- Draw instruction text (no outline)
+        drawText(font, text, x + 20, lineY + 2)
+        lineY = lineY + lineHeight + barPadding
     end
+
     -- Draw border
-    gfx.setColor(borderColor)
+    gfx.setColor(gfx.kColorBlack)
     gfx.setLineWidth(borderWidth)
     gfx.drawRoundRect(x, y, w, h, cornerRadius)
 end

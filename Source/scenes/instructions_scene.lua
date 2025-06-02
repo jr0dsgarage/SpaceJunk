@@ -4,10 +4,10 @@ local scene_manager = _G.scene_manager
 local slide_transition_scene = _G.slide_transition_scene
 
 local instructions = {
-    "Use the D-pad to move the beam!",
-    "Turn the crank to change beam focal point!",
+    "Use the D-pad to move the beam focal point!!",
+    "Crank to change beam focal point distance!",
     "Match focal point size to the junk size!",
-    "Smaller junk = more points!",
+    "Catch smaller junk = score more points!",
     "Better size match = more points!",
     "Game ends when timer runs out...",
     "Go for a high score!"
@@ -40,30 +40,21 @@ function InstructionsScene:draw(xOffset, hideInstructions)
     local paperY = 4
     local paperW = (_G.SCREEN_WIDTH or 400) - 8
     local paperH = (_G.SCREEN_HEIGHT or 240) - 4 - 20
-    -- Calculate bar start and heights
-    local barPadding = 4
-    local titleBarHeight = 0
-    if _G.ui and _G.ui.titleText_font then
-        gfx.setFont(_G.ui.titleText_font)
-        local _, th = gfx.getTextSize("Instructions")
-        titleBarHeight = th
-    else
-        titleBarHeight = 24
-    end
-    -- Prepare lines and fonts for PaperBG
-    local lines = {"Instructions"}
-    for i = 1, #instructions do table.insert(lines, instructions[i]) end
-    local fonts = {}
-    fonts[1] = _G.ui and _G.ui.titleText_font or nil
-    for i = 2, #lines do fonts[i] = _G.ui and _G.ui.altText_font or nil end
+    
+    -- Prepare title and instruction lines for PaperBG
+    local titleText = "Instructions"
+    local lineText = instructions
+    local titleFont = _G.ui and _G.ui.titleText_font or nil
+    local lineFont = _G.ui and _G.ui.altText_font or nil
     -- Draw paper background and all text using PaperBG class
     _G.PaperBG.draw(
         paperX, paperY, paperW, paperH,
         {
-            lines = lines,
-            fonts = fonts,
-            barPadding = barPadding,
-            dither = 0.9,
+            titleText = titleText,
+            lineText = lineText,
+            titleFont = titleFont,
+            lineFont = lineFont,
+            dither = 0.25,
             cornerRadius = 8,
             borderWidth = 2,
         }
