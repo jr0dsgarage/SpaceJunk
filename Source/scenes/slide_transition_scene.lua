@@ -69,7 +69,7 @@ function slide_transition_scene:draw()
             -- Instructions -> Menu (instructions slide out left)
             fromX = 0 - slide
             toX = width - slide
-            starfieldX = -(2 * width) + t * (2 * width) -- match highscore transition distance
+            starfieldX = -(2 * width) + t * (2 * width)
         end,
         [1] = function()
             -- Menu -> Highscore (highscore slides in from right)
@@ -78,9 +78,9 @@ function slide_transition_scene:draw()
             starfieldX = t * (2 * width)
         end,
         [-1] = function()
-            -- Highscore -> Menu (highscore slides out right)
-            fromX = -width + slide
-            toX = slide
+            -- Highscore -> Menu (highscore slides out right, menu slides in from left)
+            fromX = 0 + slide
+            toX = -width + slide
             starfieldX = (1 - t) * (2 * width)
         end
     }
