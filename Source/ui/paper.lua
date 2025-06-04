@@ -4,7 +4,7 @@ local sysFont = gfx.getSystemFont(gfx.font.kVariantNormal)
 
 local Paper = {}
 
--- Helper to draw plain text (no outline)
+-- Helper to draw plain text 
 local function drawText(font, text, x, y)
     if not font then return end
     gfx.setColor(gfx.kColorBlack)
@@ -40,7 +40,7 @@ function Paper.draw(x, y, w, h, options)
     -- Draw title text (no outline)
     drawText(titleFont, titleText, x + 16, titleRectY + 4)
 
-    -- Start drawing lines below the title rectangle, with scroll offset
+    -- Start drawing bars below the title rectangle, with scroll offset
     local lineY = titleRectY + titleRectH + 4 - (scrollOffset % 1) * ((lineFont and lineFont:getHeight() or 16) + barPadding)
     local firstIdx = math.floor(scrollOffset) + 1
     for i = 0, visibleLines - 1 do
@@ -59,8 +59,8 @@ function Paper.draw(x, y, w, h, options)
             gfx.setColor(gfx.kColorWhite)
             gfx.fillRect(x + 8, lineY + 1, w - 16, lineHeight + barPadding)
         end
-        -- Draw instruction text (no outline)
-        drawText(font, text, x + 20, lineY + 2)
+        -- Draw instruction text 
+        drawText(font, text, x + 20, lineY + 5)
         lineY = lineY + lineHeight + barPadding
     end
 

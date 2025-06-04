@@ -11,7 +11,11 @@ local lineText = {
     "Catch smaller junk = score more points!",
     "Better size match = more points!",
     "Game ends when timer runs out...",
-    "Go for a high score!"
+    "Go for a high score!",
+    "Test",
+    "Test 2",
+    "Test 3",
+    "Test 4",
 }
 
 local visibleLines = 7
