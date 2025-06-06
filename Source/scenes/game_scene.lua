@@ -88,13 +88,11 @@ function game_scene:enter()
     end
     self.bgSprite:add()
 
+    -- Create a sprite for the background_ship image
+    self.backgroundSpriteObj = _G.BackgroundSprite.new(_G.ZINDEX and _G.ZINDEX.SHIP_IMAGE or 50)
+
     -- Cracks sprite for drawing cracks above all other sprites
-    self.cracksSprite = gfx.sprite.new(self.cracksImage)
-    self.cracksSprite:setCenter(0, 0)
-    self.cracksSprite:moveTo(0, 0)
-    self.cracksSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.CRACKS or 100)
-    self.cracksSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-    self.cracksSprite:add()
+    self.cracksSpriteObj = _G.CracksSprite.new(self.cracksImage, _G.ZINDEX and _G.ZINDEX.CRACKS or 100, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Beam and crank indicator
     self.beamSprite = BeamSprite.new(self)
@@ -103,14 +101,7 @@ function game_scene:enter()
     -- Capture synth setup
     self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
 
-    -- Create a sprite for the background_ship image
-    local bgImg = gfx.image.new("sprites/ui/background_ship.png")
-    self.backgroundSprite = gfx.sprite.new(bgImg)
-    self.backgroundSprite:setCenter(0, 0)
-    self.backgroundSprite:moveTo(0, 0)
-    self.backgroundSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.SHIP_IMAGE or 50)
-    self.backgroundSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-    self.backgroundSprite:add()
+    
 end
 
 -- Spawns a new flying object using the spawner
@@ -168,8 +159,8 @@ local function handleObjectRemoval(self, i, obj, caught)
             self.flyingObjectSpawner:drawCrack(obj.x, obj.y)
             gfx.popContext()
             -- Update cracksSprite image
-            if self.cracksSprite then
-                self.cracksSprite:setImage(self.cracksImage)
+            if self.cracksSpriteObj then
+                self.cracksSpriteObj:setImage(self.cracksImage)
             end
         end
     end
@@ -275,11 +266,14 @@ end
 
 -- Cleans up resources and stops music when leaving the game scene
 function game_scene:leave()
-    if self.backgroundSprite then
-        self.backgroundSprite:remove()
-        self.backgroundSprite = nil
+    if self.backgroundSpriteObj then
+        self.backgroundSpriteObj:remove()
+        self.backgroundSpriteObj = nil
     end
-
+    if self.cracksSpriteObj then
+        self.cracksSpriteObj:remove()
+        self.cracksSpriteObj = nil
+    end
     if self.bgMusicPlayer then
         self.bgMusicPlayer:stop()
         self.bgMusicPlayer = nil
