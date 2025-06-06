@@ -16,6 +16,7 @@ local MOVE_SPEED_DIV = 5
 local CRANK_INDICATOR_HEIGHT = 32
 local NOTE_DURATION = 0.2
 local NOTE_VELOCITY = 0.2
+local SHIP_IMAGE_PATH = "sprites/ui/background_ship.png"
 
 -- Resets the game state variables for a new game session
 function game_scene:resetGameState()
@@ -36,6 +37,47 @@ function game_scene:enter()
     self.maxBeamRadius = MAX_BEAM_RADIUS
     self._scoreSceneSwitched = false
     self.soundManager = SoundManager.new()
+
+
+    -- Background sprite for drawing the starfield and score popups
+    self.bgSprite = gfx.sprite.new()
+    self.bgSprite:setCenter(0, 0)
+    self.bgSprite:moveTo(0, 0)
+    self.bgSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.STARFIELD or 0)
+    self.bgSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    self.bgSprite.draw = function(_)
+        gfx.clear(gfx.kColorBlack)
+        -- Draw starfield in the same position as menu_scene for seamless transition
+        local baseX = (_G.SCREEN_WIDTH or 400)/2
+        local baseY = (_G.SCREEN_HEIGHT or 240)/2
+        local width = (_G.SCREEN_WIDTH or 400)
+        local height = (_G.SCREEN_HEIGHT or 240)
+        if self.starfield and self.starfield.draw then
+            -- Calculate gameplay parallax based on beam position
+            local px = (self.beamX - width/2) * 0.005
+            local py = (self.beamY - height/2) * 0.005
+            self.starfield:draw(baseX, baseY, 3*width, height, (self.starfield.parallaxX or 0) + px, (self.starfield.parallaxY or 0) + py)
+        end
+        self.scorePopups:draw()
+    end
+    self.bgSprite:add()
+
+    -- Create a sprite for the background_ship image
+    local bgImg = gfx.image.new(SHIP_IMAGE_PATH)
+    self.backgroundSpriteObj = _G.BackgroundSprite.new(bgImg, _G.ZINDEX and _G.ZINDEX.SHIP_IMAGE or 50, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+
+    -- Cracks sprite for drawing cracks above all other sprites
+    self.cracksImage = gfx.image.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    self.cracks = {}
+    self.cracksSpriteObj = _G.CracksSprite.new(self.cracksImage, _G.ZINDEX and _G.ZINDEX.CRACKS or 100, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+
+    -- Beam and crank indicator
+    self.beamSprite = BeamSprite.new(self)
+    self.crankIndicator = CrankIndicatorSprite.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+
+    -- Capture synth setup
+    self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
+
 
     -- Background music
     local ok, bgMusicPlayer = pcall(function()
@@ -62,44 +104,6 @@ function game_scene:enter()
 
     -- Reset game state
     self:resetGameState()
-
-    -- Background sprite for drawing the starfield and score popups
-    self.bgSprite = gfx.sprite.new()
-    self.bgSprite:setCenter(0, 0)
-    self.bgSprite:moveTo(0, 0)
-    self.bgSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.STARFIELD or 0)
-    self.bgSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-    self.cracksImage = gfx.image.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-    self.cracks = {}
-    self.bgSprite.draw = function(_)
-        gfx.clear(gfx.kColorBlack)
-        -- Draw starfield in the same position as menu_scene for seamless transition
-        local baseX = (_G.SCREEN_WIDTH or 400)/2
-        local baseY = (_G.SCREEN_HEIGHT or 240)/2
-        local width = (_G.SCREEN_WIDTH or 400)
-        local height = (_G.SCREEN_HEIGHT or 240)
-        if self.starfield and self.starfield.draw then
-            -- Calculate gameplay parallax based on beam position
-            local px = (self.beamX - width/2) * 0.005
-            local py = (self.beamY - height/2) * 0.005
-            self.starfield:draw(baseX, baseY, 3*width, height, (self.starfield.parallaxX or 0) + px, (self.starfield.parallaxY or 0) + py)
-        end
-        self.scorePopups:draw()
-    end
-    self.bgSprite:add()
-
-    -- Create a sprite for the background_ship image
-    self.backgroundSpriteObj = _G.BackgroundSprite.new(_G.ZINDEX and _G.ZINDEX.SHIP_IMAGE or 50)
-
-    -- Cracks sprite for drawing cracks above all other sprites
-    self.cracksSpriteObj = _G.CracksSprite.new(self.cracksImage, _G.ZINDEX and _G.ZINDEX.CRACKS or 100, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-
-    -- Beam and crank indicator
-    self.beamSprite = BeamSprite.new(self)
-    self.crankIndicator = CrankIndicatorSprite.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-
-    -- Capture synth setup
-    self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
 
     
 end
