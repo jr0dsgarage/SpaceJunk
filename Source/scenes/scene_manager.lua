@@ -59,6 +59,7 @@ function scene_manager.draw()
     local height = _G.SCREEN_HEIGHT or 240
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, width, height)
+    
     -- Only draw the starfield if not in the transition scene
     if currentScene ~= _G.slide_transition_scene then
         local offsetX = 0
@@ -69,6 +70,8 @@ function scene_manager.draw()
             _G.sharedStarfield:draw(width/2 + offsetX, height/2, 3 * width, height, 0, _G.sharedStarfield.parallaxY or 0)
         end
     end
+     -- Draw all sprites (background, flying objects, etc) before UI
+    playdate.graphics.sprite.update()
     if currentScene and currentScene.draw then
         currentScene:draw()
     end

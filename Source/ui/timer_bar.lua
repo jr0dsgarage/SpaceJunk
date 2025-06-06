@@ -75,29 +75,22 @@ end
 
 function TimerBar:drawBar()
     local gfx <const> = playdate.graphics
-    local timeLeft = self:getTimeLeft()
-    -- Draw black background rectangle for the timer bar and label
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(0, 0, self.width, self.height)
-    -- Draw label
     if ui and ui.altText_font then
         gfx.setFont(ui.altText_font)
     end
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.drawText("Time:", 0, 0)
-    -- Line parameters for the timer bar
     local lineX = 48
     local lineY = 8
     local lineW = self.width - 56
-    -- Draw timer rectangles (rightmost disappears first)
     local totalRects = self.duration
     local rectWidth = 4
     local rectHeight = 8
+    local timeLeft = self:getTimeLeft()
     local gap = (lineW - (totalRects * rectWidth)) / (totalRects - 1)
     for i = 1, totalRects do
         local sx = lineX + lineW - ((i - 1) * (rectWidth + gap)) - rectWidth
         local sy = lineY - rectHeight/2
-        -- Only draw if this rectangle should still be visible (leftmost stays longest)
         if i > (totalRects - timeLeft) then
             gfx.setColor(gfx.kColorWhite)
             gfx.fillRect(sx, sy, rectWidth, rectHeight)

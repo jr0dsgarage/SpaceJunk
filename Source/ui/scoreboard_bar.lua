@@ -43,20 +43,18 @@ end
 
 function ScoreboardBar:drawBar()
     local gfx <const> = playdate.graphics
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(0, 0, self.width, self.height)
     if ui and ui.altText_font then
         gfx.setFont(ui.altText_font)
     end
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.setColor(gfx.kColorWhite)
+    -- gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    -- gfx.setColor(gfx.kColorWhite)
     gfx.drawTextAligned("CAUGHT", 0, 1, kTextAlignment.left)
     gfx.drawTextAligned("SCORE", 200, 1, kTextAlignment.center)
     gfx.drawTextAligned("MISSED", 400, 1, kTextAlignment.right)
     gfx.drawTextAligned(tostring(self.caught), 0, 19, kTextAlignment.left)
     gfx.drawTextAligned(tostring(self.score), 200, 19, kTextAlignment.center)
     gfx.drawTextAligned(tostring(self.missed), 400, 19, kTextAlignment.right)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    -- gfx.setImageDrawMode(gfx.kDrawModeCopy)
 end
 
 return ScoreboardBar

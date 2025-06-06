@@ -45,6 +45,7 @@ local function resumeTimerBar()
 end
 
 return {
+
     drawScore = drawScore,
     drawTimerBar = drawTimerBar,
     reset = reset,

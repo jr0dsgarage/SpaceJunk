@@ -9,8 +9,9 @@ _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT = playdate.display.getWidth(), playdate.displa
 
 -- Global z-indexes for layering
 _G.ZINDEX = {
-    BACKGROUND = -100,
-    FLYING_OBJECT_BASE = 100, -- flying objects will be 100 + i
+    FLYING_OBJECT_BASE = 50, -- flying objects will be 50 + i
+    BEAM = 100,              -- beam and related effects
+    BACKGROUND = 200,        -- background sprite above flying objects and beam
     SCOREBOARD = 9999,
     CRANK_INDICATOR = 10000,
     CRACKS = 5000,
@@ -39,7 +40,6 @@ _G.drawBanner = import "ui/drawBanner.lua"
 _G.spriteLoader = import "graphics/spriteload.lua"
 _G.PaperBG = import("ui/paper")
 
-
 -- Import scene management and scenes
 local scene_manager = import "scenes/scene_manager"
 local menu_scene = import "scenes/menu_scene"
@@ -48,6 +48,7 @@ local score_scene = import "scenes/score_scene"
 local highscore_scene = import "scenes/highscore_scene.lua"
 local slide_transition_scene = import "scenes/slide_transition_scene.lua"
 local instructions_scene = import "scenes/instructions_scene.lua"
+local test_scene = import "scenes/test_scene.lua"
 
 -- Make scenes global for transition scene usage
 _G.scene_manager = scene_manager
@@ -55,6 +56,7 @@ _G.slide_transition_scene = slide_transition_scene
 _G.menu_scene = menu_scene
 _G.highscore_scene = highscore_scene
 _G.instructions_scene = instructions_scene
+_G.test_scene = test_scene
 
 
 -- Initialize the playdate system
@@ -119,4 +121,5 @@ end
 function _G.switchToHighScoreScene()
     scene_manager.setScene(highscore_scene)
 end
+
 

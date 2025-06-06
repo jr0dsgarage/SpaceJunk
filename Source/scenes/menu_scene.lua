@@ -23,13 +23,6 @@ function menu_scene:enter()
     end
 end
 
-function menu_scene:leave()
-end
-
-function menu_scene:update()
-    -- No per-scene parallax logic needed; handled globally
-end
-
 -- Add support for drawing at an x offset for transition animations
 function menu_scene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
@@ -40,7 +33,7 @@ function menu_scene:draw(xOffset, hideInstructions)
     local startSubtitleY = START_SUBTITLE_Y or 140
     local aCharIndex = A_CHAR_INDEX or 9
     local statsFont = ui and ui.altText_font or gfx.getFont()
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
     gfx.setColor(gfx.kColorBlack)
     if _G.drawBanner and _G.drawBanner.draw then
         _G.drawBanner.draw("SPACE JUNK", titleX + xOffset, titleY, ui and ui.titleText_font or nil)
@@ -80,6 +73,13 @@ end
 function menu_scene:leftButtonDown()
     -- Trigger slide transition to instructions (menu -> instructions, slide left)
     _G.scene_manager.setScene(_G.slide_transition_scene, -2)
+end
+
+function menu_scene:BButtonDown()
+    -- Switch to test scene when B is pressed on the main menu
+    if _G.test_scene then
+        _G.scene_manager.setScene(_G.test_scene)
+    end
 end
 
 return menu_scene
