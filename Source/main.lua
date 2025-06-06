@@ -10,7 +10,7 @@ _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT = playdate.display.getWidth(), playdate.displa
 -- Global z-indexes for layering
 _G.ZINDEX = {
     STARFIELD = 0,           -- starfield is always at the bottom
-    FLYING_OBJECT_BASE = 100, -- flying objects will be 100 + i
+    FLYING_OBJECT_BASE = 50, -- flying objects will be 50 + i
     BEAM = 100,              -- beam and related effects
     SHIP_IMAGE = 200,         -- background image below flying objects and beam
     SCOREBOARD = 9999,
