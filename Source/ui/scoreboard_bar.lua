@@ -48,12 +48,12 @@ function ScoreboardBar:drawBar()
     end
     -- gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     -- gfx.setColor(gfx.kColorWhite)
-    gfx.drawTextAligned("CAUGHT", 0, 1, kTextAlignment.left)
-    gfx.drawTextAligned("SCORE", 200, 6, kTextAlignment.center)
-    gfx.drawTextAligned("MISSED", 400, 1, kTextAlignment.right)
-    gfx.drawTextAligned(tostring(self.caught), 0, 19, kTextAlignment.left)
-    gfx.drawTextAligned(tostring(self.score), 200, 19, kTextAlignment.center)
-    gfx.drawTextAligned(tostring(self.missed), 400, 19, kTextAlignment.right)
+    gfx.drawTextAligned("CAUGHT", 10, 1, kTextAlignment.left)
+    gfx.drawTextAligned("SCORE", 200, 10, kTextAlignment.center)
+    gfx.drawTextAligned("MISSED", 400-10, 1, kTextAlignment.right)
+    gfx.drawTextAligned(tostring(self.caught), 15, 15, kTextAlignment.left)
+    gfx.drawTextAligned(tostring(self.score), 200, 22, kTextAlignment.center)
+    gfx.drawTextAligned(tostring(self.missed), 400-15, 15, kTextAlignment.right)
     -- gfx.setImageDrawMode(gfx.kDrawModeCopy)
 end
 
