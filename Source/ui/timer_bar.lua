@@ -79,7 +79,7 @@ function TimerBar:drawBar()
         gfx.setFont(ui.altText_font)
     end
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawText("Time:", 0, 0)
+    gfx.drawText("TIME:", 5, 1)
     local lineX = 48
     local lineY = 8
     local lineW = self.width - 56
