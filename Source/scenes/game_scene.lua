@@ -80,8 +80,8 @@ function game_scene:enter()
         local height = (_G.SCREEN_HEIGHT or 240)
         if self.starfield and self.starfield.draw then
             -- Calculate gameplay parallax based on beam position
-            local px = (self.beamX - width/2) * 0.02
-            local py = (self.beamY - height/2) * 0.02
+            local px = (self.beamX - width/2) * 0.005
+            local py = (self.beamY - height/2) * 0.005
             self.starfield:draw(baseX, baseY, 3*width, height, (self.starfield.parallaxX or 0) + px, (self.starfield.parallaxY or 0) + py)
         end
         self.scorePopups:draw()
