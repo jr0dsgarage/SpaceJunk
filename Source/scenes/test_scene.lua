@@ -20,6 +20,9 @@ function test_scene:update()
 end
 
 function test_scene:draw()
+    -- Always clear the screen to black first
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(0, 0, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     -- Draw the starfield manually (behind all sprites)
     if self.starfield and self.starfield.draw then
         self.starfield:draw(_G.SCREEN_WIDTH/2, _G.SCREEN_HEIGHT/2, _G.SCREEN_WIDTH*3, _G.SCREEN_HEIGHT, 0, self.starfield.parallaxY)

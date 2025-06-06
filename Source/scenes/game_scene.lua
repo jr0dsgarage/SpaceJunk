@@ -102,6 +102,15 @@ function game_scene:enter()
 
     -- Capture synth setup
     self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
+
+    -- Create a sprite for the background_ship image
+    local bgImg = gfx.image.new("sprites/ui/background_ship.png")
+    self.backgroundSprite = gfx.sprite.new(bgImg)
+    self.backgroundSprite:setCenter(0, 0)
+    self.backgroundSprite:moveTo(0, 0)
+    self.backgroundSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.BACKGROUND or 50)
+    self.backgroundSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    self.backgroundSprite:add()
 end
 
 -- Spawns a new flying object using the spawner
@@ -259,12 +268,18 @@ end
 
 -- Draws the timer bar and score bar UI for the game scene
 function game_scene:draw()
+    -- No manual draw for background_ship; sprite system handles it
     if ui and ui.drawTimerBar then ui.drawTimerBar(self.timeLeft or GAME_DURATION_MS / 1000) end
     if ui and ui.drawScore then ui.drawScore(self.caught, self.missed, self.score) end
 end
 
 -- Cleans up resources and stops music when leaving the game scene
 function game_scene:leave()
+    if self.backgroundSprite then
+        self.backgroundSprite:remove()
+        self.backgroundSprite = nil
+    end
+
     if self.bgMusicPlayer then
         self.bgMusicPlayer:stop()
         self.bgMusicPlayer = nil

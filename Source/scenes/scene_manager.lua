@@ -67,11 +67,11 @@ function scene_manager.draw()
             offsetX = 2 * width
         end
         if _G.sharedStarfield and _G.sharedStarfield.draw then
-            _G.sharedStarfield:draw(width/2 + offsetX, height/2, 3 * width, height, 0, _G.sharedStarfield.parallaxY or 0)
+            _G.sharedStarfield:draw(width / 2 + offsetX, height / 2, 3 * width, height, 0,
+            _G.sharedStarfield.parallaxY or 0)
         end
     end
-     -- Draw all sprites (background, flying objects, etc) before UI
-    playdate.graphics.sprite.update()
+    
     if currentScene and currentScene.draw then
         currentScene:draw()
     end
