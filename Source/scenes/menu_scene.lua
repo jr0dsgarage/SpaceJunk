@@ -75,11 +75,4 @@ function menu_scene:leftButtonDown()
     _G.scene_manager.setScene(_G.slide_transition_scene, -2)
 end
 
-function menu_scene:BButtonDown()
-    -- Switch to test scene when B is pressed on the main menu
-    if _G.test_scene then
-        _G.scene_manager.setScene(_G.test_scene)
-    end
-end
-
 return menu_scene
