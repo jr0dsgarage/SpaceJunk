@@ -90,7 +90,7 @@ function highscore_scene:update()
     -- Crank-based scrolling for the score list
     local crankChange = playdate.getCrankChange()
     if math.abs(crankChange) > 0 then
-        self.scrollOffset = self.scrollOffset - crankChange * 0.04
+        self.scrollOffset = self.scrollOffset - crankChange * 0.009
         self.scrollOffset = math.max(0, math.min(self.scrollOffset, self.maxScroll))
     end
     -- Reset high scores: hold A+B for 2 seconds, then confirm
