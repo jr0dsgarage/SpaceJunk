@@ -7,11 +7,11 @@ local game_scene = {}
 -- Constants for game configuration and layout
 local GAME_DURATION_MS = 60 * 1000 -- 60 seconds in milliseconds
 local INITIAL_BEAM_RADIUS = 20
-local MIN_BEAM_RADIUS = 10
+local MIN_BEAM_RADIUS = 15
 local MAX_BEAM_RADIUS = 75
 local MAX_FLYING_OBJECTS = 3
 local MAX_OBJECT_SIZE = MAX_BEAM_RADIUS
-local MOVE_SPEED_MIN = 5
+local MOVE_SPEED_MIN = 7
 local MOVE_SPEED_DIV = 5
 local CRANK_INDICATOR_HEIGHT = 32
 local NOTE_DURATION = 0.2
