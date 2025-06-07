@@ -18,22 +18,12 @@ local lineText = {
     "Test 4",
 }
 
-local visibleLines = 7
 
 local InstructionsScene = {}
 
-function InstructionsScene.init()
-    _G.PaperBG.setScrollParams(#lineText, visibleLines)
-    _G.PaperBG.scrollOffset = 0
-end
+function InstructionsScene.init() end
 
-function InstructionsScene.update()
-    -- Clamp scrollOffset in PaperBG
-    if _G.PaperBG.scrollOffset < 0 then _G.PaperBG.scrollOffset = 0 end
-    if _G.PaperBG.scrollOffset > _G.PaperBG.maxScroll then
-        _G.PaperBG.scrollOffset = _G.PaperBG.maxScroll
-    end
-end
+function InstructionsScene.update() end
 
 function InstructionsScene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
@@ -54,8 +44,7 @@ function InstructionsScene:draw(xOffset, hideInstructions)
             dither = 0.93,
             cornerRadius = 8,
             borderWidth = 2,
-            scrollOffset = _G.PaperBG.scrollOffset,
-            visibleLines = visibleLines,
+            visibleLines = 7,
         }
     )
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
@@ -63,17 +52,11 @@ function InstructionsScene:draw(xOffset, hideInstructions)
     end
 end
 
-function InstructionsScene.cranked(change, accelerated)
-    _G.PaperBG.cranked(change)
-end
+function InstructionsScene.cranked(change, accelerated) end
 
-function InstructionsScene.upButtonDown()
-    _G.PaperBG.upButtonDown()
-end
+function InstructionsScene.upButtonDown() end
 
-function InstructionsScene.downButtonDown()
-    _G.PaperBG.downButtonDown()
-end
+function InstructionsScene.downButtonDown() end
 
 function InstructionsScene.rightButtonDown()
     if _G.scene_manager and _G.slide_transition_scene then
