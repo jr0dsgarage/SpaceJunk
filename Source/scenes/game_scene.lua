@@ -16,7 +16,7 @@ local MOVE_SPEED_DIV = 5
 local CRANK_INDICATOR_HEIGHT = 32
 local NOTE_DURATION = 0.2
 local NOTE_VELOCITY = 0.2
-local SHIP_IMAGE_PATH = "sprites/ui/background_ship.png"
+local SHIP_IMAGE_PATH = _G.SHIP_IMAGE_PATH 
 
 -- Resets the game state variables for a new game session
 function game_scene:resetGameState()
@@ -64,7 +64,7 @@ function game_scene:enter()
 
     -- Create a sprite for the background_ship image
     local bgImg = gfx.image.new(SHIP_IMAGE_PATH)
-    self.backgroundSpriteObj = _G.BackgroundSprite.new(bgImg, _G.ZINDEX and _G.ZINDEX.SHIP_IMAGE or 50, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    self.backgroundSpriteObj = _G.BackgroundSprite.new(bgImg, _G.ZINDEX and _G.ZINDEX.SHIP_IMAGE, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Cracks sprite for drawing cracks above all other sprites
     self.cracksImage = gfx.image.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)

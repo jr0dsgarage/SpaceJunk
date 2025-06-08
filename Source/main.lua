@@ -18,6 +18,8 @@ _G.ZINDEX = {
     CRACKS = 500,
 }
 
+_G.SHIP_IMAGE_PATH = "sprites/ui/background_ship.png"
+
 -- Global constants for game dimensions
 _G.TIMERBAR_HEIGHT = 16
 _G.SCOREBOARD_HEIGHT = 42
