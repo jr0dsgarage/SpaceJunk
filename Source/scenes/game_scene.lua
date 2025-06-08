@@ -105,7 +105,36 @@ function game_scene:enter()
     -- Reset game state
     self:resetGameState()
 
-    
+    -- Beam Zoom Sprite (right side, between titlebar and scoreboard)
+    local beamZoomWidth = 5
+    local beamZoomHeight = _G.SCREEN_HEIGHT - (_G.TIMERBAR_HEIGHT + _G.SCOREBOARD_HEIGHT)
+    local beamZoomX = _G.SCREEN_WIDTH - 20 -- 20px from right edge
+    local beamZoomY = _G.TIMERBAR_HEIGHT
+    self.beamZoomSprite = gfx.sprite.new()
+    self.beamZoomSprite:setCenter(0, 0)
+    self.beamZoomSprite:moveTo(beamZoomX, beamZoomY)
+    self.beamZoomSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.SCOREBOARD or 9998)
+    self.beamZoomSprite:setSize(beamZoomWidth, beamZoomHeight)
+    self.beamZoomSprite.draw = function(_)
+        gfx.setColor(gfx.kColorWhite)
+        -- Draw the main vertical line
+        gfx.drawLine(beamZoomWidth // 2, 0, beamZoomWidth // 2, beamZoomHeight)
+        -- Draw tick marks, denser at top/bottom, sparser in middle
+        local crankPos = playdate.getCrankPosition() or 0
+        local t = (crankPos % 360) / 360
+        local nTicks = 40
+        for i = 0, nTicks do
+            -- Use a cosine curve to space ticks: more at ends, fewer in middle
+            local norm = i / nTicks
+            local density = 0.5 * (1 - math.cos(norm * math.pi))
+            local y = math.floor(density * (beamZoomHeight - 1))
+            -- Animate with crank: offset all lines by crank position
+            local offset = math.floor(t * (beamZoomHeight - 1))
+            local drawY = (y + offset) % beamZoomHeight
+            gfx.drawLine(0, drawY, beamZoomWidth, drawY)
+        end
+    end
+    self.beamZoomSprite:add()
 end
 
 -- Spawns a new flying object using the spawner
