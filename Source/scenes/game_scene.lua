@@ -7,7 +7,7 @@ local game_scene = {}
 -- Constants for game configuration and layout
 local GAME_DURATION_MS = 60 * 1000 -- 60 seconds in milliseconds
 local INITIAL_BEAM_RADIUS = 20
-local MIN_BEAM_RADIUS = 15
+local MIN_BEAM_RADIUS = 10
 local MAX_BEAM_RADIUS = 75
 local MAX_FLYING_OBJECTS = 3
 local MAX_OBJECT_SIZE = MAX_BEAM_RADIUS
@@ -16,7 +16,6 @@ local MOVE_SPEED_DIV = 5
 local CRANK_INDICATOR_HEIGHT = 32
 local NOTE_DURATION = 0.2
 local NOTE_VELOCITY = 0.2
-local SHIP_IMAGE_PATH = _G.SHIP_IMAGE_PATH 
 
 -- Resets the game state variables for a new game session
 function game_scene:resetGameState()
@@ -63,7 +62,7 @@ function game_scene:enter()
     self.bgSprite:add()
 
     -- Create a sprite for the background_ship image
-    local bgImg = gfx.image.new(SHIP_IMAGE_PATH)
+    local bgImg = gfx.image.new(_G.SHIP_IMAGE_PATH)
     self.backgroundSpriteObj = _G.BackgroundSprite.new(bgImg, _G.ZINDEX and _G.ZINDEX.SHIP_IMAGE, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Cracks sprite for drawing cracks above all other sprites
@@ -149,7 +148,7 @@ local function calculateScore(beamRadius, objRadius)
     -- Promote catching early: scale by (1 - objPercent) so smaller/earlier objects are worth more
     local earlyBonus = 1 - objPercent
     -- At 50% beam and 50% object, score should be 150
-    local baseScore = 150
+    local baseScore = 250
     local minScore, maxScore = 1, 250
     local score = math.floor(baseScore * match * earlyBonus + minScore)
     -- Clamp to min/max
