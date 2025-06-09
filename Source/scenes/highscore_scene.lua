@@ -67,9 +67,9 @@ function highscore_scene:drawScoreList(xOffset)
         if entry and entry.score and entry.initials then
             local y = LIST_Y0 + i * SCORE_HEIGHT - (self.scrollOffset % 1) * SCORE_HEIGHT
             if y > TITLE_Y + LIST_OFFSET then
-                local initials = entry.initials or "   "
-                local score = entry.score or 0
-                gfx.drawTextAligned(string.format("%s  %d", initials, score), LIST_X + xOffset, y, kTextAlignment.center)
+                local initials = entry.initials or "AAA"
+                local score = entry.score or 0                
+                gfx.drawTextAligned(string.format("%d  %s  %d", scoreIdx, initials, score), LIST_X + xOffset, y, kTextAlignment.center)
             end
         end
     end
