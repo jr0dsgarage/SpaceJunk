@@ -5,17 +5,38 @@ local captureSynth = snd.synth.new(snd.kWaveSquare)
 local game_scene = {}
 
 -- Constants for game configuration and layout
-local GAME_DURATION_MS = 60 * 1000 -- 60 seconds in milliseconds
-local INITIAL_BEAM_RADIUS = 20
-local MIN_BEAM_RADIUS = 10
-local MAX_BEAM_RADIUS = 75
-local MAX_FLYING_OBJECTS = 3
-local MAX_OBJECT_SIZE = MAX_BEAM_RADIUS
-local MOVE_SPEED_MIN = 7
-local MOVE_SPEED_DIV = 5
-local CRANK_INDICATOR_HEIGHT = 32
-local NOTE_DURATION = 0.2
-local NOTE_VELOCITY = 0.2
+local BASE_SCORE <const> = 250
+local MIN_SCORE <const> = 1
+local MAX_SCORE <const> = 250
+local GAME_DURATION_MS <const> = 60 * 1000 -- 60 seconds in milliseconds
+
+-- Beam Circle  constants
+local INITIAL_BEAM_RADIUS <const> = 20
+local MIN_BEAM_RADIUS <const> = 10
+local MAX_BEAM_RADIUS <const> = 75
+
+-- Flying object constants
+local MAX_FLYING_OBJECTS <const> = 3
+local MAX_OBJECT_SIZE <const> = MAX_BEAM_RADIUS
+local MOVE_SPEED_MIN <const> = 7
+local MOVE_SPEED_DIV <const> = 5
+
+-- Zoom indicator constants
+local BEAM_ZOOM_WIDTH <const> = 5
+local BEAM_ZOOM_EXTRA_HEIGHT <const> = 0 -- for future tweaks
+local BEAM_ZOOM_Y_OFFSET <const> = 0
+local BEAM_ZOOM_MIN_TICKS <const> = 10
+local BEAM_ZOOM_MAX_TICKS <const> = 60
+
+-- Crank indicator constants
+local CRANK_INDICATOR_HEIGHT <const> = 32
+
+-- C Major scale notes in Hz
+-- C4, D4, E4, F4, G4, A4, B4
+local C_MAJOR_NOTES <const> = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} 
+local NOTE_DURATION <const> = 0.2
+local NOTE_VELOCITY <const> = 0.2
+
 
 -- Resets the game state variables for a new game session
 function game_scene:resetGameState()
@@ -75,7 +96,7 @@ function game_scene:enter()
     self.crankIndicator = CrankIndicatorSprite.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Capture synth setup
-    self.cMajorNotes = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- C4, D4, E4, F4, G4, A4, B4
+    self.cMajorNotes = C_MAJOR_NOTES
 
 
     -- Background music
@@ -105,10 +126,10 @@ function game_scene:enter()
     self:resetGameState()
 
     -- Beam Zoom Sprite (right side, between titlebar and scoreboard)
-    local beamZoomWidth = 5
-    local beamZoomHeight = _G.SCREEN_HEIGHT - (_G.TIMERBAR_HEIGHT + _G.SCOREBOARD_HEIGHT)
-    local beamZoomX = _G.SCREEN_WIDTH - beamZoomWidth -- align right edge of sprite to screen edge
-    local beamZoomY = _G.TIMERBAR_HEIGHT
+    local beamZoomWidth = BEAM_ZOOM_WIDTH
+    local beamZoomHeight = _G.SCREEN_HEIGHT - (_G.TIMERBAR_HEIGHT + _G.SCOREBOARD_HEIGHT) + BEAM_ZOOM_EXTRA_HEIGHT
+    local beamZoomX = _G.SCREEN_WIDTH - beamZoomWidth
+    local beamZoomY = _G.TIMERBAR_HEIGHT + BEAM_ZOOM_Y_OFFSET
     self.beamZoomSprite = gfx.sprite.new()
     self.beamZoomSprite:setCenter(0, 0)
     self.beamZoomSprite:moveTo(beamZoomX, beamZoomY)
@@ -116,11 +137,9 @@ function game_scene:enter()
     self.beamZoomSprite:setSize(beamZoomWidth, beamZoomHeight)
     self.beamZoomSprite.draw = function(_)
         gfx.setColor(gfx.kColorWhite)
-        -- Draw the main vertical line at the far right edge of the sprite
         gfx.drawLine(beamZoomWidth - 1, 0, beamZoomWidth - 1, beamZoomHeight)
-        -- Draw tick marks: density increases as beam gets closer to player
-        local minTicks = 10
-        local maxTicks = 60
+        local minTicks = BEAM_ZOOM_MIN_TICKS
+        local maxTicks = BEAM_ZOOM_MAX_TICKS
         local beamPercent = (self.beamRadius - self.minBeamRadius) / (self.maxBeamRadius - self.minBeamRadius)
         local nTicks = math.floor(minTicks + (1 - beamPercent) * (maxTicks - minTicks))
         for i = 0, nTicks do
@@ -140,18 +159,13 @@ end
 
 -- Calculates the score for catching an object based on beam and object size
 local function calculateScore(beamRadius, objRadius)
-    -- Calculate beam and object percent (0 = min, 1 = max)
     local beamPercent = (beamRadius - MIN_BEAM_RADIUS) / (MAX_BEAM_RADIUS - MIN_BEAM_RADIUS)
     local objPercent = (objRadius - MIN_BEAM_RADIUS) / (MAX_BEAM_RADIUS - MIN_BEAM_RADIUS)
-    -- Score is max when beam matches object and both are small, min when beam is much larger than object
     local match = 1 - math.abs(beamPercent - objPercent)
-    -- Promote catching early: scale by (1 - objPercent) so smaller/earlier objects are worth more
     local earlyBonus = 1 - objPercent
-    -- At 50% beam and 50% object, score should be 150
-    local baseScore = 250
-    local minScore, maxScore = 1, 250
+    local baseScore = BASE_SCORE
+    local minScore, maxScore = MIN_SCORE, MAX_SCORE
     local score = math.floor(baseScore * match * earlyBonus + minScore)
-    -- Clamp to min/max
     return math.max(minScore, math.min(maxScore, score)), match, earlyBonus, minScore, maxScore
 end
 
