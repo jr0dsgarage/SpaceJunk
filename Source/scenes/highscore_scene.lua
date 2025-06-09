@@ -15,9 +15,6 @@ local RESET_CONFIRM_Y = 136
 local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
 
--- Constants for starfield and layout
-local STARFIELD_CENTER_Y = 120
-
 
 function highscore_scene:enter()
     -- Use the globally initialized starfield
@@ -28,14 +25,6 @@ function highscore_scene:enter()
     self.scrollOffset = 0
     self.maxScroll = math.max(0, (#self.scores - MAX_SCORES_SHOWN))
 
-    -- Center the starfield vertically at STARFIELD_CENTER_Y offset if not already set
-    if self.starfield and self.starfield.height then
-        local centerY = STARFIELD_CENTER_Y
-        if not self.starfield._parallaxYInitialized then
-            self.starfield.parallaxY = centerY
-            self.starfield._parallaxYInitialized = true
-        end
-    end
 end
 
 -- Add support for drawing at an x offset for transition animations
