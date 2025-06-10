@@ -273,8 +273,8 @@ end
 -- Draws the timer bar and score bar UI for the game scene
 function game_scene:draw()
     -- No manual draw for background_ship; sprite system handles it
-    if ui and ui.drawTimerBar then ui.drawTimerBar(self.timeLeft or GAME_DURATION_MS / 1000) end
-    if ui and ui.drawScore then ui.drawScore(self.caught, self.missed, self.score) end
+    if _G.ui and _G.ui.drawTimerBar then _G.ui.drawTimerBar(self.timeLeft or GAME_DURATION_MS / 1000) end
+    if _G.ui and _G.ui.drawScore then _G.ui.drawScore(self.caught, self.missed, self.score) end
 end
 
 -- Cleans up resources and stops music when leaving the game scene
@@ -283,6 +283,11 @@ function game_scene:leave()
         self.bgMusicPlayer:stop()
         self.bgMusicPlayer = nil
     end
+end
+
+-- Indicates that this scene uses Playdate sprites
+function game_scene:usesSprites()
+    return true
 end
 
 return game_scene

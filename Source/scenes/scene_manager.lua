@@ -19,6 +19,7 @@ local function ensureStarfield()
 end
 
 function scene_manager.clear()
+    print ("Clearing scene manager")
     playdate.graphics.sprite.removeAll()
     if _G.ui and _G.ui.reset then _G.ui.reset() end
 end

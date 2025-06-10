@@ -12,7 +12,7 @@ local STATS_Y = 140
 
 -- Constants for layout and logic
 local INITIALS_COUNT = 3
-local INITIALS_START = {' ', ' ', ' '}
+local INITIALS_START = {'A', 'A', 'A'}
 local BLINK_OFFSET = 44
 local YOFFSET_INITIALS = -40
 local LINE_HALF_WIDTH = 12
@@ -20,8 +20,8 @@ local LINE_THICKNESS = 3
 local CRANK_SENSITIVITY = 2
 
 function score_scene:enter(finalScore, caught, missed)
-    self.starfield = _G.sharedStarfield
     
+    self.starfield = _G.sharedStarfield
     self.finalScore = finalScore or 0
     self.caught = caught or 0
     self.missed = missed or 0
@@ -89,23 +89,23 @@ function score_scene:draw()
     local yOffset = (self.enteringInitials and self.isNewHighScore) and YOFFSET_INITIALS or 0
     -- Title background and text (match menu)
     local titleY = TITLE_Y + yOffset
-    _G.drawBanner.draw("GAME OVER", INITIALS_X_CENTER, titleY, ui.titleText_font)
+    _G.drawBanner.draw("GAME OVER", INITIALS_X_CENTER, titleY, _G.ui.titleText_font)
     if self.isNewHighScore then
-        gfx.setFont(ui.altText_font)
+        gfx.setFont(_G.ui.altText_font)
         local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
         local nhsText = "New High Score!"
         if blink then
-            _G.drawBanner.draw(nhsText, INITIALS_X_CENTER, titleY + 28, ui.altText_font)
+            _G.drawBanner.draw(nhsText, INITIALS_X_CENTER, titleY + 28, _G.ui.altText_font)
         end
         -- Show initials below 'New High Score!' if initials have been entered
         if not self.enteringInitials then
             local initialsStr = table.concat(self.initials)
             local initialsY = titleY + BLINK_OFFSET
-            _G.drawBanner.draw(initialsStr, INITIALS_X_CENTER, initialsY, ui.altText_font)
+            _G.drawBanner.draw(initialsStr, INITIALS_X_CENTER, initialsY, _G.ui.altText_font)
         end
     end
     -- Score/Stats background and text (match subtitle style)
-    local statsFont = ui.altText_font
+    local statsFont = _G.ui.altText_font
     local statsY = STATS_Y + yOffset
     local scoreStr = string.format("SCORE: %d", self.finalScore)
     local caughtStr = string.format("CAUGHT: %d", self.caught)
@@ -118,11 +118,11 @@ function score_scene:draw()
         -- Enter initials UI
         local instr = "Enter Initials"
         local instrY = INSTR_Y + yOffset
-        _G.drawBanner.draw(instr, INITIALS_X_CENTER, instrY, ui.altText_font)
+        _G.drawBanner.draw(instr, INITIALS_X_CENTER, instrY, _G.ui.altText_font)
         -- Draw initials input
         local initialsY = instrY + INITIALS_Y_OFFSET
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite) -- Ensure initials are drawn in white
-        gfx.setFont(ui.titleText_font)
+        gfx.setFont(_G.ui.titleText_font)
         local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
         for i = 1, INITIALS_COUNT do
             local x = INITIALS_X_CENTER + (i-2)*INITIALS_X_SPACING
@@ -150,8 +150,8 @@ function score_scene:draw()
     else
         -- Instructions background and text, left/right aligned at bottom
         if _G.drawBanner and _G.drawBanner.drawAligned then
-            _G.drawBanner.drawAligned("B: Main Menu", _G.INSTR_LEFT_X, _G.INSTR_Y, kTextAlignment.left, ui.altText_font)
-            _G.drawBanner.drawAligned("A: Play Again", _G.INSTR_RIGHT_X, _G.INSTR_Y, kTextAlignment.right, ui.altText_font)
+            _G.drawBanner.drawAligned("B: Main Menu", _G.INSTR_LEFT_X, _G.INSTR_Y, kTextAlignment.left, _G.ui.altText_font)
+            _G.drawBanner.drawAligned("A: Play Again", _G.INSTR_RIGHT_X, _G.INSTR_Y, kTextAlignment.right, _G.ui.altText_font)
         end
     end
 end
