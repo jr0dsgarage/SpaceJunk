@@ -285,9 +285,4 @@ function game_scene:leave()
     end
 end
 
--- Indicates that this scene uses Playdate sprites
-function game_scene:usesSprites()
-    return true
-end
-
 return game_scene

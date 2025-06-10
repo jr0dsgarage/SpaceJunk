@@ -85,9 +85,9 @@ end
 function playdate.update()
     scene_manager.update()
     scene_manager.draw()
-    if scene_manager.usesSprites and scene_manager.usesSprites() then
+
         playdate.graphics.sprite.update()
-    end
+
     playdate.timer.updateTimers()
 end
 
