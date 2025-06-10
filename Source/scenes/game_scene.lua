@@ -21,13 +21,6 @@ local MAX_OBJECT_SIZE <const> = MAX_BEAM_RADIUS
 local MOVE_SPEED_MIN <const> = 7
 local MOVE_SPEED_DIV <const> = 5
 
--- Zoom indicator constants
-local BEAM_ZOOM_WIDTH <const> = 5
-local BEAM_ZOOM_EXTRA_HEIGHT <const> = 0 -- for future tweaks
-local BEAM_ZOOM_Y_OFFSET <const> = 0
-local BEAM_ZOOM_MIN_TICKS <const> = 10
-local BEAM_ZOOM_MAX_TICKS <const> = 60
-
 -- Crank indicator constants
 local CRANK_INDICATOR_HEIGHT <const> = 32
 
