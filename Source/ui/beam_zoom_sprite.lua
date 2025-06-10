@@ -43,12 +43,10 @@ function BeamZoomSprite.new(parentScene)
             if i % self.largeTickSpacing == 0 then
                 x0 = self.width
                 x1 = self.width - largeTickLength
-                print(string.format("Large tick at y=%d, x0=%d, x1=%d", y, x0, x1))
                 gfx.drawLine(x0, y, x1, y)
             else
                 x0 = self.width
                 x1 = self.width - normalTickLength
-                print(string.format("Normal tick at y=%d, x0=%d, x1=%d", y, x0, x1))
                 gfx.drawLine(x0, y, x1, y)
             end
         end
