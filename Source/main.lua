@@ -41,10 +41,10 @@ _G.SoundManager = import "audio/sound_manager.lua"
 _G.HighScores = import "io/highscores.lua"
 _G.drawBanner = import "ui/drawBanner.lua"
 _G.spriteLoader = import "graphics/spriteload.lua"
-_G.PaperBG = import("ui/paper")
-_G.BackgroundSprite = import "ui/background_sprite.lua"
-_G.CracksSprite = import "ui/cracks_sprite.lua"
-_G.BeamZoomSprite = import "ui/beam_zoom_sprite.lua"
+_G.PaperBG = import("graphics/paper")
+_G.BackgroundSprite = import "graphics/background_sprite.lua"
+_G.CracksSprite = import "graphics/cracks_sprite.lua"
+_G.BeamZoomSprite = import "graphics/beam_zoom_sprite.lua"
 
 -- Import scene management and scenes
 local scene_manager = import "scenes/scene_manager"
