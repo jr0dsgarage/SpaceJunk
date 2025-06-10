@@ -126,30 +126,11 @@ function game_scene:enter()
     self:resetGameState()
 
     -- Beam Zoom Sprite (right side, between titlebar and scoreboard)
-    local beamZoomWidth = BEAM_ZOOM_WIDTH
-    local beamZoomHeight = _G.SCREEN_HEIGHT - (_G.TIMERBAR_HEIGHT + _G.SCOREBOARD_HEIGHT) + BEAM_ZOOM_EXTRA_HEIGHT
-    local beamZoomX = _G.SCREEN_WIDTH - beamZoomWidth
-    local beamZoomY = _G.TIMERBAR_HEIGHT + BEAM_ZOOM_Y_OFFSET
-    self.beamZoomSprite = gfx.sprite.new()
-    self.beamZoomSprite:setCenter(0, 0)
-    self.beamZoomSprite:moveTo(beamZoomX, beamZoomY)
-    self.beamZoomSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.SCOREBOARD or 9998)
-    self.beamZoomSprite:setSize(beamZoomWidth, beamZoomHeight)
-    self.beamZoomSprite.draw = function(_)
-        gfx.setColor(gfx.kColorWhite)
-        gfx.drawLine(beamZoomWidth - 1, 0, beamZoomWidth - 1, beamZoomHeight)
-        local minTicks = BEAM_ZOOM_MIN_TICKS
-        local maxTicks = BEAM_ZOOM_MAX_TICKS
-        local beamPercent = (self.beamRadius - self.minBeamRadius) / (self.maxBeamRadius - self.minBeamRadius)
-        local nTicks = math.floor(minTicks + (1 - beamPercent) * (maxTicks - minTicks))
-        for i = 0, nTicks do
-            local norm = i / nTicks
-            local density = 0.5 * (1 - math.cos(norm * math.pi))
-            local y = math.floor(density * (beamZoomHeight - 1))
-            gfx.drawLine(0, y, beamZoomWidth, y)
-        end
+    if self.beamZoomSprite then
+        self.beamZoomSprite:remove()
+        self.beamZoomSprite = nil
     end
-    self.beamZoomSprite:add()
+    self.beamZoomSprite = _G.BeamZoomSprite.new(self)
 end
 
 -- Spawns a new flying object using the spawner

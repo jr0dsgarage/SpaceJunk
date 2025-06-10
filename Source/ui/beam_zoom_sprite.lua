@@ -10,6 +10,9 @@ function BeamZoomSprite.new(parentScene)
     local self = setmetatable({}, BeamZoomSprite)
     self.parentScene = parentScene
     self.width = 5
+    self.largeTickPadding = 2 -- extra length for the larger tick                                                        -- padding for every 5th tick mark
+    self.largeTickSpacing = 5 -- draw a larger tick mark every nth tick
+    self.height = _G.SCREEN_HEIGHT - (_G.TIMERBAR_HEIGHT + _G.SCOREBOARD_HEIGHT) -- was -4, now -8 for 2px less on top and bottom
     self.height = _G.SCREEN_HEIGHT - (_G.TIMERBAR_HEIGHT + _G.SCOREBOARD_HEIGHT) - 8 -- was -4, now -8 for 2px less on top and bottom
     self.x = _G.SCREEN_WIDTH - self.width
     self.y = _G.TIMERBAR_HEIGHT + 4 -- was +2, now +4 for 2px lower
@@ -25,16 +28,23 @@ function BeamZoomSprite.new(parentScene)
         -- Draw tick marks: density increases as beam gets closer to player
         local minTicks = 5
         local maxTicks = 60
-        local beamRadius = self.parentScene.beamRadius or 20
-        local minBeam = self.parentScene.minBeamRadius or 15
-        local maxBeam = self.parentScene.maxBeamRadius or 75
+        local beamRadius = self.parentScene.beamRadius
+        local minBeam = self.parentScene.minBeamRadius 
+        local maxBeam = self.parentScene.maxBeamRadius
         local beamPercent = (beamRadius - minBeam) / (maxBeam - minBeam)
         local nTicks = math.floor(minTicks + (1 - beamPercent) * (maxTicks - minTicks))
+        local normalTickLength = self.width
+        local largeTickLength = self.width + self.largeTickPadding
         for i = 0, nTicks do
             local norm = i / nTicks
             local density = 0.5 * (1 - math.cos(norm * math.pi))
             local y = math.floor(density * (self.height - 1))
-            gfx.drawLine(0, y, self.width, y)
+            if i % self.largeTickSpacing == 0 then
+                print("Large tick at " .. y)
+                gfx.drawLine(self.width - largeTickLength, y, self.width, y)
+            else
+                gfx.drawLine(self.width - normalTickLength, y, self.width, y)
+            end
         end
     end
     self.sprite:add()
