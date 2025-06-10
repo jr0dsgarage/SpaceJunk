@@ -7,7 +7,6 @@ local currentScene = nil
 
 -- Constants for starfield and layout
 local STARFIELD_CENTER_Y = 120
-local SCREEN_HEIGHT = _G.SCREEN_HEIGHT or 240
 
 -- Initialize the global starfield (3x3 screens, centered)
 local function ensureStarfield()
@@ -40,7 +39,7 @@ function scene_manager.update()
     if (currentScene == _G.menu_scene or currentScene == _G.highscore_scene) and _G.sharedStarfield then
         local crankChange = playdate.getCrankChange()
         if math.abs(crankChange) > 0 then
-            local maxOffset = SCREEN_HEIGHT / 1.5
+            local maxOffset = _G.SCREEN_HEIGHT / 1.5
             local centerY = STARFIELD_CENTER_Y
             local newY = (_G.sharedStarfield.parallaxY or centerY) - crankChange * 0.5
             if newY < centerY - maxOffset then newY = centerY - maxOffset end
@@ -65,6 +64,9 @@ function scene_manager.draw()
         local offsetX = 0
         if currentScene == _G.highscore_scene then
             offsetX = 2 * width
+        end
+        if currentScene == _G.instructions_scene then
+            offsetX = -2 * width
         end
         if _G.sharedStarfield and _G.sharedStarfield.draw then
             _G.sharedStarfield:draw(width / 2 + offsetX, height / 2, 3 * width, height, 0,

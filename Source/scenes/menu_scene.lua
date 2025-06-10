@@ -1,9 +1,6 @@
 local gfx <const> = playdate.graphics
 local menu_scene = {}
 
--- Constants for starfield and layout
-local STARFIELD_CENTER_Y = 120
-
 -- Constants for layout and spacing
 local TITLE_Y = 80
 local TITLE_X = 200
