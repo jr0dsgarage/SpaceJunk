@@ -54,24 +54,14 @@ end
 
 function scene_manager.draw()
     -- Always clear the screen to black first
-    local width = _G.SCREEN_WIDTH or 400
-    local height = _G.SCREEN_HEIGHT or 240
+    local width = _G.SCREEN_WIDTH
+    local height = _G.SCREEN_HEIGHT 
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, width, height)
     
-    -- Only draw the starfield if not in the transition scene
-    if currentScene ~= _G.slide_transition_scene then
-        local offsetX = 0
-        if currentScene == _G.highscore_scene then
-            offsetX = 2 * width
-        end
-        if currentScene == _G.instructions_scene then
-            offsetX = -2 * width
-        end
-        if _G.sharedStarfield and _G.sharedStarfield.draw then
-            _G.sharedStarfield:draw(width / 2 + offsetX, height / 2, 3 * width, height, 0,
-            _G.sharedStarfield.parallaxY or 0)
-        end
+    -- Always draw the starfield as the background, regardless of scene
+    if _G.sharedStarfield and _G.sharedStarfield.draw then
+        _G.sharedStarfield:draw(width / 2, height / 2, 3 * width, height, 0, _G.sharedStarfield.parallaxY or 0)
     end
     
     if currentScene and currentScene.draw then

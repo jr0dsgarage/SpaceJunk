@@ -2,11 +2,6 @@
 local gfx <const> = playdate.graphics
 local slide_transition_scene = {}
 
--- Use global menu_scene and highscore_scene for transition
-local menu_scene = _G.menu_scene
-local highscore_scene = _G.highscore_scene
-local instructions_scene = _G.instructions_scene
-
 local DURATION = 0.5 -- seconds
 local FPS = 30
 local TOTAL_FRAMES = math.floor(DURATION * FPS)
@@ -92,12 +87,15 @@ function slide_transition_scene:draw()
         toX = 0
         starfieldX = 0
     end
-    -- Draw starfield behind everything, using same offset logic as highscore transitions
-    if self.starfield and self.starfield.draw then
-        -- Always draw starfield at full screen size, centered, with correct parallax
-        self.starfield:draw(width/2 + starfieldX, height/2, 3 * width, height)
+    -- Only draw the starfield if the scene manager didn't already draw it
+    -- (i.e., temporarily clear the background to black, don't double-draw)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(0, 0, width, height)
+    local starfield = _G.sharedStarfield
+    if starfield and starfield.draw then
+        local starfieldDrawX = (width * 1.5) + starfieldX
+        starfield:draw(starfieldDrawX, height/2, 3 * width, height)
     end
-    -- Draw scenes (fromScene and toScene) on top of starfield
     if self.fromScene and self.fromScene.draw then
         self.fromScene:draw(fromX, true)
     end

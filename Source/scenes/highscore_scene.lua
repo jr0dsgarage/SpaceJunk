@@ -17,9 +17,6 @@ local RESET_MSG_Y = 136
 
 
 function highscore_scene:enter()
-    -- Use the globally initialized starfield
-    self.starfield = _G.sharedStarfield
-
     -- Initialize/reset scene state
     self.scores = _G.HighScores and _G.HighScores.load() or {}
     self.scrollOffset = 0
