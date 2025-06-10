@@ -77,16 +77,16 @@ function game_scene:enter()
 
     -- Create a sprite for the background_ship image
     local bgImg = gfx.image.new(_G.SHIP_IMAGE_PATH)
-    self.backgroundSpriteObj = _G.BackgroundSprite.new(bgImg, _G.ZINDEX and _G.ZINDEX.SHIP_IMAGE, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    self.backgroundSpriteObj = _G.BackgroundSprite.new(self, bgImg, _G.ZINDEX and _G.ZINDEX.SHIP_IMAGE, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Cracks sprite for drawing cracks above all other sprites
     self.cracksImage = gfx.image.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     self.cracks = {}
-    self.cracksSpriteObj = _G.CracksSprite.new(self.cracksImage, _G.ZINDEX and _G.ZINDEX.CRACKS or 100, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    self.cracksSpriteObj = _G.CracksSprite.new(self, self.cracksImage, _G.ZINDEX and _G.ZINDEX.CRACKS or 100, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Beam and crank indicator
     self.beamSprite = BeamSprite.new(self)
-    self.crankIndicator = CrankIndicatorSprite.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    self.crankIndicator = CrankIndicatorSprite.new(self, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Capture synth setup
     self.cMajorNotes = C_MAJOR_NOTES

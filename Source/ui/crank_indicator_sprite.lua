@@ -3,7 +3,7 @@ local gfx <const> = playdate.graphics
 local CrankIndicatorSprite = {}
 CrankIndicatorSprite.__index = CrankIndicatorSprite
 
-function CrankIndicatorSprite.new(screenWidth, screenHeight)
+function CrankIndicatorSprite.new(parentScene, screenWidth, screenHeight)
     local self = setmetatable({}, CrankIndicatorSprite)
     local sprite = gfx.sprite.new()
     sprite:setCenter(0, 0)

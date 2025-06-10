@@ -4,7 +4,7 @@ local gfx <const> = playdate.graphics
 local BackgroundSprite = {}
 BackgroundSprite.__index = BackgroundSprite
 
-function BackgroundSprite.new(bgImg, zindex, width, height)
+function BackgroundSprite.new(parentScene, bgImg, zindex, width, height)
     local sprite = gfx.sprite.new(bgImg)
     sprite:setCenter(0, 0)
     sprite:moveTo(0, 0)

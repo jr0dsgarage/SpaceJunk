@@ -4,7 +4,7 @@ local gfx <const> = playdate.graphics
 local CracksSprite = {}
 CracksSprite.__index = CracksSprite
 
-function CracksSprite.new(image, zindex, width, height)
+function CracksSprite.new(parentScene, image, zindex, width, height)
     local sprite = gfx.sprite.new(image)
     sprite:setCenter(0, 0)
     sprite:moveTo(0, 0)
