@@ -267,10 +267,6 @@ function game_scene:update()
         end
     end
 
-    -- At the end of update, force background sprite to redraw
-    if self.bgSprite then self.bgSprite:markDirty() end
-    if self.beamSprite and self.beamSprite.sprite then self.beamSprite.sprite:markDirty() end
-
     -- Timer logic
     local now = playdate.getCurrentTimeMilliseconds()
     local elapsed = now - self.startTime
@@ -290,14 +286,6 @@ end
 
 -- Cleans up resources and stops music when leaving the game scene
 function game_scene:leave()
-    if self.backgroundSpriteObj then
-        self.backgroundSpriteObj:remove()
-        self.backgroundSpriteObj = nil
-    end
-    if self.cracksSpriteObj then
-        self.cracksSpriteObj:remove()
-        self.cracksSpriteObj = nil
-    end
     if self.bgMusicPlayer then
         self.bgMusicPlayer:stop()
         self.bgMusicPlayer = nil
