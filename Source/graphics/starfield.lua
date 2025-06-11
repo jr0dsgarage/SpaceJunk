@@ -75,7 +75,7 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, 
             local sh = screenHeight or _G.SCREEN_HEIGHT or 240
             local imgW, imgH = self.bgImage:getSize()
             -- Draw so that the image center is at the center of the screen (0,0 is top left)
-            local drawX = math.floor(0 )
+            local drawX = math.floor(sw/2 - imgW/2- imgW)
             local drawY = math.floor(sh/2 - imgH/2)
             print("[Starfield] Drawing bgImage at (" .. drawX .. ", " .. drawY .. ") size: " .. imgW .. "x" .. imgH)
             self.bgImage:draw(drawX, drawY)
