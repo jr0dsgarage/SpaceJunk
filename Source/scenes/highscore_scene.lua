@@ -10,11 +10,13 @@ local LIST_Y0 = 80
 local LIST_OFFSET = 22
 local LIST_RECT_Y_OFFSET = -4
 local MAX_SCORES_SHOWN = 5
-local SCORE_HEIGHT = 30
+local SCORE_HEIGHT = 25
 local RESET_CONFIRM_Y = 136
 local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
 
+local TITLE_BANNER_PAD = 8
+local SUBTITLE_BANNER_PAD = 6
 
 function highscore_scene:enter()
     -- Initialize/reset scene state
@@ -39,19 +41,19 @@ function highscore_scene:draw(xOffset, hideInstructions)
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
     -- Draw the HIGH SCORES banner
     if _G.drawBanner and _G.drawBanner.draw then
-        _G.drawBanner.draw("HIGH SCORES", TITLE_X + xOffset, TITLE_Y, ui.titleText_font)
+        _G.drawBanner.draw("HIGH SCORES", TITLE_X + xOffset, TITLE_Y, ui.titleText_font, _G.TITLE_BANNER_PAD)
     end
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, ui.altText_font)
-        _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, ui.altText_font)
+        _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, ui.altText_font, _G.INSTR_BANNER_PAD)
+        _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, ui.altText_font, _G.INSTR_BANNER_PAD)
     end
     if self.confirmingReset then
         -- Inline reset confirmation
-        _G.drawBanner.draw("Really reset high scores?", TITLE_X, RESET_CONFIRM_Y, ui.altText_font)
-        _G.drawBanner.draw("B: No     A: Yes", TITLE_X, RESET_CONFIRM2_Y, ui.altText_font)
+        _G.drawBanner.draw("Really reset high scores?", TITLE_X, RESET_CONFIRM_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD)
+        _G.drawBanner.draw("B: No     A: Yes", TITLE_X, RESET_CONFIRM2_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD)
     elseif self.showResetMsg and self.showResetMsg > 0 then
         -- Inline reset message
-        _G.drawBanner.draw("High Scores Reset!", TITLE_X, RESET_MSG_Y, ui.altText_font)
+        _G.drawBanner.draw("High Scores Reset!", TITLE_X, RESET_MSG_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD)
     end
 end
 
