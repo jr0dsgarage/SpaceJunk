@@ -71,7 +71,14 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, 
     -- Only draw the background image if the current scene does NOT use sprites
     if not (_G.scene_manager and _G.scene_manager.usesSprites and _G.scene_manager.usesSprites()) then
         if self.bgImage then
-            self.bgImage:draw(0, 0)
+            local sw = screenWidth or _G.SCREEN_WIDTH or 400
+            local sh = screenHeight or _G.SCREEN_HEIGHT or 240
+            local imgW, imgH = self.bgImage:getSize()
+            -- Draw so that the image center is at the center of the screen (0,0 is top left)
+            local drawX = math.floor(0 )
+            local drawY = math.floor(sh/2 - imgH/2)
+            print("[Starfield] Drawing bgImage at (" .. drawX .. ", " .. drawY .. ") size: " .. imgW .. "x" .. imgH)
+            self.bgImage:draw(drawX, drawY)
         else
             gfx.setColor(gfx.kColorBlack)
             gfx.fillRect(0, 0, screenWidth or _G.SCREEN_WIDTH or 400, screenHeight or _G.SCREEN_HEIGHT or 240)
