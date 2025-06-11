@@ -2,11 +2,12 @@
 local gfx <const> = playdate.graphics
 local drawBanner = {}
 
--- Internal utility to draw a black rectangle behind text
+-- Internal utility to draw a black rounded rectangle behind text
 local function drawRectangleForText(x, y, w, h)
     gfx.setColor(gfx.kColorBlack)
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
-    gfx.fillRect(x, y, w, h)
+    local radius = 8 -- adjust for desired roundness
+    gfx.fillRoundRect(x, y, w, h, radius)
 end
 
 -- Utility to determine rectangle vertical offset based on font
@@ -15,48 +16,43 @@ local function getRectYOffset(font)
     if font == ui.titleText_font then
         return 10
     else
-        return 8
+        return 6
     end
+end
+
+-- Shared internal function for drawing a banner (rounded rect + text)
+local function drawBannerCore(str, x, y, alignment, font, bannerPadding)
+    local pad = bannerPadding or 2
+    if font then gfx.setFont(font) end
+    local textWidth = gfx.getTextSize(str)
+    local fontObj = gfx.getFont()
+    local fontHeight = fontObj and fontObj:getHeight() or 16
+    local rectYOffset = getRectYOffset(font)
+    local rectW, rectH = textWidth + pad*2, fontHeight + pad*2
+    local rectX, rectY
+    if alignment == kTextAlignment.right then
+        rectX = x - textWidth - pad
+    elseif alignment == kTextAlignment.left then
+        rectX = x - pad
+    else -- center
+        rectX = x - textWidth/2 - pad
+    end
+    rectY = y - fontHeight/2 - pad + rectYOffset
+    drawRectangleForText(rectX, rectY, rectW, rectH)
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    if font then gfx.setFont(font) end
+    gfx.drawTextAligned(str, x, y, alignment or kTextAlignment.center)
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
 end
 
 -- Draws text with a black rectangle background, centered at (x, y)
-function drawBanner.draw(str, x, y, font)
-    if font then gfx.setFont(font) end
-    local w = gfx.getTextSize(str)
-    local fontObj = gfx.getFont()
-    local h = fontObj and fontObj:getHeight() or 16
-    local rectW, rectH = w + 4, h + 4
-    local rectYOffset = getRectYOffset(font)
-    local rectX, rectY = x - w/2 - 2, y - h/2 - 2 + rectYOffset
-    drawRectangleForText(rectX, rectY, rectW, rectH)
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    if font then gfx.setFont(font) end
-    gfx.drawTextAligned(str, x, y, kTextAlignment.center)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+function drawBanner.draw(str, x, y, font, bannerPadding)
+    drawBannerCore(str, x, y, kTextAlignment.center, font, bannerPadding)
 end
 
 -- Draws text with a black rectangle background, aligned at (x, y)
-function drawBanner.drawAligned(str, x, y, alignment, font)
-    if font then gfx.setFont(font) end
-    local w = gfx.getTextSize(str)
-    local fontObj = gfx.getFont()
-    local h = fontObj and fontObj:getHeight() or 16
-    local rectW, rectH = w + 4, h + 4
-    local rectYOffset = getRectYOffset(font)
-    local rectX
-    if alignment == kTextAlignment.center then
-        rectX = x - w/2 - 2
-    elseif alignment == kTextAlignment.right then
-        rectX = x - w - 2
-    else -- left
-        rectX = x - 2
-    end
-    local rectY = y - h/2 - 2 + rectYOffset
-    drawRectangleForText(rectX, rectY, rectW, rectH)
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    if font then gfx.setFont(font) end
-    gfx.drawTextAligned(str, x, y, alignment)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+function drawBanner.drawAligned(str, x, y, alignment, font, bannerPadding)
+    drawBannerCore(str, x, y, alignment, font, bannerPadding)
 end
 
 return drawBanner

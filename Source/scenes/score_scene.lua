@@ -89,19 +89,19 @@ function score_scene:draw()
     local yOffset = (self.enteringInitials and self.isNewHighScore) and YOFFSET_INITIALS or 0
     -- Title background and text (match menu)
     local titleY = TITLE_Y + yOffset
-    _G.drawBanner.draw("GAME OVER", INITIALS_X_CENTER, titleY, _G.ui.titleText_font)
+    _G.drawBanner.draw("GAME OVER", INITIALS_X_CENTER, titleY, _G.ui.titleText_font, _G.TITLE_BANNER_PAD)
     if self.isNewHighScore then
         gfx.setFont(_G.ui.altText_font)
         local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
         local nhsText = "New High Score!"
         if blink then
-            _G.drawBanner.draw(nhsText, INITIALS_X_CENTER, titleY + 28, _G.ui.altText_font)
+            _G.drawBanner.draw(nhsText, INITIALS_X_CENTER, titleY + 28, _G.ui.altText_font, _G.SUBTITLE_BANNER_PAD)
         end
-        -- Show initials below 'New High Score!' if initials have been entered
+        -- Show initials at the bottom of the screen if initials have been entered
         if not self.enteringInitials then
             local initialsStr = table.concat(self.initials)
-            local initialsY = titleY + BLINK_OFFSET
-            _G.drawBanner.draw(initialsStr, INITIALS_X_CENTER, initialsY, _G.ui.altText_font)
+            local bottomY = (_G.SCREEN_HEIGHT or 240) - 32
+            _G.drawBanner.draw(initialsStr, INITIALS_X_CENTER, bottomY, _G.ui.titleText_font, _G.TITLE_BANNER_PAD)
         end
     end
     -- Score/Stats background and text (match subtitle style)
@@ -111,16 +111,22 @@ function score_scene:draw()
     local caughtStr = string.format("CAUGHT: %d", self.caught)
     local missedStr = string.format("MISSED: %d", self.missed)
     local statsSpacing = statsFont:getHeight() + 2
-    _G.drawBanner.draw(scoreStr, INITIALS_X_CENTER, statsY, statsFont)
-    _G.drawBanner.draw(caughtStr, INITIALS_X_CENTER, statsY + statsSpacing, statsFont)
-    _G.drawBanner.draw(missedStr, INITIALS_X_CENTER, statsY + statsSpacing * 2, statsFont)
+    _G.drawBanner.draw(scoreStr, INITIALS_X_CENTER, statsY, statsFont, _G.SUBTITLE_BANNER_PAD-2)
+    _G.drawBanner.draw(caughtStr, INITIALS_X_CENTER, statsY + statsSpacing, statsFont, _G.SUBTITLE_BANNER_PAD-2)
+    _G.drawBanner.draw(missedStr, INITIALS_X_CENTER, statsY + statsSpacing * 2, statsFont, _G.SUBTITLE_BANNER_PAD-2)
     if self.enteringInitials then
         -- Enter initials UI
         local instr = "Enter Initials"
         local instrY = INSTR_Y + yOffset
-        _G.drawBanner.draw(instr, INITIALS_X_CENTER, instrY, _G.ui.altText_font)
-        -- Draw initials input
+        _G.drawBanner.draw(instr, INITIALS_X_CENTER, instrY, _G.ui.altText_font, _G.SUBTITLE_BANNER_PAD)
+        -- Draw banner behind initials input using drawBanner
         local initialsY = instrY + INITIALS_Y_OFFSET
+        local bannerWidth = (INITIALS_COUNT - 1) * INITIALS_X_SPACING + 48 -- 48 for padding and char width
+        local bannerHeight = 120
+        local bannerX = INITIALS_X_CENTER
+        local bannerY = initialsY 
+        _G.drawBanner.draw("", bannerX, bannerY + bannerHeight/2, nil, bannerWidth/2) -- empty string, just for background
+        -- Draw initials input
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite) -- Ensure initials are drawn in white
         gfx.setFont(_G.ui.titleText_font)
         local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
@@ -150,8 +156,8 @@ function score_scene:draw()
     else
         -- Instructions background and text, left/right aligned at bottom
         if _G.drawBanner and _G.drawBanner.drawAligned then
-            _G.drawBanner.drawAligned("B: Main Menu", _G.INSTR_LEFT_X, _G.INSTR_Y, kTextAlignment.left, _G.ui.altText_font)
-            _G.drawBanner.drawAligned("A: Play Again", _G.INSTR_RIGHT_X, _G.INSTR_Y, kTextAlignment.right, _G.ui.altText_font)
+            _G.drawBanner.drawAligned("B: Main Menu", _G.INSTR_LEFT_X, _G.INSTR_Y, kTextAlignment.left, _G.ui.altText_font, _G.INSTR_BANNER_PAD)
+            _G.drawBanner.drawAligned("A: Play Again", _G.INSTR_RIGHT_X, _G.INSTR_Y, kTextAlignment.right, _G.ui.altText_font, _G.INSTR_BANNER_PAD)
         end
     end
 end
