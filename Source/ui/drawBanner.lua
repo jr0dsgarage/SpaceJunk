@@ -16,7 +16,7 @@ local function getRectYOffset(font)
     if font == ui.titleText_font then
         return 10
     else
-        return 8
+        return 6
     end
 end
 
