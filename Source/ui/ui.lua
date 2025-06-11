@@ -10,6 +10,36 @@ local timerBar = nil
 local scoreboardBar = nil
 local lastTimerValue = nil
 
+-- Global screen dimensions
+_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT = playdate.display.getWidth(), playdate.display.getHeight()
+
+-- Global z-indexes for layering
+_G.ZINDEX = {
+    STARFIELD = 0,           -- starfield is always at the bottom
+    FLYING_OBJECT_BASE = 50, -- flying objects will be 50 + i
+    BEAM = 100,              -- beam and related effects
+    SHIP_IMAGE = 5000,         -- background image below flying objects and beam
+    SCOREBOARD = 9999,
+    CRANK_INDICATOR = 10000,
+    CRACKS = 500,
+}
+
+-- Banner padding constants for use in all scenes
+_G.TITLE_BANNER_PAD = 8
+_G.SUBTITLE_BANNER_PAD = 6
+_G.INSTR_BANNER_PAD = 10
+
+_G.SHIP_IMAGE_PATH = "sprites/ship_backgrounds/ship1"
+
+-- Global constants for game dimensions
+_G.TIMERBAR_HEIGHT = 16
+_G.SCOREBOARD_HEIGHT = 42
+
+-- Shared layout constants
+_G.INSTR_LEFT_X = 0
+_G.INSTR_RIGHT_X = _G.SCREEN_WIDTH
+_G.INSTR_Y = _G.SCREEN_HEIGHT - 20
+
 local function drawTimerBar(timeLeft)
     if not timerBar then
         timerBar = TimerBar.new(60, 0, 0, 400, 16)
