@@ -14,9 +14,7 @@ local SCORE_HEIGHT = 25
 local RESET_CONFIRM_Y = 136
 local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
-
-local TITLE_BANNER_PAD = 8
-local SUBTITLE_BANNER_PAD = 6
+local SCORE_LIST_PAD = 8 -- Padding around the score list
 
 function highscore_scene:enter()
     -- Initialize/reset scene state
@@ -31,10 +29,12 @@ function highscore_scene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
     gfx.setFont(ui.altText_font)
-    local listRectX = LIST_X - LIST_W/2 + xOffset
+    local listRectX = LIST_X - LIST_W/2 - SCORE_LIST_PAD + xOffset
     local listRectY = LIST_Y0 + LIST_RECT_Y_OFFSET
+    local listWidth = LIST_W + SCORE_LIST_PAD * 2
     gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(listRectX, listRectY, LIST_W, MAX_SCORES_SHOWN * SCORE_HEIGHT - 2)
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    gfx.fillRoundRect(listRectX, listRectY, listWidth, MAX_SCORES_SHOWN * SCORE_HEIGHT - 2, 8) -- 8px radius
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
     self:drawScoreList(xOffset)
@@ -60,15 +60,26 @@ end
 function highscore_scene:drawScoreList(xOffset)
     local firstIdx = math.floor(self.scrollOffset or 0) + 1
     local scores = self.scores or {}
+    -- Column layout
+    local leftX = LIST_X - LIST_W/2 + SCORE_LIST_PAD + (xOffset or 0)
+    local colNumW = SCORE_LIST_PAD - 5 -- width for scoreIdx column
+    local colInitW = 38 -- width for initials column
+    local colScoreW = 40 -- width for score column
+    local listTop = LIST_Y0 + LIST_RECT_Y_OFFSET
+    local listBottom = listTop + MAX_SCORES_SHOWN * SCORE_HEIGHT - 2
     for i = 0, MAX_SCORES_SHOWN - 1 do
         local scoreIdx = firstIdx + i
         local entry = scores[scoreIdx]
         if entry and entry.score and entry.initials then
             local y = LIST_Y0 + i * SCORE_HEIGHT - (self.scrollOffset % 1) * SCORE_HEIGHT
-            if y > TITLE_Y + LIST_OFFSET then
+            -- Only draw if within the visible bounds of the rounded rectangle
+            if y >= listTop and y < listBottom then
                 local initials = entry.initials or "AAA"
-                local score = entry.score or 0                
-                gfx.drawTextAligned(string.format("%d  %s  %d", scoreIdx, initials, score), LIST_X + xOffset, y, kTextAlignment.center)
+                local score = entry.score or 0
+                -- Draw columns: scoreIdx (right), initials (center), score (left)
+                gfx.drawTextAligned(tostring(scoreIdx), leftX + colNumW, y, kTextAlignment.right)
+                gfx.drawTextAligned(initials, leftX + colNumW + colInitW/2, y, kTextAlignment.center)
+                gfx.drawTextAligned(tostring(score), leftX + colNumW + colInitW, y, kTextAlignment.left)
             end
         end
     end
