@@ -77,7 +77,6 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, 
             -- Draw so that the image center is at the center of the screen (0,0 is top left)
             local drawX = math.floor(sw/2 - imgW/2- imgW)
             local drawY = math.floor(sh/2 - imgH/2)
-            print("[Starfield] Drawing bgImage at (" .. drawX .. ", " .. drawY .. ") size: " .. imgW .. "x" .. imgH)
             self.bgImage:draw(drawX, drawY)
         else
             gfx.setColor(gfx.kColorBlack)
