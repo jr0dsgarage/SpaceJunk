@@ -2,11 +2,12 @@
 local gfx <const> = playdate.graphics
 local drawBanner = {}
 
--- Internal utility to draw a black rectangle behind text
+-- Internal utility to draw a black rounded rectangle behind text
 local function drawRectangleForText(x, y, w, h)
     gfx.setColor(gfx.kColorBlack)
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
-    gfx.fillRect(x, y, w, h)
+    local radius = 8 -- adjust for desired roundness
+    gfx.fillRoundRect(x, y, w, h, radius)
 end
 
 -- Utility to determine rectangle vertical offset based on font
