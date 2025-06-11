@@ -107,7 +107,7 @@ function game_scene:enter()
     self.starfield = _G.sharedStarfield
 
     -- Flying objects
-    self.flyingObjectImgs = _G.spriteLoader.tableLoad()
+    self.flyingObjectImgs = _G.spriteLoader.tableLoad("sprites/junk/")
     self.maxFlyingObjects = MAX_FLYING_OBJECTS
     self.flyingObjectSpawner = FlyingObjectSpawner.new(self.flyingObjectImgs, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, self.maxFlyingObjects)
     self.maxObjectSize = MAX_OBJECT_SIZE

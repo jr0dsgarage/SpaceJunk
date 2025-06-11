@@ -18,7 +18,7 @@ _G.ZINDEX = {
     CRACKS = 500,
 }
 
-_G.SHIP_IMAGE_PATH = "sprites/ui/background_ship.png"
+_G.SHIP_IMAGE_PATH = "sprites/ship_backgrounds/ship1.png"
 
 -- Global constants for game dimensions
 _G.TIMERBAR_HEIGHT = 16
@@ -30,16 +30,21 @@ _G.INSTR_RIGHT_X = _G.SCREEN_WIDTH
 _G.INSTR_Y = _G.SCREEN_HEIGHT - 20
 
 -- Attach all modules to _G for global access
+-- Import ui functions and sprites
 _G.ui = import "ui/ui.lua"
 _G.BeamSprite = import "ui/beam_sprite.lua"
 _G.ScorePopups = import "ui/score_popup.lua"
 _G.CrankIndicatorSprite = import "ui/crank_indicator_sprite.lua"
-_G.Starfield = import "graphics/starfield.lua"
-_G.FlyingObjectSpawner = import "graphics/flying_object_spawner.lua"
-_G.FlyingObjectSprite = import "graphics/flying_object.lua"
+_G.drawBanner = import "ui/drawBanner.lua"
+
+-- Import game utilities
 _G.SoundManager = import "audio/sound_manager.lua"
 _G.HighScores = import "io/highscores.lua"
-_G.drawBanner = import "ui/drawBanner.lua"
+
+-- Import graphics functions and sprite loaders
+_G.FlyingObjectSpawner = import "graphics/flying_object_spawner.lua"
+_G.FlyingObjectSprite = import "graphics/flying_object.lua"
+_G.Starfield = import "graphics/starfield.lua"
 _G.spriteLoader = import "graphics/spriteload.lua"
 _G.PaperBG = import("graphics/paper")
 _G.BackgroundSprite = import "graphics/background_sprite.lua"
@@ -51,11 +56,11 @@ local scene_manager = import "scenes/scene_manager"
 local menu_scene = import "scenes/menu_scene"
 local game_scene = import "scenes/game_scene"
 local score_scene = import "scenes/score_scene"
-local highscore_scene = import "scenes/highscore_scene.lua"
-local slide_transition_scene = import "scenes/slide_transition_scene.lua"
-local instructions_scene = import "scenes/instructions_scene.lua"
+local highscore_scene = import "scenes/highscore_scene"
+local slide_transition_scene = import "scenes/slide_transition_scene"
+local instructions_scene = import "scenes/instructions_scene"
 
--- Make scenes global for transition scene usage
+-- Make menu scenes global for transition scene usage
 _G.scene_manager = scene_manager
 _G.slide_transition_scene = slide_transition_scene
 _G.menu_scene = menu_scene
