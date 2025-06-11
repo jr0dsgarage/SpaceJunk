@@ -21,14 +21,16 @@ local function getRectYOffset(font)
 end
 
 -- Draws text with a black rectangle background, centered at (x, y)
-function drawBanner.draw(str, x, y, font)
+function drawBanner.draw(str, x, y, font, bannerPadding)
+    local bannerPadding = bannerPadding or 2
     if font then gfx.setFont(font) end
-    local w = gfx.getTextSize(str)
+    local textWidth = gfx.getTextSize(str)
     local fontObj = gfx.getFont()
-    local h = fontObj and fontObj:getHeight() or 16
-    local rectW, rectH = w + 4, h + 4
+    local fontHeight = fontObj and fontObj:getHeight() or 16
     local rectYOffset = getRectYOffset(font)
-    local rectX, rectY = x - w/2 - 2, y - h/2 - 2 + rectYOffset
+    local rectW, rectH = textWidth + bannerPadding*2, fontHeight + bannerPadding *2
+    
+    local rectX, rectY = x - textWidth/2 - bannerPadding, y - fontHeight/2 - bannerPadding + rectYOffset
     drawRectangleForText(rectX, rectY, rectW, rectH)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     if font then gfx.setFont(font) end
