@@ -18,7 +18,7 @@ _G.ZINDEX = {
     CRACKS = 500,
 }
 
-_G.SHIP_IMAGE_PATH = "sprites/ship_backgrounds/ship1.png"
+_G.SHIP_IMAGE_PATH = "sprites/ship_backgrounds/ship1"
 
 -- Global constants for game dimensions
 _G.TIMERBAR_HEIGHT = 16

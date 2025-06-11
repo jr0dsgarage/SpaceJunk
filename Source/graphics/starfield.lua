@@ -7,15 +7,29 @@ Starfield.__index = Starfield
 
 local NUM_STARS = 150
 local GRID_SIZE = 3
-local DEFAULT_SCREEN_WIDTH = 400
-local DEFAULT_SCREEN_HEIGHT = 240
+
+-- Load background images from the specified directory
+local function loadBackgroundImages()
+    local imgDir = "sprites/space_images"
+    local files = playdate.file.listFiles(imgDir)
+    local images = {}
+    -- Prefer .pdi files (runtime), fallback to .png in dev
+    for _, filename in ipairs(files) do
+        if filename:match("%.pdi$") or filename:match("%.png$") then
+            local fullPath = imgDir .. (imgDir:sub(-1) == "/" and "" or "/") .. filename
+            local ok, img = pcall(function() return gfx.image.new(fullPath) end)
+            if ok and img then
+                table.insert(images, img)
+            end
+        end
+    end
+    return images
+end
 
 function Starfield.new()
-    local width = (_G.SCREEN_WIDTH or DEFAULT_SCREEN_WIDTH) * GRID_SIZE
-    local height = (_G.SCREEN_HEIGHT or DEFAULT_SCREEN_HEIGHT) * GRID_SIZE
     local self = setmetatable({}, Starfield)
-    self.width = width
-    self.height = height
+    self.width = (_G.SCREEN_WIDTH) * GRID_SIZE
+    self.height = (_G.SCREEN_HEIGHT) * GRID_SIZE
     self.numStars = NUM_STARS
     self.stars = {}
     self.parallaxX = 0
@@ -27,6 +41,12 @@ function Starfield.new()
             y = math.random(0, self.height),
             size = math.random(1, 2)
         })
+    end
+    self.bgImages = loadBackgroundImages()
+    if #self.bgImages > 0 then
+        self.bgImage = self.bgImages[math.random(1, #self.bgImages)]
+    else
+        self.bgImage = nil
     end
     return self
 end
@@ -48,6 +68,15 @@ function Starfield:scrollParallaxY(dy, screenHeight)
 end
 
 function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, parallaxY)
+    -- Only draw the background image if the current scene does NOT use sprites
+    if not (_G.scene_manager and _G.scene_manager.usesSprites and _G.scene_manager.usesSprites()) then
+        if self.bgImage then
+            self.bgImage:draw(0, 0)
+        else
+            gfx.setColor(gfx.kColorBlack)
+            gfx.fillRect(0, 0, screenWidth or _G.SCREEN_WIDTH or 400, screenHeight or _G.SCREEN_HEIGHT or 240)
+        end
+    end
     gfx.setColor(gfx.kColorWhite)
     local maxOffset = 3
     local dx, dy = 0, 0
