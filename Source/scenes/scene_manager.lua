@@ -54,14 +54,11 @@ end
 
 function scene_manager.draw()
     -- Always clear the screen to black first
-    local width = _G.SCREEN_WIDTH
-    local height = _G.SCREEN_HEIGHT 
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(0, 0, width, height)
+    gfx.clear(gfx.kColorBlack)
     
     -- Always draw the starfield as the background, regardless of scene
     if _G.sharedStarfield and _G.sharedStarfield.draw then
-        _G.sharedStarfield:draw(width / 2, height / 2, 3 * width, height, 0, _G.sharedStarfield.parallaxY or 0)
+        _G.sharedStarfield:draw(_G.SCREEN_WIDTH / 2, _G.SCREEN_HEIGHT / 2, 3 * _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, 0, _G.sharedStarfield.parallaxY or 0)
     end
     
     if currentScene and currentScene.draw then
