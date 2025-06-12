@@ -51,6 +51,8 @@ function game_scene:enter()
     self._scoreSceneSwitched = false
     self.soundManager = SoundManager.new()
 
+    -- Use the globally initialized starfield
+    self.starfield = _G.sharedStarfield
 
     -- Background sprite for drawing the starfield and score popups
     self.bgSprite = gfx.sprite.new()
@@ -59,7 +61,7 @@ function game_scene:enter()
     self.bgSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.STARFIELD or 0)
     self.bgSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
     self.bgSprite.draw = function(_)
-        gfx.clear(gfx.kColorBlack)
+        gfx.clear(gfx.kColorBlack) -- this line prevents the starfield bgImg from being drawn
         -- Draw starfield in the same position as menu_scene for seamless transition
         local baseX = (_G.SCREEN_WIDTH or 400)/2
         local baseY = (_G.SCREEN_HEIGHT or 240)/2
@@ -76,8 +78,8 @@ function game_scene:enter()
     self.bgSprite:add()
 
     -- Create a sprite for the background_ship image
-    local bgImg = gfx.image.new(_G.SHIP_IMAGE_PATH)
-    self.backgroundSpriteObj = _G.BackgroundSprite.new(self, bgImg, _G.ZINDEX and _G.ZINDEX.SHIP_IMAGE, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
+    local shipImg = gfx.image.new(_G.SHIP_IMAGE_PATH)
+    self.backgroundSpriteObj = _G.BackgroundSprite.new(self, shipImg, _G.ZINDEX and _G.ZINDEX.SHIP_IMAGE, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
     -- Cracks sprite for drawing cracks above all other sprites
     self.cracksImage = gfx.image.new(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
@@ -102,9 +104,6 @@ function game_scene:enter()
     else
         self.bgMusicPlayer = nil
     end
-
-    -- Use the globally initialized starfield
-    self.starfield = _G.sharedStarfield
 
     -- Flying objects
     self.flyingObjectImgs = _G.spriteLoader.tableLoad("sprites/junk/")
