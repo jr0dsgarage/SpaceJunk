@@ -8,8 +8,10 @@ You're a space junker, and your job is to collect space junk.  It's pretty borin
 {:style="text-align:center;"}
 ![Gameplay Preview](https://raw.githubusercontent.com/jr0dsgarage/SpaceJunk/refs/heads/main/renders/starjunk_preview.gif)
 
-Control the tractor beam focus point using the D-pad, and change its size using the Crank! Match the focal point size to the junk size for extra points!.
+Control the tractor beam focus point using the D-pad, and change its size using the Crank! 
 
-The further away an object is, the more points you'll score for capturing it!
+Match the focal point size to the junk size for extra points!.
+
+The further away (smaller) an object is, the more points you'll score for capturing it!
 
 Each capture session is 60 seconds long.  Catch as much junk as you can before the time runs out, and set a new high score!
