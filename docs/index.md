@@ -6,7 +6,10 @@ You're a space junker, and your job is to collect space junk.  It's pretty borin
 
 ---
 <div style="text-align: center;">
-![Gameplay Preview](https://raw.githubusercontent.com/jr0dsgarage/SpaceJunk/refs/heads/main/renders/starjunk_preview.gif)</div>
+
+![Gameplay Preview](https://raw.githubusercontent.com/jr0dsgarage/SpaceJunk/refs/heads/main/renders/starjunk_preview.gif)
+
+</div>
 ---
 
 Control the tractor beam focus point using the D-pad, and change its size using the Crank! 
