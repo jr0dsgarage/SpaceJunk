@@ -5,17 +5,10 @@ local scene_manager = {}
 
 local currentScene = nil
 
--- Constants for starfield and layout
-local STARFIELD_CENTER_Y = 120
-
--- Initialize the global starfield (3x3 screens, centered)
-local function ensureStarfield()
-    if not _G.sharedStarfield then
-        _G.sharedStarfield = _G.Starfield.new()
-        _G.sharedStarfield.parallaxX = 0
-        _G.sharedStarfield.parallaxY = STARFIELD_CENTER_Y
-    end
-end
+-- Parallax constants for scene types (shared with transition scene)
+_G.MENU_PARALLAX_X = 0
+_G.HIGHSCORE_PARALLAX_X = 5
+_G.INSTRUCTIONS_PARALLAX_X = -5
 
 function scene_manager.clear()
     playdate.graphics.sprite.removeAll()
@@ -23,10 +16,17 @@ function scene_manager.clear()
 end
 
 function scene_manager.setScene(scene, ...)
-    ensureStarfield()
     scene_manager.clear()
     if currentScene and currentScene.leave then
         currentScene:leave()
+    end
+    -- Set starfield parallaxX for each scene type
+    if scene == _G.menu_scene then
+        _G.sharedStarfield.parallaxX = _G.MENU_PARALLAX_X
+    elseif scene == _G.highscore_scene then
+        _G.sharedStarfield.parallaxX = _G.HIGHSCORE_PARALLAX_X
+    elseif scene == _G.instructions_scene then
+        _G.sharedStarfield.parallaxX = _G.INSTRUCTIONS_PARALLAX_X
     end
     currentScene = scene
     if currentScene and currentScene.enter then
@@ -35,12 +35,12 @@ function scene_manager.setScene(scene, ...)
 end
 
 function scene_manager.update()
-    -- Centralize crank-based Y parallax for menu and highscore scenes
-    if (currentScene == _G.menu_scene or currentScene == _G.highscore_scene) and _G.sharedStarfield then
+    -- Centralize crank-based Y parallax for all scenes
+    if _G.sharedStarfield then
         local crankChange = playdate.getCrankChange()
         if math.abs(crankChange) > 0 then
             local maxOffset = _G.SCREEN_HEIGHT / 1.5
-            local centerY = STARFIELD_CENTER_Y
+            local centerY = 120
             local newY = (_G.sharedStarfield.parallaxY or centerY) - crankChange * 0.5
             if newY < centerY - maxOffset then newY = centerY - maxOffset end
             if newY > centerY + maxOffset then newY = centerY + maxOffset end
@@ -58,7 +58,7 @@ function scene_manager.draw()
     
     -- Always draw the starfield as the background, regardless of scene
     if _G.sharedStarfield and _G.sharedStarfield.draw then
-        _G.sharedStarfield:draw(_G.SCREEN_WIDTH / 2, _G.SCREEN_HEIGHT / 2, 3 * _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, 0, _G.sharedStarfield.parallaxY or 0)
+        _G.sharedStarfield:draw(_G.SCREEN_WIDTH / 2, _G.SCREEN_HEIGHT / 2, 3 * _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT, _G.sharedStarfield.parallaxX, _G.sharedStarfield.parallaxY)
     end
     
     if currentScene and currentScene.draw then

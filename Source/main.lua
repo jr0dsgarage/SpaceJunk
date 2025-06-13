@@ -43,23 +43,10 @@ _G.highscore_scene = highscore_scene
 _G.instructions_scene = instructions_scene
 
 
--- Initialize the playdate system
-function playdate.init()
-    playdate.display.setRefreshRate(30)
-    playdate.display.setScale(2)
-
-    -- Initialize the starfield
-    _G.sharedStarfield = _G.Starfield.new()
-
-    -- Initialize the sound manager
-    _G.SoundManager.init()
-
-    -- Initialize the high scores
-    _G.HighScores.init()
-
-    -- Set up the scene manager
-    scene_manager.init()
-end
+-- Initialize the starfield
+_G.sharedStarfield = _G.Starfield.new()
+-- Start with the menu scene
+scene_manager.setScene(menu_scene)
 
 -- Update and draw functions for the playdate system
 function playdate.update()
@@ -88,9 +75,6 @@ end
 function playdate.leftButtonDown()
     scene_manager.leftButtonDown()
 end
-
--- Start with the menu scene
-scene_manager.setScene(menu_scene)
 
 function _G.switchToGameScene()
     scene_manager.setScene(game_scene)
