@@ -211,11 +211,11 @@ function score_scene:BButtonDown()
             self.initialsIndex = self.initialsIndex - 1
         end
     else
-        -- Create a new starfield when leaving the score scene
-        if _G.Starfield then
-            _G.sharedStarfield = _G.Starfield.new()
-            _G.sharedStarfield.parallaxY = 120
-        end
+        -- Do not create a new starfield here; always use the one from the scene manager
+        -- if _G.Starfield then
+        --     _G.sharedStarfield = _G.Starfield.new()
+        --     _G.sharedStarfield.parallaxY = 120
+        -- end
         if _G.switchToMenuScene then
             _G.switchToMenuScene()
         end

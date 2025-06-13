@@ -6,6 +6,11 @@ local DURATION = 0.5 -- seconds
 local FPS = 30
 local TOTAL_FRAMES = math.floor(DURATION * FPS)
 
+-- Parallax constants (use globals from scene_manager.lua)
+local MENU_PARALLAX_X = _G.MENU_PARALLAX_X
+local HIGHSCORE_PARALLAX_X = _G.HIGHSCORE_PARALLAX_X
+local INSTRUCTIONS_PARALLAX_X = _G.INSTRUCTIONS_PARALLAX_X
+
 function slide_transition_scene:enter(direction)
     self.frame = 0
     self.direction = direction or 1
@@ -51,50 +56,43 @@ function slide_transition_scene:draw()
     local width = self.width or (_G and _G.SCREEN_WIDTH) or 400
     local height = self.height or (_G and _G.SCREEN_HEIGHT) or 240
     local t = math.min((self.frame or 0) / (TOTAL_FRAMES or 1), 1)
-    local slide = t * width
-    local fromX, toX, starfieldX
-    local drawFuncs = {
-        [-2] = function()
-            -- Menu -> Instructions (instructions slide in from left)
-            fromX = 0 + slide
-            toX = -width + slide
-            starfieldX = -t * (2 * width)
-        end,
-        [-3] = function()
-            -- Instructions -> Menu (instructions slide out left)
-            fromX = 0 - slide
-            toX = width - slide
-            starfieldX = -(2 * width) + t * (2 * width)
-        end,
-        [1] = function()
-            -- Menu -> Highscore (highscore slides in from right)
-            fromX = -slide
-            toX = width - slide
-            starfieldX = t * (2 * width)
-        end,
-        [-1] = function()
-            -- Highscore -> Menu (highscore slides out right, menu slides in from left)
-            fromX = 0 + slide
-            toX = -width + slide
-            starfieldX = (1 - t) * (2 * width)
-        end
-    }
-    local func = drawFuncs[self.direction]
-    if func then
-        func()
+    local fromX, toX
+    -- Determine slide offsets for scenes
+    if self.direction == -2 then -- Menu -> Instructions
+        fromX = t * width
+        toX = -width + t * width
+    elseif self.direction == -3 then -- Instructions -> Menu
+        fromX = -t * width
+        toX = width - t * width
+    elseif self.direction == 1 then -- Menu -> Highscore
+        fromX = -t * width
+        toX = width - t * width
+    elseif self.direction == -1 then -- Highscore -> Menu
+        fromX = t * width
+        toX = -width + t * width
     else
         fromX = 0
         toX = 0
-        starfieldX = 0
     end
-    -- Only draw the starfield if the scene manager didn't already draw it
-    -- (i.e., temporarily clear the background to black, don't double-draw)
+    -- Always clear the background
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, width, height)
+    -- Starfield parallax interpolation (correct direction)
+    local fromParallaxX, toParallaxX = MENU_PARALLAX_X, MENU_PARALLAX_X
+    if self.fromScene == _G.menu_scene and self.toScene == _G.highscore_scene then
+        fromParallaxX, toParallaxX = MENU_PARALLAX_X, HIGHSCORE_PARALLAX_X
+    elseif self.fromScene == _G.highscore_scene and self.toScene == _G.menu_scene then
+        fromParallaxX, toParallaxX = HIGHSCORE_PARALLAX_X, MENU_PARALLAX_X
+    elseif self.fromScene == _G.menu_scene and self.toScene == _G.instructions_scene then
+        fromParallaxX, toParallaxX = MENU_PARALLAX_X, INSTRUCTIONS_PARALLAX_X
+    elseif self.fromScene == _G.instructions_scene and self.toScene == _G.menu_scene then
+        fromParallaxX, toParallaxX = INSTRUCTIONS_PARALLAX_X, MENU_PARALLAX_X
+    end
+    -- Use standard lerp: from + (to - from) * t
+    local baseParallaxX = fromParallaxX + (toParallaxX - fromParallaxX) * t
     local starfield = _G.sharedStarfield
     if starfield and starfield.draw then
-        local starfieldDrawX = (width * 1.5) + starfieldX
-        starfield:draw(starfieldDrawX, height/2, 3 * width, height)
+        starfield:draw(width/2, height/2, 3 * width, height, baseParallaxX, starfield.parallaxY or 0)
     end
     if self.fromScene and self.fromScene.draw then
         self.fromScene:draw(fromX, true)
