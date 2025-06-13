@@ -10,6 +10,8 @@ You're a space junker, and your job is to collect space junk.  It's pretty borin
 
 ---
 
+### How to Play
+
 Control the tractor beam focus point using the D-pad, and change its size using the Crank! 
 
 Match the focal point size to the junk size for extra points!.
