@@ -219,6 +219,8 @@ function score_scene:BButtonDown()
             self.initialsIndex = self.initialsIndex - 1
         end
     else
+        -- Remove the current starfield instance
+        _G.sharedStarfield = nil
         if _G.switchToMenuScene then
             _G.switchToMenuScene()
         end

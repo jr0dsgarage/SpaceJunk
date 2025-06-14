@@ -12,6 +12,10 @@ _G.INSTRUCTIONS_PARALLAX_X = -5
 
 function scene_manager.clear()
     playdate.graphics.sprite.removeAll()
+    -- Recreate starfield if missing (e.g., after score scene B button)
+    if not _G.sharedStarfield then
+        _G.sharedStarfield = _G.Starfield.new()
+    end
     if _G.ui and _G.ui.reset then _G.ui.reset() end
 end
 
@@ -20,6 +24,7 @@ function scene_manager.setScene(scene, ...)
     if currentScene and currentScene.leave then
         currentScene:leave()
     end
+    
     -- Set starfield parallaxX for each scene type
     if scene == _G.menu_scene then
         _G.sharedStarfield.parallaxX = _G.MENU_PARALLAX_X

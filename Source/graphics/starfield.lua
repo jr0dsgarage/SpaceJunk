@@ -70,22 +70,22 @@ function Starfield:scrollParallaxY(dy, screenHeight)
 end
 
 function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, parallaxY)
-    
-    -- Only draw the random bgImage if the current scene does NOT use sprites
+    -- Only draw the background image if the current scene does NOT use sprites
     if not (_G.scene_manager and _G.scene_manager.usesSprites and _G.scene_manager.usesSprites()) then
         if self.bgImage then
             local sw = screenWidth or _G.SCREEN_WIDTH or 400
             local sh = screenHeight or _G.SCREEN_HEIGHT or 240
             local imgW, imgH = self.bgImage:getSize()
-            local drawX = math.floor(sw / 2 - imgW / 2 - imgW)
-            local drawY = math.floor(sh / 2 - imgH / 2)
+            -- Draw so that the image center is at the center of the screen (0,0 is top left)
+            local drawX = math.floor(sw/2 - imgW/2- imgW)
+            local drawY = math.floor(sh/2 - imgH/2)
             self.bgImage:draw(drawX, drawY)
         else
             gfx.setColor(gfx.kColorBlack)
             gfx.fillRect(0, 0, screenWidth or _G.SCREEN_WIDTH or 400, screenHeight or _G.SCREEN_HEIGHT or 240)
         end
     end
-    -- Always draw the JWST Advanced Deep Extragalactic Survey image first
+    -- Always draw the JWST Advanced Deep Extragalactic Survey image 
     if self.spaceImage then
         local sw = screenWidth or _G.SCREEN_WIDTH or 400
         local sh = screenHeight or _G.SCREEN_HEIGHT or 240
