@@ -8,7 +8,7 @@ local game_scene = {}
 local BASE_SCORE <const> = 250
 local MIN_SCORE <const> = 1
 local MAX_SCORE <const> = 250
-local GAME_DURATION_MS <const> = 5 * 1000 -- 60 seconds in milliseconds
+local GAME_DURATION_MS <const> = 60 * 1000 -- 60 seconds in milliseconds
 
 -- Beam Circle  constants
 local INITIAL_BEAM_RADIUS <const> = 20

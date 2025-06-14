@@ -76,9 +76,11 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, 
             local sw = screenWidth or _G.SCREEN_WIDTH or 400
             local sh = screenHeight or _G.SCREEN_HEIGHT or 240
             local imgW, imgH = self.bgImage:getSize()
-            -- Draw so that the image center is at the center of the screen (0,0 is top left)
-            local drawX = math.floor(sw/2 - imgW/2- imgW)
-            local drawY = math.floor(sh/2 - imgH/2)
+            -- Parallax for bgImage: max 1px in each direction
+            local bg_dx = math.max(-1, math.min(1, (parallaxX or self.parallaxX or 0) * 0.2))
+            local bg_dy = math.max(-1, math.min(1, (parallaxY or self.parallaxY or 0) * 0.2))
+            local drawX = math.floor(sw/2 - imgW/2- imgW + bg_dx)
+            local drawY = math.floor(sh/2 - imgH/2 + bg_dy)
             self.bgImage:draw(drawX, drawY)
         else
             gfx.setColor(gfx.kColorBlack)
