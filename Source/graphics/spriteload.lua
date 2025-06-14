@@ -1,10 +1,20 @@
--- Loads all .png sprites from the sprites/ folder and returns a table of images indexed by filename (without extension)
+---
+-- Sprite loader module for loading all .png or .pdi sprites from a directory.
+-- Returns a table of images indexed by filename (without extension).
+-- @module spriteload
+-- @usage
+--   local spriteload = require("graphics.spriteload")
+--   local images = spriteload.tableLoad("sprites/junk")
+
 local gfx <const> = playdate.graphics
 local spriteDir = "sprites/junk"
 
 local sprites = {}
 -- No static spriteList: always load dynamically from spriteDir
 
+--- Load all .pdi images from the given directory.
+-- @param spriteDirPath Optional directory path to load from
+-- @return Array of Playdate image objects
 local function tableLoad(spriteDirPath)
     local spriteArray = {}
     local dirToUse = spriteDirPath or spriteDir

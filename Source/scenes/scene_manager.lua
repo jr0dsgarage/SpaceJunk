@@ -1,3 +1,11 @@
+---
+-- Scene Manager module for handling scene transitions and starfield parallax.
+-- Provides global parallax constants and manages scene lifecycle.
+-- @module scene_manager
+-- @usage
+--   local scene_manager = require("scenes.scene_manager")
+--   scene_manager.setScene(menu_scene)
+
 local gfx <const> = playdate.graphics -- Add this line to define gfx
 
 -- scenes/scene_manager.lua
@@ -5,11 +13,15 @@ local scene_manager = {}
 
 local currentScene = nil
 
--- Parallax constants for scene types (shared with transition scene)
+--- Parallax constants for scene types (shared with transition scene)
+-- @field MENU_PARALLAX_X Parallax X for menu scene
+-- @field HIGHSCORE_PARALLAX_X Parallax X for highscore scene
+-- @field INSTRUCTIONS_PARALLAX_X Parallax X for instructions scene
 _G.MENU_PARALLAX_X = 0
 _G.HIGHSCORE_PARALLAX_X = 5
 _G.INSTRUCTIONS_PARALLAX_X = -5
 
+--- Clear all sprites and reset starfield if missing.
 function scene_manager.clear()
     playdate.graphics.sprite.removeAll()
     -- Recreate starfield if missing (e.g., after score scene B button)
@@ -19,6 +31,9 @@ function scene_manager.clear()
     if _G.ui and _G.ui.reset then _G.ui.reset() end
 end
 
+--- Set the current scene, handling transitions and parallax.
+-- @param scene Scene table to activate
+-- @param ... Additional arguments for scene's enter method
 function scene_manager.setScene(scene, ...)
     scene_manager.clear()
     if currentScene and currentScene.leave then

@@ -1,4 +1,11 @@
--- Source/scenes/instructions_scene.lua
+---
+-- Instructions scene module for displaying game instructions.
+-- Draws instructions text and handles layout.
+-- @module InstructionsScene
+-- @usage
+--   local InstructionsScene = require("scenes.instructions_scene")
+--   InstructionsScene:draw()
+
 local gfx <const> = playdate.graphics
 local scene_manager = _G.scene_manager
 local slide_transition_scene = _G.slide_transition_scene
@@ -20,10 +27,15 @@ local lineText = {
 
 local InstructionsScene = {}
 
+--- Initialize the instructions scene (no-op).
 function InstructionsScene.init() end
 
+--- Update the instructions scene (no-op).
 function InstructionsScene.update() end
 
+--- Draw the instructions scene, with optional x offset for transitions.
+-- @param xOffset X offset for transition animation
+-- @param hideInstructions Boolean to hide instructions
 function InstructionsScene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
     -- Paper dimensions

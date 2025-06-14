@@ -1,3 +1,11 @@
+---
+-- Menu scene module for the main menu UI and title screen.
+-- Draws title, subtitle, and handles menu entry logic.
+-- @module menu_scene
+-- @usage
+--   local menu_scene = require("scenes.menu_scene")
+--   menu_scene:enter()
+
 local gfx <const> = playdate.graphics
 local menu_scene = {}
 
@@ -9,12 +17,15 @@ local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 local TITLE_BANNER_PAD = 8
 local SUBTITLE_BANNER_PAD = 6
 
+--- Enter the menu scene and initialize starfield reference.
 function menu_scene:enter()
     -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
 end
 
--- Add support for drawing at an x offset for transition animations
+--- Draw the menu scene, with optional x offset for transitions.
+-- @param xOffset X offset for transition animation
+-- @param hideInstructions Boolean to hide instructions
 function menu_scene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
     local titleX = TITLE_X

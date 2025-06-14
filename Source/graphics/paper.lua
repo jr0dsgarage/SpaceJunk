@@ -1,19 +1,33 @@
--- Source/ui/paper.lua
+---
+-- Paper module for drawing a paper-style background and text.
+-- Provides a helper to draw a paper background with title and lines.
+-- @module Paper
+-- @usage
+--   local Paper = require("graphics.paper")
+--   Paper.draw(x, y, w, h, options)
+
 local gfx <const> = playdate.graphics
 local sysFont = gfx.getSystemFont(gfx.font.kVariantNormal)
 
 local Paper = {}
 
--- Helper to draw plain text 
+--- Helper to draw plain text with a font.
+-- @param font Playdate font object
+-- @param text String to draw
+-- @param x X position
+-- @param y Y position
 local function drawText(font, text, x, y)
     if not font then return end
     gfx.setColor(gfx.kColorBlack)
     font:drawText(text, x, y)
 end
 
--- Draw a paper background with alternating bars and border, and calculate bar heights from text/objects
--- x, y, w, h: paper rect
--- options: {titleText, lineText, fonts, dither, cornerRadius, borderWidth, borderColor, fillColor, scrollOffset, visibleLines}
+--- Draw a paper background with alternating bars and border.
+-- @param x X position
+-- @param y Y position
+-- @param w Width
+-- @param h Height
+-- @param options Table with keys: titleText, lineText, fonts, dither, cornerRadius, borderWidth, borderColor, fillColor, scrollOffset, visibleLines
 function Paper.draw(x, y, w, h, options)
     options = options or {}
     local titleText = options.titleText or ""

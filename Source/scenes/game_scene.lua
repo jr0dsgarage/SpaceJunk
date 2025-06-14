@@ -1,3 +1,11 @@
+---
+-- Game scene module for main gameplay loop, logic, and rendering.
+-- Handles game state, scoring, flying objects, and input.
+-- @module game_scene
+-- @usage
+--   local game_scene = require("scenes.game_scene")
+--   game_scene:enter()
+
 local gfx <const> = playdate.graphics
 local snd = playdate.sound
 local captureSynth = snd.synth.new(snd.kWaveSquare)
@@ -35,8 +43,11 @@ local BEEP_FREQ <const> = 880 -- A5
 local BEEP_DURATION <const> = 0.5
 local BEEP_VOLUME <const> = 0.5
 
-
--- Helper to play a beep with a linear fade out
+---
+-- Helper to play a beep with a linear fade out.
+-- @param freq Frequency in Hz
+-- @param duration Duration in seconds
+-- @param startVolume Initial volume (0..1)
 local function playBeepWithFade(freq, duration, startVolume)
     local synth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
     synth:playNote(freq, duration, startVolume)
@@ -50,6 +61,7 @@ local function playBeepWithFade(freq, duration, startVolume)
     end
 end
 
+--- 
 -- Resets the game state variables for a new game session
 function game_scene:resetGameState()
     self.caught = 0
@@ -61,6 +73,7 @@ function game_scene:resetGameState()
     self._beeped = {} -- Reset beeps for countdown
 end
 
+--- 
 -- Initializes the game scene, sets up objects, music, and background
 function game_scene:enter()
     -- Initialize or reset game state here

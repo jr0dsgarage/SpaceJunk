@@ -1,8 +1,17 @@
+--- FlyingObjectSpawner is responsible for spawning and managing flying objects on the screen.
+-- @classmod FlyingObjectSpawner
+
 local gfx <const> = playdate.graphics
 
 local FlyingObjectSpawner = {}
 FlyingObjectSpawner.__index = FlyingObjectSpawner
 
+--- Create a new FlyingObjectSpawner.
+-- @param flyingObjectImgs Table of images for flying objects.
+-- @param screenWidth Width of the screen.
+-- @param screenHeight Height of the screen.
+-- @param maxFlyingObjects Maximum number of flying objects.
+-- @return A new FlyingObjectSpawner instance.
 function FlyingObjectSpawner.new(flyingObjectImgs, screenWidth, screenHeight, maxFlyingObjects)
     local self = setmetatable({}, FlyingObjectSpawner)
     self.flyingObjectImgs = flyingObjectImgs
@@ -13,6 +22,8 @@ function FlyingObjectSpawner.new(flyingObjectImgs, screenWidth, screenHeight, ma
     return self
 end
 
+--- Spawn a new flying object at a random position.
+-- @return The new flying object.
 function FlyingObjectSpawner:spawnFlyingObject()
     local x = math.random(0, self.screenWidth)
     local y = math.random(_G.TIMERBAR_HEIGHT, self.screenHeight - _G.SCOREBOARD_HEIGHT) -- leave space for timer and scoreboard
@@ -25,12 +36,15 @@ function FlyingObjectSpawner:spawnFlyingObject()
     return obj
 end
 
+--- Update the Z indices of all flying objects for correct layering.
 function FlyingObjectSpawner:updateZIndices()
     for i = 1, #self.flyingObjects do
         self.flyingObjects[i].sprite:setZIndex(_G.ZINDEX.FLYING_OBJECT_BASE  + i)
     end
 end
 
+--- Remove a flying object at a given index.
+-- @param index The index of the object to remove.
 function FlyingObjectSpawner:removeObjectAt(index)
     local obj = self.flyingObjects[index]
     if obj then obj:remove() end
@@ -38,6 +52,9 @@ function FlyingObjectSpawner:removeObjectAt(index)
     self:updateZIndices()
 end
 
+--- Draw a crack effect at the given position.
+-- @param x X position.
+-- @param y Y position.
 function FlyingObjectSpawner:drawCrack(x, y)
     local function drawBranch(x, y, angle, length, depth)
         if depth > 3 or length < 2 then return end

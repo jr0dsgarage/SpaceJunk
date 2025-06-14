@@ -1,10 +1,18 @@
--- Source/sound_manager.lua
+---
+-- SoundManager module for handling all game sound effects and music.
+-- Centralizes sound logic for beeps, tunes, and capture/miss effects.
+-- @module SoundManager
+-- @usage
+--   local SoundManager = require("audio.sound_manager")
+--   local sm = SoundManager.new()
 
 local snd = playdate.sound
 
 local SoundManager = {}
 SoundManager.__index = SoundManager
 
+--- Create a new SoundManager instance.
+-- @return SoundManager instance
 function SoundManager.new()
     local self = setmetatable({}, SoundManager)
     self.captureSynth = snd.synth.new(snd.kWaveSquare)
@@ -12,12 +20,15 @@ function SoundManager.new()
     return self
 end
 
+--- Play a capture sound with pitch based on precision.
+-- @param precision Number between 0 and 1
 function SoundManager:playCapture(precision)
     -- precision: 0..1
     local freq = 440 + 200 * precision
     self.captureSynth:playNote(freq, 0.2, 0.2)
 end
 
+--- Play a sound for missed objects.
 function SoundManager:playMiss()
     -- Play a low frequency, crunchy sound for missed objects
     -- Use a short, low note with a bit of noise
@@ -26,6 +37,7 @@ function SoundManager:playMiss()
     synth:playNote(80, 0.15, 0.2) -- low frequency, short duration
 end
 
+--- Play a countdown beep with fade-out effect.
 function SoundManager:playCountdownBeep()
     local BEEP_FREQ = 880 -- A5
     local BEEP_DURATION = 0.5

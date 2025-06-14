@@ -1,4 +1,11 @@
--- scenes/slide_transition_scene.lua
+---
+-- Slide transition scene module for animated scene transitions with parallax.
+-- Uses global parallax constants and handles direction-based transitions.
+-- @module slide_transition_scene
+-- @usage
+--   local slide_transition_scene = require("scenes.slide_transition_scene")
+--   slide_transition_scene:enter(direction)
+
 local gfx <const> = playdate.graphics
 local slide_transition_scene = {}
 
@@ -11,6 +18,8 @@ local MENU_PARALLAX_X = _G.MENU_PARALLAX_X
 local HIGHSCORE_PARALLAX_X = _G.HIGHSCORE_PARALLAX_X
 local INSTRUCTIONS_PARALLAX_X = _G.INSTRUCTIONS_PARALLAX_X
 
+--- Enter the slide transition scene.
+-- @param direction Integer indicating transition direction
 function slide_transition_scene:enter(direction)
     self.frame = 0
     self.direction = direction or 1
@@ -38,6 +47,7 @@ function slide_transition_scene:enter(direction)
     end
 end
 
+--- Update the slide transition scene, advancing the frame and checking for scene change.
 function slide_transition_scene:update()
     self.frame = self.frame + 1
     if self.frame >= TOTAL_FRAMES then
@@ -52,6 +62,7 @@ function slide_transition_scene:update()
     end
 end
 
+--- Draw the slide transition scene, including parallax starfield and scene slides.
 function slide_transition_scene:draw()
     local width = self.width or (_G and _G.SCREEN_WIDTH) or 400
     local height = self.height or (_G and _G.SCREEN_HEIGHT) or 240

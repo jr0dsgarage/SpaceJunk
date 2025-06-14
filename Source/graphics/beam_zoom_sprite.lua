@@ -1,11 +1,19 @@
--- BeamZoomSprite: UI sprite for visualizing beam proximity (zoom bar)
--- Usage: local zoomBar = BeamZoomSprite.new(parentScene)
+---
+-- BeamZoomSprite: UI sprite for visualizing beam proximity (zoom bar).
+-- Draws a vertical bar with tick marks indicating beam radius.
+-- @module BeamZoomSprite
+-- @usage
+--   local BeamZoomSprite = require("graphics.beam_zoom_sprite")
+--   local zoomBar = BeamZoomSprite.new(parentScene)
 
 local gfx <const> = playdate.graphics
 
 local BeamZoomSprite = {}
 BeamZoomSprite.__index = BeamZoomSprite
 
+--- Create a new BeamZoomSprite.
+-- @param parentScene Reference to the parent scene (for beam radius info)
+-- @return BeamZoomSprite instance
 function BeamZoomSprite.new(parentScene)
     local self = setmetatable({}, BeamZoomSprite)
     self.parentScene = parentScene

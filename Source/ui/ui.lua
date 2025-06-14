@@ -1,3 +1,11 @@
+---
+-- UI module for global fonts, layout constants, and UI bars.
+-- Provides access to fonts, z-indexes, and shared UI elements.
+-- @module ui
+-- @usage
+--   local ui = require("ui.ui")
+--   local font = ui.rains3xFont
+
 local gfx <const> = playdate.graphics
 
 local rains3xFont = gfx.font.new("fonts/font-rains-3x")

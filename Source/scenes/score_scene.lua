@@ -1,4 +1,11 @@
--- scenes/score_scene.lua
+---
+-- Score scene module for displaying stats and handling high score entry.
+-- Draws a single rounded rectangle for stats and manages initials input.
+-- @module score_scene
+-- @usage
+--   local score_scene = require("scenes.score_scene")
+--   score_scene:enter(finalScore, isHighScore)
+
 local gfx <const> = playdate.graphics
 local score_scene = {}
 
@@ -24,6 +31,8 @@ local TUNE_VOLUME <const> = 0.5
 local TUNE_OCTAVE_RATIO <const> = 2 -- One octave up
 local TUNE_BASS_RATIO <const> = 0.25 -- Two octaves down
 
+--- Play the score scene tune, with octave shift for high scores.
+-- @param isHighScore Boolean, true if new high score
 local function playScoreTune(isHighScore)
     local melodySynth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
     local bassSynth = playdate.sound.synth.new(playdate.sound.kWaveSquare)

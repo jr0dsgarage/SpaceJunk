@@ -1,3 +1,11 @@
+---
+-- Highscore scene module for displaying and managing high scores.
+-- Draws a rounded rectangle for the score list and handles scrolling.
+-- @module highscore_scene
+-- @usage
+--   local highscore_scene = require("scenes.highscore_scene")
+--   highscore_scene:enter()
+
 local gfx <const> = playdate.graphics
 local highscore_scene = {}
 
@@ -16,6 +24,7 @@ local RESET_CONFIRM2_Y = 156
 local RESET_MSG_Y = 136
 local SCORE_LIST_PAD = 8 -- Padding around the score list
 
+--- Enter the highscore scene and load scores.
 function highscore_scene:enter()
     -- Initialize/reset scene state
     self.scores = _G.HighScores and _G.HighScores.load() or {}
@@ -25,6 +34,9 @@ function highscore_scene:enter()
 end
 
 -- Add support for drawing at an x offset for transition animations
+--- Draw the highscore scene, with optional x offset for transitions.
+-- @param xOffset X offset for transition animation
+-- @param hideInstructions Boolean to hide instructions
 function highscore_scene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
     gfx.setImageDrawMode(gfx.kDrawModeCopy)

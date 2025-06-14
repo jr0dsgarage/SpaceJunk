@@ -1,4 +1,8 @@
--- Helper to load a specific image from the space_images directory
+---
+-- Helper to load a specific image from the space_images directory.
+-- Always loads the JWST Advanced Deep Extragalactic Survey image.
+-- @function loadSpaceImage
+-- @return Playdate image object or nil if loading fails
 local gfx <const> = playdate.graphics
 local function loadSpaceImage()
     local imgPath = "sprites/space_images/JWST Advanced Deep Extragalactic Survey_transparent.png"

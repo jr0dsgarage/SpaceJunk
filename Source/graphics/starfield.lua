@@ -1,4 +1,5 @@
--- Source/starfield.lua
+--- Starfield module for rendering a parallax starfield and background images.
+-- @classmod Starfield
 
 local gfx <const> = playdate.graphics
 local loadSpaceImage = import("graphics/load_space_image.lua")
@@ -9,7 +10,8 @@ Starfield.__index = Starfield
 local NUM_STARS = 150
 local GRID_SIZE = 3
 
--- Load background images from the specified directory
+--- Load background images from the specified directory.
+-- @return Table of loaded images.
 local function loadBackgroundImages()
     local imgDir = "sprites/space_images"
     local files = playdate.file.listFiles(imgDir)
@@ -27,6 +29,8 @@ local function loadBackgroundImages()
     return images
 end
 
+--- Create a new Starfield instance.
+-- @return A new Starfield object.
 function Starfield.new()
     local self = setmetatable({}, Starfield)
     self.width = (_G.SCREEN_WIDTH) * GRID_SIZE
@@ -53,11 +57,17 @@ function Starfield.new()
     return self
 end
 
+--- Set the parallax offset for the starfield.
+-- @param px Parallax X offset.
+-- @param py Parallax Y offset.
 function Starfield:setParallaxOffset(px, py)
     self.parallaxX = px or 0
     self.parallaxY = py or 0
 end
 
+--- Scroll the starfield vertically by a given amount.
+-- @param dy Delta Y to scroll.
+-- @param screenHeight Height of the screen.
 function Starfield:scrollParallaxY(dy, screenHeight)
     local maxY = ((self.height or ((screenHeight or 240) * 3)) - (screenHeight or 240)) / 2
     local newY = (self.parallaxY or 0) + dy
@@ -69,6 +79,13 @@ function Starfield:scrollParallaxY(dy, screenHeight)
     self:setParallaxOffset(self.parallaxX or 0, newY)
 end
 
+--- Draw the starfield, background image, and space image.
+-- @param centerX Center X position.
+-- @param centerY Center Y position.
+-- @param screenWidth Width of the screen.
+-- @param screenHeight Height of the screen.
+-- @param parallaxX Parallax X offset.
+-- @param parallaxY Parallax Y offset.
 function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, parallaxY)
     -- Only draw the background image if the current scene does NOT use sprites
     if not (_G.scene_manager and _G.scene_manager.usesSprites and _G.scene_manager.usesSprites()) then

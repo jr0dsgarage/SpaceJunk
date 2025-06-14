@@ -1,3 +1,6 @@
+--- Main entry point for SpaceJunk Playdate game.
+-- Sets up global modules, scenes, and the main update loop.
+
 import "Corelibs/object"
 import "Corelibs/graphics"
 import "Corelibs/sprites"
@@ -42,13 +45,12 @@ _G.menu_scene = menu_scene
 _G.highscore_scene = highscore_scene
 _G.instructions_scene = instructions_scene
 
-
 -- Initialize the starfield
 _G.sharedStarfield = _G.Starfield.new()
 -- Start with the menu scene
 scene_manager.setScene(menu_scene)
 
--- Update and draw functions for the playdate system
+--- Main update loop for Playdate system.
 function playdate.update()
     scene_manager.update()
     scene_manager.draw()
