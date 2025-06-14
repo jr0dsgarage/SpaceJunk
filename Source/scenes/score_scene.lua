@@ -13,7 +13,6 @@ local STATS_Y = 140
 -- Constants for layout and logic
 local INITIALS_COUNT = 3
 local INITIALS_START = {'A', 'A', 'A'}
-local BLINK_OFFSET = 44
 local YOFFSET_INITIALS = -40
 local LINE_HALF_WIDTH = 12
 local LINE_THICKNESS = 3
@@ -104,16 +103,25 @@ function score_scene:draw()
             _G.drawBanner.draw(initialsStr, INITIALS_X_CENTER, bottomY, _G.ui.titleText_font, _G.TITLE_BANNER_PAD)
         end
     end
-    -- Score/Stats background and text (match subtitle style)
+    -- Score/Stats background and text (single black rounded box)
     local statsFont = _G.ui.altText_font
     local statsY = STATS_Y + yOffset
     local scoreStr = string.format("SCORE: %d", self.finalScore)
     local caughtStr = string.format("CAUGHT: %d", self.caught)
     local missedStr = string.format("MISSED: %d", self.missed)
     local statsSpacing = statsFont:getHeight() + 2
-    _G.drawBanner.draw(scoreStr, INITIALS_X_CENTER, statsY, statsFont, _G.SUBTITLE_BANNER_PAD-2)
-    _G.drawBanner.draw(caughtStr, INITIALS_X_CENTER, statsY + statsSpacing, statsFont, _G.SUBTITLE_BANNER_PAD-2)
-    _G.drawBanner.draw(missedStr, INITIALS_X_CENTER, statsY + statsSpacing * 2, statsFont, _G.SUBTITLE_BANNER_PAD-2)
+    -- Calculate bounding box for all three lines
+    local boxWidth = 128
+    local boxHeight = statsSpacing * 3 + 10
+    local boxX = INITIALS_X_CENTER - boxWidth/2 
+    local boxY = statsY - statsFont:getHeight()/2 
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 12)
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    gfx.setFont(statsFont)
+    gfx.drawTextAligned(scoreStr, INITIALS_X_CENTER, statsY, kTextAlignment.center)
+    gfx.drawTextAligned(caughtStr, INITIALS_X_CENTER, statsY + statsSpacing, kTextAlignment.center)
+    gfx.drawTextAligned(missedStr, INITIALS_X_CENTER, statsY + statsSpacing * 2, kTextAlignment.center)
     if self.enteringInitials then
         -- Enter initials UI
         local instr = "Enter Initials"
@@ -211,11 +219,6 @@ function score_scene:BButtonDown()
             self.initialsIndex = self.initialsIndex - 1
         end
     else
-        -- Do not create a new starfield here; always use the one from the scene manager
-        -- if _G.Starfield then
-        --     _G.sharedStarfield = _G.Starfield.new()
-        --     _G.sharedStarfield.parallaxY = 120
-        -- end
         if _G.switchToMenuScene then
             _G.switchToMenuScene()
         end
