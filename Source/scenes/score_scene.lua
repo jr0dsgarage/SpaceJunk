@@ -12,11 +12,30 @@ local STATS_Y = 140
 
 -- Constants for layout and logic
 local INITIALS_COUNT = 3
-local INITIALS_START = {'A', 'A', 'A'}
+local INITIALS_START = {'A', ' ', ' '}
 local YOFFSET_INITIALS = -40
 local LINE_HALF_WIDTH = 12
 local LINE_THICKNESS = 3
 local CRANK_SENSITIVITY = 2
+
+local TUNE_BASE_FREQS <const> = {523.25, 587.33, 659.25, 698.46, 783.99} -- C5, D5, E5, F5, G5
+local TUNE_DURATION <const> = 0.12
+local TUNE_VOLUME <const> = 0.5
+local TUNE_OCTAVE_RATIO <const> = 2 -- One octave up
+
+local function playScoreTune(isHighScore)
+    local synth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
+    local freqs = {}
+    for i, f in ipairs(TUNE_BASE_FREQS) do
+        freqs[i] = isHighScore and (f * TUNE_OCTAVE_RATIO) or f
+    end
+    for i, freq in ipairs(freqs) do
+        local duration = (i == #freqs) and (TUNE_DURATION * 2) or TUNE_DURATION
+        playdate.timer.performAfterDelay((i-1)*TUNE_DURATION*1000, function()
+            synth:playNote(freq, duration, TUNE_VOLUME)
+        end)
+    end
+end
 
 function score_scene:enter(finalScore, caught, missed)
     
@@ -50,6 +69,7 @@ function score_scene:enter(finalScore, caught, missed)
         self.initialsIndex = 1
         self.blinkTimer = 0
     end
+    playScoreTune(self.isNewHighScore)
 end
 
 function score_scene:update()

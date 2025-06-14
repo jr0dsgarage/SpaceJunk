@@ -8,7 +8,7 @@ local game_scene = {}
 local BASE_SCORE <const> = 250
 local MIN_SCORE <const> = 1
 local MAX_SCORE <const> = 250
-local GAME_DURATION_MS <const> = 60 * 1000 -- 60 seconds in milliseconds
+local GAME_DURATION_MS <const> = 5 * 1000 -- 60 seconds in milliseconds
 
 -- Beam Circle  constants
 local INITIAL_BEAM_RADIUS <const> = 20
@@ -30,6 +30,25 @@ local C_MAJOR_NOTES <const> = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 4
 local NOTE_DURATION <const> = 0.2
 local NOTE_VELOCITY <const> = 0.2
 
+-- Beep settings
+local BEEP_FREQ <const> = 880 -- A5
+local BEEP_DURATION <const> = 0.5
+local BEEP_VOLUME <const> = 0.5
+
+
+-- Helper to play a beep with a linear fade out
+local function playBeepWithFade(freq, duration, startVolume)
+    local synth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
+    synth:playNote(freq, duration, startVolume)
+    -- Schedule a timer to fade out the volume to 0 over the duration
+    local steps = 10
+    for i = 1, steps do
+        playdate.timer.performAfterDelay(duration * 1000 * (i/steps), function()
+            local v = startVolume * (1 - i/steps)
+            synth:setVolume(math.max(0, v))
+        end)
+    end
+end
 
 -- Resets the game state variables for a new game session
 function game_scene:resetGameState()
@@ -39,6 +58,7 @@ function game_scene:resetGameState()
     self.scorePopups = ScorePopups.new()
     self.startTime = playdate.getCurrentTimeMilliseconds()
     self.gameOver = false
+    self._beeped = {} -- Reset beeps for countdown
 end
 
 -- Initializes the game scene, sets up objects, music, and background
@@ -262,6 +282,16 @@ function game_scene:update()
     local now = playdate.getCurrentTimeMilliseconds()
     local elapsed = now - self.startTime
     self.timeLeft = math.max(0, math.ceil((GAME_DURATION_MS - elapsed) / 1000))
+
+    -- Play beeps at 3, 2, 1 seconds left
+    if not self._beeped then self._beeped = {} end
+    for i = 3, 1, -1 do
+        if self.timeLeft == i and not self._beeped[i] then
+            playBeepWithFade(BEEP_FREQ, BEEP_DURATION, BEEP_VOLUME)
+            self._beeped[i] = true
+        end
+    end
+
     if elapsed >= GAME_DURATION_MS then
         self.gameOver = true
         return
