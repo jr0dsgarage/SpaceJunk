@@ -26,4 +26,39 @@ function SoundManager:playMiss()
     synth:playNote(80, 0.15, 0.2) -- low frequency, short duration
 end
 
+function SoundManager:playCountdownBeep()
+    local BEEP_FREQ = 880 -- A5
+    local BEEP_DURATION = 0.5
+    local BEEP_VOLUME = 0.5
+    local synth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
+    synth:playNote(BEEP_FREQ, BEEP_DURATION, BEEP_VOLUME)
+    -- Fade out
+    local steps = 10
+    for i = 1, steps do
+        playdate.timer.performAfterDelay(BEEP_DURATION * 1000 * (i/steps), function()
+            local v = BEEP_VOLUME * (1 - i/steps)
+            synth:setVolume(math.max(0, v))
+        end)
+    end
+end
+
+function SoundManager:playScoreTune(isHighScore)
+    local TUNE_BASE_FREQS = {523.25, 587.33, 659.25, 698.46, 783.99} -- C5, D5, E5, F5, G5
+    local TUNE_DURATION = 0.12
+    local TUNE_VOLUME = 0.5
+    local TUNE_OCTAVE_RATIO = 2 -- One octave up
+    local TUNE_BASS_RATIO = 0.25 -- Two octaves down
+    local melodySynth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
+    local bassSynth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
+    for i, f in ipairs(TUNE_BASE_FREQS) do
+        local melodyFreq = isHighScore and (f * TUNE_OCTAVE_RATIO) or f
+        local bassFreq = melodyFreq * TUNE_BASS_RATIO
+        local duration = (i == #TUNE_BASE_FREQS) and (TUNE_DURATION * 2) or TUNE_DURATION
+        playdate.timer.performAfterDelay((i-1)*TUNE_DURATION*1000, function()
+            melodySynth:playNote(melodyFreq, duration, TUNE_VOLUME)
+            bassSynth:playNote(bassFreq, duration, TUNE_VOLUME)
+        end)
+    end
+end
+
 return SoundManager

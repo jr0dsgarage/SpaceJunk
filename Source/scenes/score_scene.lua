@@ -70,7 +70,11 @@ function score_scene:enter(finalScore, caught, missed)
         self.initialsIndex = 1
         self.blinkTimer = 0
     end
-    playScoreTune(self.isNewHighScore)
+    if _G.SoundManager and _G.SoundManager.playScoreTune then
+        _G.SoundManager:playScoreTune(self.isNewHighScore)
+    elseif self.soundManager and self.soundManager.playScoreTune then
+        self.soundManager:playScoreTune(self.isNewHighScore)
+    end
 end
 
 function score_scene:update()

@@ -287,7 +287,9 @@ function game_scene:update()
     if not self._beeped then self._beeped = {} end
     for i = 3, 1, -1 do
         if self.timeLeft == i and not self._beeped[i] then
-            playBeepWithFade(BEEP_FREQ, BEEP_DURATION, BEEP_VOLUME)
+            if self.soundManager and self.soundManager.playCountdownBeep then
+                self.soundManager:playCountdownBeep()
+            end
             self._beeped[i] = true
         end
     end
