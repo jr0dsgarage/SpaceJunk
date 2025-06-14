@@ -22,17 +22,18 @@ local TUNE_BASE_FREQS <const> = {523.25, 587.33, 659.25, 698.46, 783.99} -- C5, 
 local TUNE_DURATION <const> = 0.12
 local TUNE_VOLUME <const> = 0.5
 local TUNE_OCTAVE_RATIO <const> = 2 -- One octave up
+local TUNE_BASS_RATIO <const> = 0.25 -- Two octaves down
 
 local function playScoreTune(isHighScore)
-    local synth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
-    local freqs = {}
+    local melodySynth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
+    local bassSynth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
     for i, f in ipairs(TUNE_BASE_FREQS) do
-        freqs[i] = isHighScore and (f * TUNE_OCTAVE_RATIO) or f
-    end
-    for i, freq in ipairs(freqs) do
-        local duration = (i == #freqs) and (TUNE_DURATION * 2) or TUNE_DURATION
+        local melodyFreq = isHighScore and (f * TUNE_OCTAVE_RATIO) or f
+        local bassFreq = melodyFreq * TUNE_BASS_RATIO
+        local duration = (i == #TUNE_BASE_FREQS) and (TUNE_DURATION * 2) or TUNE_DURATION
         playdate.timer.performAfterDelay((i-1)*TUNE_DURATION*1000, function()
-            synth:playNote(freq, duration, TUNE_VOLUME)
+            melodySynth:playNote(melodyFreq, duration, TUNE_VOLUME)
+            bassSynth:playNote(bassFreq, duration, TUNE_VOLUME)
         end)
     end
 end
