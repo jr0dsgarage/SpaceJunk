@@ -16,7 +16,7 @@ local LIST_W = 90 -- Width of the score list
 local LIST_X = 200 -- X position for the score list
 local LIST_Y0 = 80 -- Y position for the score list
 local LIST_OFFSET = 22 -- Offset between score entries
-local LIST_RECT_Y_OFFSET = -4 -- Y offset for the list rectangle
+local LIST_RECT_Y_OFFSET = -10 -- Y offset for the list rectangle
 local MAX_SCORES_SHOWN = 5 -- Maximum number of scores to show
 local SCORE_HEIGHT = 25 -- Height of each score entry
 local RESET_CONFIRM_Y = 136 -- Y position for reset confirmation
@@ -44,28 +44,29 @@ function highscore_scene:draw(xOffset, hideInstructions)
     local listRectX = LIST_X - LIST_W/2 - SCORE_LIST_PAD + xOffset
     local listRectY = LIST_Y0 + LIST_RECT_Y_OFFSET
     local listWidth = LIST_W + SCORE_LIST_PAD * 2
-    gfx.setColor(gfx.kColorBlack)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
-    gfx.fillRoundRect(listRectX, listRectY, listWidth, MAX_SCORES_SHOWN * SCORE_HEIGHT - 2, 8) -- 8px radius
+    local listHeight = MAX_SCORES_SHOWN * SCORE_HEIGHT - 2
+    if _G.drawBanner and _G.drawBanner.draw then
+        _G.drawBanner.draw("", listRectX + listWidth/2, listRectY + listHeight/2, nil, listWidth/2, 2)
+    end
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setColor(gfx.kColorWhite)
     self:drawScoreList(xOffset)
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
     -- Draw the HIGH SCORES banner
     if _G.drawBanner and _G.drawBanner.draw then
-        _G.drawBanner.draw("HIGH SCORES", TITLE_X + xOffset, TITLE_Y, ui.titleText_font, _G.TITLE_BANNER_PAD)
+        _G.drawBanner.draw("HIGH SCORES", TITLE_X + xOffset, TITLE_Y, ui.titleText_font, _G.TITLE_BANNER_PAD, 3)
     end
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, ui.altText_font, _G.INSTR_BANNER_PAD)
-        _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, ui.altText_font, _G.INSTR_BANNER_PAD)
+        _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, ui.altText_font, _G.INSTR_BANNER_PAD, 1)
+        _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, ui.altText_font, _G.INSTR_BANNER_PAD, 1)
     end
     if self.confirmingReset then
         -- Inline reset confirmation
-        _G.drawBanner.draw("Really reset high scores?", TITLE_X, RESET_CONFIRM_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD)
-        _G.drawBanner.draw("B: No     A: Yes", TITLE_X, RESET_CONFIRM2_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD)
+        _G.drawBanner.draw("Really reset high scores?", TITLE_X, RESET_CONFIRM_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD, 1)
+        _G.drawBanner.draw("B: No     A: Yes", TITLE_X, RESET_CONFIRM2_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD, 1)
     elseif self.showResetMsg and self.showResetMsg > 0 then
         -- Inline reset message
-        _G.drawBanner.draw("High Scores Reset!", TITLE_X, RESET_MSG_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD)
+        _G.drawBanner.draw("High Scores Reset!", TITLE_X, RESET_MSG_Y, ui.altText_font, _G.SUBTITLE_BANNER_PAD, 1)
     end
 end
 
@@ -77,8 +78,7 @@ function highscore_scene:drawScoreList(xOffset)
     local colNumW = SCORE_LIST_PAD - 5 -- width for scoreIdx column
     local colInitW = 38 -- width for initials column
     local colScoreW = 40 -- width for score column
-    local listTop = LIST_Y0 + LIST_RECT_Y_OFFSET
-    local listBottom = listTop + MAX_SCORES_SHOWN * SCORE_HEIGHT - 2
+    local yOffset = 5 -- Shift the list 5 pixels lower to stay within the banner
     for i = 0, MAX_SCORES_SHOWN - 1 do
         local scoreIdx = firstIdx + i
         local entry = scores[scoreIdx]
