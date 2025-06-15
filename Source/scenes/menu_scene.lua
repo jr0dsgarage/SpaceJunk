@@ -33,11 +33,11 @@ function menu_scene:draw(xOffset, hideInstructions)
     local statsFont = _G.ui and _G.ui.altText_font or gfx.getFont()
 
     if _G.drawBanner and _G.drawBanner.draw then
-        _G.drawBanner.draw("SPACE JUNK", titleX + xOffset, titleY, ui and ui.titleText_font or nil, _G.TITLE_BANNER_PAD)
+        _G.drawBanner.draw("SPACE JUNK", titleX + xOffset, titleY, ui and ui.titleText_font or nil, _G.TITLE_BANNER_PAD, 5)
     end
     local startSubtitle = "PRESS   A   TO START"
     if _G.drawBanner and _G.drawBanner.draw then
-        _G.drawBanner.draw(startSubtitle, titleX + xOffset, startSubtitleY, statsFont, _G.SUBTITLE_BANNER_PAD)
+        _G.drawBanner.draw(startSubtitle, titleX + xOffset, startSubtitleY, statsFont, _G.SUBTITLE_BANNER_PAD,1)
     end
     local prefix = string.sub(startSubtitle, 1, aCharIndex - 1)
     local prefixW, _ = gfx.getTextSize(prefix)
@@ -49,8 +49,8 @@ function menu_scene:draw(xOffset, hideInstructions)
     gfx.setLineWidth(2)
     gfx.drawCircleAtPoint(aX, aY, aW)
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("< Instructions", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, statsFont, _G.INSTR_BANNER_PAD)
-        _G.drawBanner.drawAligned("High Scores >", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, statsFont, _G.INSTR_BANNER_PAD)
+        _G.drawBanner.drawAligned("< Instructions", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, statsFont, _G.INSTR_BANNER_PAD, 1)
+        _G.drawBanner.drawAligned("High Scores >", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, statsFont, _G.INSTR_BANNER_PAD, 1)
     end
 end
 
