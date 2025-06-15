@@ -134,7 +134,20 @@ function score_scene:draw()
         if not self.enteringInitials then
             local initialsStr = table.concat(self.initials)
             local bottomY = (_G.SCREEN_HEIGHT or 240) - 32
-            _G.drawBanner.draw(initialsStr, INITIALS_X_CENTER, bottomY, _G.ui.titleText_font, _G.TITLE_BANNER_PAD)
+            -- Find the score index for the new high score
+            local entries = _G.HighScores and _G.HighScores.load() or {}
+            local scoreIdx = nil
+            for i, entry in ipairs(entries) do
+                if entry.score == self.finalScore and entry.initials == initialsStr then
+                    scoreIdx = i
+                    break
+                end
+            end
+            local displayStr = initialsStr
+            if scoreIdx then
+                displayStr = string.format(" #%d %s ", scoreIdx, initialsStr)
+            end
+            _G.drawBanner.draw(displayStr, INITIALS_X_CENTER, bottomY, _G.ui.titleText_font, _G.TITLE_BANNER_PAD)
         end
     end
     -- Score/Stats background and text (single black rounded box)
