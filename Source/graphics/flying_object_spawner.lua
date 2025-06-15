@@ -1,10 +1,10 @@
 --- FlyingObjectSpawner is responsible for spawning and managing flying objects on the screen.
 -- @classmod FlyingObjectSpawner
 
-local gfx <const> = playdate.graphics
+local gfx <const> = playdate.graphics -- Playdate graphics module
 
-local FlyingObjectSpawner = {}
-FlyingObjectSpawner.__index = FlyingObjectSpawner
+local FlyingObjectSpawner = {} -- Table for FlyingObjectSpawner methods and metatable
+FlyingObjectSpawner.__index = FlyingObjectSpawner -- Metatable index for FlyingObjectSpawner
 
 --- Create a new FlyingObjectSpawner.
 -- @param flyingObjectImgs Table of images for flying objects.

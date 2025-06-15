@@ -6,30 +6,30 @@
 --   local score_scene = require("scenes.score_scene")
 --   score_scene:enter(finalScore, isHighScore)
 
-local gfx <const> = playdate.graphics
-local score_scene = {}
+local gfx <const> = playdate.graphics -- Playdate graphics module
+local score_scene = {} -- Table for score scene methods and state
 
 -- Constants for layout and spacing
-local INITIALS_X_CENTER = 200
-local INITIALS_X_SPACING = 40
-local INITIALS_Y_OFFSET = 26
-local LINE_Y_OFFSET = 24
-local TITLE_Y = 80
-local STATS_Y = 140
+local INITIALS_X_CENTER = 200 -- X center for initials input
+local INITIALS_X_SPACING = 40 -- Spacing between initials
+local INITIALS_Y_OFFSET = 26 -- Y offset for initials
+local LINE_Y_OFFSET = 24 -- Y offset for lines
+local TITLE_Y = 80 -- Y position for title
+local STATS_Y = 140 -- Y position for stats box
 
 -- Constants for layout and logic
-local INITIALS_COUNT = 3
-local INITIALS_START = {'A', ' ', ' '}
-local YOFFSET_INITIALS = -40
-local LINE_HALF_WIDTH = 12
-local LINE_THICKNESS = 3
-local CRANK_SENSITIVITY = 2
+local INITIALS_COUNT = 3 -- Number of initials
+local INITIALS_START = {'A', ' ', ' '} -- Default initials
+local YOFFSET_INITIALS = -40 -- Y offset for initials input
+local LINE_HALF_WIDTH = 12 -- Half width for lines
+local LINE_THICKNESS = 3 -- Thickness for lines
+local CRANK_SENSITIVITY = 2 -- Sensitivity for crank input
 
 local TUNE_BASE_FREQS <const> = {523.25, 587.33, 659.25, 698.46, 783.99} -- C5, D5, E5, F5, G5
-local TUNE_DURATION <const> = 0.12
-local TUNE_VOLUME <const> = 0.5
-local TUNE_OCTAVE_RATIO <const> = 2 -- One octave up
-local TUNE_BASS_RATIO <const> = 0.25 -- Two octaves down
+local TUNE_DURATION <const> = 0.12 -- Duration of each note in the tune
+local TUNE_VOLUME <const> = 0.5 -- Volume of the tune
+local TUNE_OCTAVE_RATIO <const> = 2 -- One octave up for high score
+local TUNE_BASS_RATIO <const> = 0.25 -- Two octaves down for bass
 
 --- Play the score scene tune, with octave shift for high scores.
 -- @param isHighScore Boolean, true if new high score

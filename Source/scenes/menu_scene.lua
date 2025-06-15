@@ -6,16 +6,14 @@
 --   local menu_scene = require("scenes.menu_scene")
 --   menu_scene:enter()
 
-local gfx <const> = playdate.graphics
-local menu_scene = {}
+local gfx <const> = playdate.graphics -- Playdate graphics module
+local menu_scene = {} -- Table for menu scene methods and state
 
 -- Constants for layout and spacing
-local TITLE_Y = 80
-local TITLE_X = 200
+local TITLE_Y = 80 -- Y position for the title text
+local TITLE_X = 200 -- X position for the title text
 local START_SUBTITLE_Y = 140 -- Y position for the "PRESS A TO START" subtitle
 local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
-local TITLE_BANNER_PAD = 8
-local SUBTITLE_BANNER_PAD = 6
 
 --- Enter the menu scene and initialize starfield reference.
 function menu_scene:enter()

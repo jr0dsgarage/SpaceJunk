@@ -6,17 +6,17 @@
 --   local ui = require("ui.ui")
 --   local font = ui.rains3xFont
 
-local gfx <const> = playdate.graphics
+local gfx <const> = playdate.graphics -- Playdate graphics module
 
-local rains3xFont = gfx.font.new("fonts/font-rains-3x")
-local fullCircleFont = gfx.font.new("fonts/font-full-circle")
+local rains3xFont = gfx.font.new("fonts/font-rains-3x") -- Rains 3x font for UI
+local fullCircleFont = gfx.font.new("fonts/font-full-circle") -- Full Circle font for UI
 
-local TimerBar = import "timer_bar.lua"
-local ScoreboardBar = import "scoreboard_bar.lua"
+local TimerBar = import "timer_bar.lua" -- Timer bar UI module
+local ScoreboardBar = import "scoreboard_bar.lua" -- Scoreboard bar UI module
 
-local timerBar = nil
-local scoreboardBar = nil
-local lastTimerValue = nil
+local timerBar = nil -- Instance of TimerBar
+local scoreboardBar = nil -- Instance of ScoreboardBar
+local lastTimerValue = nil -- Last timer value for UI updates
 
 -- Global screen dimensions
 _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT = playdate.display.getWidth(), playdate.display.getHeight()

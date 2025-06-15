@@ -6,10 +6,10 @@
 --   local CracksSprite = require("graphics.cracks_sprite")
 --   local cracks = CracksSprite.new(scene, img, z, w, h)
 
-local gfx <const> = playdate.graphics
+local gfx <const> = playdate.graphics -- Playdate graphics module
 
-local CracksSprite = {}
-CracksSprite.__index = CracksSprite
+local CracksSprite = {} -- Table for CracksSprite methods and metatable
+CracksSprite.__index = CracksSprite -- Metatable index for CracksSprite
 
 --- Create a new CracksSprite.
 -- @param parentScene Reference to parent scene

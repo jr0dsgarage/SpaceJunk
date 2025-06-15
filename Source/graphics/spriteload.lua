@@ -6,10 +6,10 @@
 --   local spriteload = require("graphics.spriteload")
 --   local images = spriteload.tableLoad("sprites/junk")
 
-local gfx <const> = playdate.graphics
-local spriteDir = "sprites/junk"
+local gfx <const> = playdate.graphics -- Playdate graphics module
+local spriteDir = "sprites/junk" -- Default directory for junk sprites
 
-local sprites = {}
+local sprites = {} -- Table for loaded sprites
 -- No static spriteList: always load dynamically from spriteDir
 
 --- Load all .pdi images from the given directory.

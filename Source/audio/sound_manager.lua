@@ -6,10 +6,10 @@
 --   local SoundManager = require("audio.sound_manager")
 --   local sm = SoundManager.new()
 
-local snd = playdate.sound
+local snd = playdate.sound -- Playdate sound module
 
-local SoundManager = {}
-SoundManager.__index = SoundManager
+local SoundManager = {} -- Table for SoundManager methods and metatable
+SoundManager.__index = SoundManager -- Metatable index for SoundManager
 
 --- Create a new SoundManager instance.
 -- @return SoundManager instance

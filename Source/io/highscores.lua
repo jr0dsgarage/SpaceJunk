@@ -6,9 +6,9 @@
 --   local highscores = require("io.highscores")
 --   local entries = highscores.load()
 
-local HIGHSCORE_FILE = "highscores"
-local MAX_SCORES = 10
-local highscores = {}
+local HIGHSCORE_FILE = "highscores" -- Filename for storing high scores
+local MAX_SCORES = 10 -- Maximum number of high scores to keep
+local highscores = {} -- Table for highscores module methods
 
 --- Load high scores from persistent storage.
 -- @return Array of high score entries

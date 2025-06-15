@@ -6,12 +6,12 @@
 --   local InstructionsScene = require("scenes.instructions_scene")
 --   InstructionsScene:draw()
 
-local gfx <const> = playdate.graphics
-local scene_manager = _G.scene_manager
-local slide_transition_scene = _G.slide_transition_scene
+local gfx <const> = playdate.graphics -- Playdate graphics module
+local scene_manager = _G.scene_manager -- Reference to global scene manager
+local slide_transition_scene = _G.slide_transition_scene -- Reference to global slide transition scene
 
-local titleText = "Instructions"
-local lineText = {
+local titleText = "Instructions" -- Title text for the instructions scene
+local lineText = { -- Array of instruction lines to display
     "Use the D-pad to move the beam focal point!!",
     "Crank to change beam focal point distance!!",
     "Match focal point size to the junk size!!",
@@ -25,7 +25,7 @@ local lineText = {
     "Test 4",
 }
 
-local InstructionsScene = {}
+local InstructionsScene = {} -- Table for instructions scene methods and state
 
 --- Initialize the instructions scene (no-op).
 function InstructionsScene.init() end

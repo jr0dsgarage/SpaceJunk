@@ -6,10 +6,10 @@
 --   local FlyingObjectSprite = require("graphics.flying_object")
 --   local obj = FlyingObjectSprite.new(x, y, size, speed, img)
 
-local gfx <const> = playdate.graphics
+local gfx <const> = playdate.graphics -- Playdate graphics module
 
-local FlyingObjectSprite = {}
-FlyingObjectSprite.__index = FlyingObjectSprite
+local FlyingObjectSprite = {} -- Table for FlyingObjectSprite methods and metatable
+FlyingObjectSprite.__index = FlyingObjectSprite -- Metatable index for FlyingObjectSprite
 
 --- Create a new FlyingObjectSprite.
 -- @param x X position

@@ -6,22 +6,22 @@
 --   local highscore_scene = require("scenes.highscore_scene")
 --   highscore_scene:enter()
 
-local gfx <const> = playdate.graphics
-local highscore_scene = {}
+local gfx <const> = playdate.graphics -- Playdate graphics module
+local highscore_scene = {} -- Table for highscore scene methods and state
 
 -- Constants for layout and spacing
-local TITLE_Y = 40
-local TITLE_X = 200
-local LIST_W = 90
-local LIST_X = 200
-local LIST_Y0 = 80
-local LIST_OFFSET = 22
-local LIST_RECT_Y_OFFSET = -4
-local MAX_SCORES_SHOWN = 5
-local SCORE_HEIGHT = 25
-local RESET_CONFIRM_Y = 136
-local RESET_CONFIRM2_Y = 156
-local RESET_MSG_Y = 136
+local TITLE_Y = 40 -- Y position for the title
+local TITLE_X = 200 -- X position for the title
+local LIST_W = 90 -- Width of the score list
+local LIST_X = 200 -- X position for the score list
+local LIST_Y0 = 80 -- Y position for the score list
+local LIST_OFFSET = 22 -- Offset between score entries
+local LIST_RECT_Y_OFFSET = -4 -- Y offset for the list rectangle
+local MAX_SCORES_SHOWN = 5 -- Maximum number of scores to show
+local SCORE_HEIGHT = 25 -- Height of each score entry
+local RESET_CONFIRM_Y = 136 -- Y position for reset confirmation
+local RESET_CONFIRM2_Y = 156 -- Y position for second reset confirmation
+local RESET_MSG_Y = 136 -- Y position for reset message
 local SCORE_LIST_PAD = 8 -- Padding around the score list
 
 --- Enter the highscore scene and load scores.

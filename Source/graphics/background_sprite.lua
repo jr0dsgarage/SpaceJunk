@@ -6,10 +6,10 @@
 --   local BackgroundSprite = require("graphics.background_sprite")
 --   local bg = BackgroundSprite.new(scene, img, z, w, h)
 
-local gfx <const> = playdate.graphics
+local gfx <const> = playdate.graphics -- Playdate graphics module
 
-local BackgroundSprite = {}
-BackgroundSprite.__index = BackgroundSprite
+local BackgroundSprite = {} -- Table for BackgroundSprite methods and metatable
+BackgroundSprite.__index = BackgroundSprite -- Metatable index for BackgroundSprite
 
 --- Create a new BackgroundSprite.
 -- @param parentScene Reference to parent scene

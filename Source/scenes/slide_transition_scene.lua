@@ -6,17 +6,17 @@
 --   local slide_transition_scene = require("scenes.slide_transition_scene")
 --   slide_transition_scene:enter(direction)
 
-local gfx <const> = playdate.graphics
-local slide_transition_scene = {}
+local gfx <const> = playdate.graphics -- Playdate graphics module
+local slide_transition_scene = {} -- Table for slide transition scene methods and state
 
-local DURATION = 0.5 -- seconds
-local FPS = 30
-local TOTAL_FRAMES = math.floor(DURATION * FPS)
+local DURATION = 0.5 -- Duration of the transition in seconds
+local FPS = 30 -- Frames per second for the transition
+local TOTAL_FRAMES = math.floor(DURATION * FPS) -- Total frames in the transition
 
 -- Parallax constants (use globals from scene_manager.lua)
-local MENU_PARALLAX_X = _G.MENU_PARALLAX_X
-local HIGHSCORE_PARALLAX_X = _G.HIGHSCORE_PARALLAX_X
-local INSTRUCTIONS_PARALLAX_X = _G.INSTRUCTIONS_PARALLAX_X
+local MENU_PARALLAX_X = _G.MENU_PARALLAX_X -- Parallax X for menu scene
+local HIGHSCORE_PARALLAX_X = _G.HIGHSCORE_PARALLAX_X -- Parallax X for highscore scene
+local INSTRUCTIONS_PARALLAX_X = _G.INSTRUCTIONS_PARALLAX_X -- Parallax X for instructions scene
 
 --- Enter the slide transition scene.
 -- @param direction Integer indicating transition direction

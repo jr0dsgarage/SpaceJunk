@@ -6,10 +6,10 @@
 --   local BeamZoomSprite = require("graphics.beam_zoom_sprite")
 --   local zoomBar = BeamZoomSprite.new(parentScene)
 
-local gfx <const> = playdate.graphics
+local gfx <const> = playdate.graphics -- Playdate graphics module
 
-local BeamZoomSprite = {}
-BeamZoomSprite.__index = BeamZoomSprite
+local BeamZoomSprite = {} -- Table for BeamZoomSprite methods and metatable
+BeamZoomSprite.__index = BeamZoomSprite -- Metatable index for BeamZoomSprite
 
 --- Create a new BeamZoomSprite.
 -- @param parentScene Reference to the parent scene (for beam radius info)

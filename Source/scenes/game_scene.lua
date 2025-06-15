@@ -6,42 +6,42 @@
 --   local game_scene = require("scenes.game_scene")
 --   game_scene:enter()
 
-local gfx <const> = playdate.graphics
-local snd = playdate.sound
-local captureSynth = snd.synth.new(snd.kWaveSquare)
+local gfx <const> = playdate.graphics -- Playdate graphics module
+local snd = playdate.sound -- Playdate sound module
+local captureSynth = snd.synth.new(snd.kWaveSquare) -- Synth for capture sound
 
-local game_scene = {}
+local game_scene = {} -- Table for game scene methods and state
 
 -- Constants for game configuration and layout
-local BASE_SCORE <const> = 250
-local MIN_SCORE <const> = 1
-local MAX_SCORE <const> = 250
+local BASE_SCORE <const> = 250 -- Base score for perfect match
+local MIN_SCORE <const> = 1 -- Minimum possible score
+local MAX_SCORE <const> = 250 -- Maximum possible score
 local GAME_DURATION_MS <const> = 60 * 1000 -- 60 seconds in milliseconds
 
 -- Beam Circle  constants
-local INITIAL_BEAM_RADIUS <const> = 20
-local MIN_BEAM_RADIUS <const> = 10
-local MAX_BEAM_RADIUS <const> = 75
+local INITIAL_BEAM_RADIUS <const> = 20 -- Initial radius of the beam
+local MIN_BEAM_RADIUS <const> = 10 -- Minimum beam radius
+local MAX_BEAM_RADIUS <const> = 75 -- Maximum beam radius
 
 -- Flying object constants
-local MAX_FLYING_OBJECTS <const> = 3
-local MAX_OBJECT_SIZE <const> = MAX_BEAM_RADIUS
-local MOVE_SPEED_MIN <const> = 7
-local MOVE_SPEED_DIV <const> = 5
+local MAX_FLYING_OBJECTS <const> = 3 -- Maximum number of flying objects
+local MAX_OBJECT_SIZE <const> = MAX_BEAM_RADIUS -- Maximum flying object size
+local MOVE_SPEED_MIN <const> = 7 -- Minimum movement speed
+local MOVE_SPEED_DIV <const> = 5 -- Speed divisor for movement
 
 -- Crank indicator constants
-local CRANK_INDICATOR_HEIGHT <const> = 32
+local CRANK_INDICATOR_HEIGHT <const> = 32 -- Height of the crank indicator
 
 -- C Major scale notes in Hz
 -- C4, D4, E4, F4, G4, A4, B4
-local C_MAJOR_NOTES <const> = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} 
-local NOTE_DURATION <const> = 0.2
-local NOTE_VELOCITY <const> = 0.2
+local C_MAJOR_NOTES <const> = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- Frequencies for C major scale
+local NOTE_DURATION <const> = 0.2 -- Duration of each note
+local NOTE_VELOCITY <const> = 0.2 -- Velocity of each note
 
 -- Beep settings
-local BEEP_FREQ <const> = 880 -- A5
-local BEEP_DURATION <const> = 0.5
-local BEEP_VOLUME <const> = 0.5
+local BEEP_FREQ <const> = 880 -- A5 frequency for beep
+local BEEP_DURATION <const> = 0.5 -- Duration of beep
+local BEEP_VOLUME <const> = 0.5 -- Volume of beep
 
 ---
 -- Helper to play a beep with a linear fade out.

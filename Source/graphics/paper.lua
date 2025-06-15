@@ -6,10 +6,10 @@
 --   local Paper = require("graphics.paper")
 --   Paper.draw(x, y, w, h, options)
 
-local gfx <const> = playdate.graphics
-local sysFont = gfx.getSystemFont(gfx.font.kVariantNormal)
+local gfx <const> = playdate.graphics -- Playdate graphics module
+local sysFont = gfx.getSystemFont(gfx.font.kVariantNormal) -- System font (normal variant)
 
-local Paper = {}
+local Paper = {} -- Table for Paper module methods
 
 --- Helper to draw plain text with a font.
 -- @param font Playdate font object

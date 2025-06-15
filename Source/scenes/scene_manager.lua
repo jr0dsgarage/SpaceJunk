@@ -6,12 +6,12 @@
 --   local scene_manager = require("scenes.scene_manager")
 --   scene_manager.setScene(menu_scene)
 
-local gfx <const> = playdate.graphics -- Add this line to define gfx
+local gfx <const> = playdate.graphics -- Playdate graphics module
 
 -- scenes/scene_manager.lua
-local scene_manager = {}
+local scene_manager = {} -- Table for scene manager methods and state
 
-local currentScene = nil
+local currentScene = nil -- Holds the currently active scene
 
 --- Parallax constants for scene types (shared with transition scene)
 -- @field MENU_PARALLAX_X Parallax X for menu scene
