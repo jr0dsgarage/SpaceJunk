@@ -2,7 +2,7 @@
 -- @classmod Starfield
 
 local gfx <const> = playdate.graphics
-local loadSpaceImage = import("graphics/load_space_image.lua")
+local loadDeepspaceImage = import("graphics/load_deepspace_image.lua")
 
 local Starfield = {}
 Starfield.__index = Starfield
@@ -53,7 +53,7 @@ function Starfield.new()
     else
         self.bgImage = nil
     end
-    self.spaceImage = loadSpaceImage()
+    self.deepSpaceImage = loadDeepspaceImage()
     return self
 end
 
@@ -105,13 +105,14 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, 
         end
     end
     -- Always draw the JWST Advanced Deep Extragalactic Survey image 
-    if self.spaceImage then
+    if self.deepSpaceImage then
+        print("Drawing space image")
         local sw = screenWidth or _G.SCREEN_WIDTH or 400
         local sh = screenHeight or _G.SCREEN_HEIGHT or 240
-        local imgW, imgH = self.spaceImage:getSize()
+        local imgW, imgH = self.deepSpaceImage:getSize()
         local drawX = math.floor(sw/2 - imgW/2- imgW)
         local drawY = math.floor(sh/2 - imgH/2)
-        self.spaceImage:draw(drawX, drawY)
+        self.deepSpaceImage:draw(drawX, drawY)
     end
     gfx.setColor(gfx.kColorWhite)
     local maxOffset = 3

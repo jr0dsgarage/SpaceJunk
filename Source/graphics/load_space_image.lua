@@ -1,3 +1,4 @@
+-- This file has been renamed to load_deepspace_image.lua. Please use that file instead.
 ---
 -- Helper to load a specific image from the space_images directory.
 -- Always loads the JWST Advanced Deep Extragalactic Survey image.
