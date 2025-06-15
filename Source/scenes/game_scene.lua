@@ -38,11 +38,6 @@ local C_MAJOR_NOTES <const> = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 4
 local NOTE_DURATION <const> = 0.2 -- Duration of each note
 local NOTE_VELOCITY <const> = 0.2 -- Velocity of each note
 
--- Beep settings
-local BEEP_FREQ <const> = 880 -- A5 frequency for beep
-local BEEP_DURATION <const> = 0.5 -- Duration of beep
-local BEEP_VOLUME <const> = 0.5 -- Volume of beep
-
 ---
 -- Helper to play a beep with a linear fade out.
 -- @param freq Frequency in Hz
