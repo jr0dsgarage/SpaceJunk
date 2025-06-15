@@ -5,7 +5,6 @@
 local gfx <const> = playdate.graphics
 local function loadDeepspaceImage()
     local imgPath = "sprites/space_images/deep_space/JWST Advanced Deep Extragalactic Survey_transparent.png"
-    print("Loading deep space image from: " .. imgPath)
     local ok, img = pcall(function() return gfx.image.new(imgPath) end)
     if ok and img then
         return img

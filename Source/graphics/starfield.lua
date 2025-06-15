@@ -106,7 +106,6 @@ function Starfield:draw(centerX, centerY, screenWidth, screenHeight, parallaxX, 
     end
     -- Always draw the JWST Advanced Deep Extragalactic Survey image 
     if self.deepSpaceImage then
-        print("Drawing space image")
         local sw = screenWidth or _G.SCREEN_WIDTH or 400
         local sh = screenHeight or _G.SCREEN_HEIGHT or 240
         local imgW, imgH = self.deepSpaceImage:getSize()
