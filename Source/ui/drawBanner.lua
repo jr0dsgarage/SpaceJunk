@@ -2,12 +2,19 @@
 local gfx <const> = playdate.graphics
 local drawBanner = {}
 
--- Internal utility to draw a black rounded rectangle behind text
-local function drawRectangleForText(x, y, w, h)
+-- Internal utility to draw a black rounded rectangle behind text, with optional border
+local function drawRectangleForText(x, y, w, h, border)
     gfx.setColor(gfx.kColorBlack)
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
     local radius = 8 -- adjust for desired roundness
     gfx.fillRoundRect(x, y, w, h, radius)
+    border = border or 0
+    if border > 0 then
+        gfx.setColor(gfx.kColorWhite)
+        gfx.setLineWidth(math.min(border, 10))
+        gfx.drawRoundRect(x, y, w, h, radius)
+        gfx.setLineWidth(1)
+    end
 end
 
 -- Utility to determine rectangle vertical offset based on font
@@ -21,7 +28,7 @@ local function getRectYOffset(font)
 end
 
 -- Shared internal function for drawing a banner (rounded rect + text)
-local function drawBannerCore(str, x, y, alignment, font, bannerPadding)
+local function drawBannerCore(str, x, y, alignment, font, bannerPadding, border)
     local pad = bannerPadding or 2
     if font then gfx.setFont(font) end
     local textWidth = gfx.getTextSize(str)
@@ -38,7 +45,7 @@ local function drawBannerCore(str, x, y, alignment, font, bannerPadding)
         rectX = x - textWidth/2 - pad
     end
     rectY = y - fontHeight/2 - pad + rectYOffset
-    drawRectangleForText(rectX, rectY, rectW, rectH)
+    drawRectangleForText(rectX, rectY, rectW, rectH, border)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     if font then gfx.setFont(font) end
     gfx.drawTextAligned(str, x, y, alignment or kTextAlignment.center)
@@ -46,13 +53,13 @@ local function drawBannerCore(str, x, y, alignment, font, bannerPadding)
 end
 
 -- Draws text with a black rectangle background, centered at (x, y)
-function drawBanner.draw(str, x, y, font, bannerPadding)
-    drawBannerCore(str, x, y, kTextAlignment.center, font, bannerPadding)
+function drawBanner.draw(str, x, y, font, bannerPadding, border)
+    drawBannerCore(str, x, y, kTextAlignment.center, font, bannerPadding, border)
 end
 
 -- Draws text with a black rectangle background, aligned at (x, y)
-function drawBanner.drawAligned(str, x, y, alignment, font, bannerPadding)
-    drawBannerCore(str, x, y, alignment, font, bannerPadding)
+function drawBanner.drawAligned(str, x, y, alignment, font, bannerPadding, border)
+    drawBannerCore(str, x, y, alignment, font, bannerPadding, border)
 end
 
 return drawBanner
