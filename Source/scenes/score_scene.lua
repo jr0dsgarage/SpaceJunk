@@ -25,16 +25,26 @@ local LINE_HALF_WIDTH = 12 -- Half width for lines
 local LINE_THICKNESS = 3 -- Thickness for lines
 local CRANK_SENSITIVITY = 2 -- Sensitivity for crank input
 
+-- Additional constants for layout and appearance
+local SCREEN_HEIGHT = _G.SCREEN_HEIGHT or 240
+local INITIALS_BANNER_Y_OFFSET = 27 -- Distance from bottom for initials banner
+local INITIALS_BANNER_PAD = 4 -- Padding for initials banner
+local STATS_BOX_WIDTH = 128 -- Width of the stats box
+local STATS_BOX_RADIUS = 8 -- Radius for rounded corners
+local STATS_BOX_EXTRA_HEIGHT = 10-- For spacing below last stat
+local INSTR_BANNER_HEIGHT = 120 -- Height for instructions banner
+local INSTR_Y = 200 -- Y position for instructions
+local ENTER_INITIALS_Y_OFFSET = 25 -- Move 'Enter Initials' text 25px lower
+local INITIALS_ENTRY_EXTRA_OFFSET = -5 -- Move initials entry 12px lower
+
 function score_scene:enter(finalScore, caught, missed)
-    
     self.starfield = _G.sharedStarfield
     self.finalScore = finalScore or 0
     self.caught = caught or 0
     self.missed = missed or 0
-    
     self.isNewHighScore = false
     self.enteringInitials = false
-    self.initialsChars = {' '} -- Start with space as blank entry
+    self.initialsChars = {' '}
     for i = 65, 90 do table.insert(self.initialsChars, string.char(i)) end -- A-Z
     for i = 48, 57 do table.insert(self.initialsChars, string.char(i)) end -- 0-9
     self.initials = {table.unpack(INITIALS_START)}
@@ -42,7 +52,7 @@ function score_scene:enter(finalScore, caught, missed)
     self.blinkTimer = 0
     if _G.HighScores then
         local entriesBefore = _G.HighScores.load()
-        _G.HighScores.add(self.finalScore or 0, "   ") -- add with blank initials for now
+        _G.HighScores.add(self.finalScore or 0, "   ")
         local entriesAfter = _G.HighScores.load()
         for i = 1, #entriesAfter do
             if entriesAfter[i].score ~= entriesBefore[i].score then
@@ -74,7 +84,6 @@ function score_scene:update()
         local down = playdate.buttonJustPressed(playdate.kButtonDown)
         local chars = self.initialsChars
         local idx = self.initialsIndex
-        -- Make crank less sensitive
         local crankStep = 0
         if math.abs(crankChange) >= CRANK_SENSITIVITY then
             crankStep = (crankChange > 0) and 1 or -1
@@ -95,6 +104,67 @@ function score_scene:update()
     end
 end
 
+-- Helper: Draw the stats box (score/caught/missed)
+local function drawStatsBox(centerX, y, font, score, caught, missed)
+    local statsSpacing = font:getHeight() + 2
+    local boxHeight = font:getHeight() * 3 + STATS_BOX_EXTRA_HEIGHT
+    local boxX = centerX - STATS_BOX_WIDTH/2
+    local boxY = y - font:getHeight()/2
+    gfx.setColor(gfx.kColorBlack)
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    gfx.fillRoundRect(boxX, boxY, STATS_BOX_WIDTH, boxHeight, STATS_BOX_RADIUS)
+    gfx.setColor(gfx.kColorWhite)
+    gfx.setLineWidth(1)
+    gfx.drawRoundRect(boxX, boxY, STATS_BOX_WIDTH, boxHeight, STATS_BOX_RADIUS)
+    gfx.setLineWidth(1)
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    gfx.setFont(font)
+    gfx.drawTextAligned(score, centerX, y, kTextAlignment.center)
+    gfx.drawTextAligned(caught, centerX, y + statsSpacing, kTextAlignment.center)
+    gfx.drawTextAligned(missed, centerX, y + statsSpacing * 2, kTextAlignment.center)
+end
+
+-- Helper: Draw the initials input UI
+local function drawInitialsInput(centerX, instrY, font, initials, initialsIndex, blink)
+    local initialsY = instrY + INITIALS_Y_OFFSET
+    local bannerWidth = (INITIALS_COUNT - 1) * INITIALS_X_SPACING + 48
+    local bannerHeight = INSTR_BANNER_HEIGHT
+    _G.drawBanner.draw("", centerX, initialsY + bannerHeight/2, nil, bannerWidth/2, 1)
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    gfx.setFont(font)
+    for i = 1, INITIALS_COUNT do
+        local x = centerX + (i-2)*INITIALS_X_SPACING
+        local char = initials[i]
+        gfx.drawTextAligned((char ~= '' and char or '_'), x, initialsY, kTextAlignment.center)
+    end
+    for i = 1, INITIALS_COUNT do
+        local x = centerX + (i-2)*INITIALS_X_SPACING
+        local lineY = initialsY + LINE_Y_OFFSET
+        if i == initialsIndex and blink then
+            gfx.setColor(gfx.kColorWhite)
+        else
+            gfx.setColor(gfx.kColorWhite)
+            gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer8x8)
+        end
+        gfx.setLineWidth(LINE_THICKNESS)
+        gfx.drawLine(x - LINE_HALF_WIDTH, lineY, x + LINE_HALF_WIDTH, lineY)
+        gfx.setLineWidth(1)
+        gfx.setColor(gfx.kColorWhite)
+        gfx.setDitherPattern(1.0, gfx.image.kDitherTypeBayer8x8)
+    end
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+end
+
+-- Helper: Draw the initials banner at the bottom
+local function drawInitialsBanner(centerX, screenHeight, initialsStr, scoreIdx, font)
+    local displayStr = initialsStr
+    if scoreIdx then
+        displayStr = string.format("#%d %s", scoreIdx, initialsStr)
+    end
+    local bottomY = screenHeight - INITIALS_BANNER_Y_OFFSET
+    _G.drawBanner.draw(displayStr, centerX, bottomY, font, INITIALS_BANNER_PAD, 1)
+end
+
 function score_scene:draw()
     -- Move everything up if entering initials
     local yOffset = (self.enteringInitials and self.isNewHighScore) and YOFFSET_INITIALS or 0
@@ -111,8 +181,6 @@ function score_scene:draw()
         -- Show initials at the bottom of the screen if initials have been entered
         if not self.enteringInitials then
             local initialsStr = table.concat(self.initials)
-            local bottomY = (_G.SCREEN_HEIGHT or 240) - 32
-            -- Find the score index for the new high score
             local entries = _G.HighScores and _G.HighScores.load() or {}
             local scoreIdx = nil
             for i, entry in ipairs(entries) do
@@ -121,11 +189,7 @@ function score_scene:draw()
                     break
                 end
             end
-            local displayStr = initialsStr
-            if scoreIdx then
-                displayStr = string.format(" #%d %s ", scoreIdx, initialsStr)
-            end
-            _G.drawBanner.draw(displayStr, INITIALS_X_CENTER, bottomY, _G.ui.titleText_font, _G.TITLE_BANNER_PAD)
+            drawInitialsBanner(INITIALS_X_CENTER, SCREEN_HEIGHT, initialsStr, scoreIdx, _G.ui.titleText_font)
         end
     end
     -- Score/Stats background and text (single black rounded box)
@@ -134,65 +198,13 @@ function score_scene:draw()
     local scoreStr = string.format("SCORE: %d", self.finalScore)
     local caughtStr = string.format("CAUGHT: %d", self.caught)
     local missedStr = string.format("MISSED: %d", self.missed)
-    local statsSpacing = statsFont:getHeight() + 2
-    -- Calculate bounding box for all three lines (tight fit)
-    local boxWidth = 128
-    local boxHeight = statsFont:getHeight() * 4
-    local boxX = INITIALS_X_CENTER - boxWidth/2
-    local boxY = statsY - statsFont:getHeight()/2
-    -- Draw custom rounded rectangle for the stats box background with a 1px border
-    gfx.setColor(gfx.kColorBlack)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
-    local radius = 8
-    gfx.fillRoundRect(boxX, boxY, boxWidth, boxHeight, radius)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setLineWidth(1)
-    gfx.drawRoundRect(boxX, boxY, boxWidth, boxHeight, radius)
-    gfx.setLineWidth(1)
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.setFont(statsFont)
-    gfx.drawTextAligned(scoreStr, INITIALS_X_CENTER, statsY, kTextAlignment.center)
-    gfx.drawTextAligned(caughtStr, INITIALS_X_CENTER, statsY + statsSpacing, kTextAlignment.center)
-    gfx.drawTextAligned(missedStr, INITIALS_X_CENTER, statsY + statsSpacing * 2, kTextAlignment.center)
+    drawStatsBox(INITIALS_X_CENTER, statsY, statsFont, scoreStr, caughtStr, missedStr)
     if self.enteringInitials then
         -- Enter initials UI
         local instr = "Enter Initials"
-        local instrY = INSTR_Y + yOffset
+        local instrY = INSTR_Y + yOffset + ENTER_INITIALS_Y_OFFSET
         _G.drawBanner.draw(instr, INITIALS_X_CENTER, instrY, _G.ui.altText_font, _G.SUBTITLE_BANNER_PAD, 1)
-        -- Draw banner behind initials input using drawBanner
-        local initialsY = instrY + INITIALS_Y_OFFSET
-        local bannerWidth = (INITIALS_COUNT - 1) * INITIALS_X_SPACING + 48 -- 48 for padding and char width
-        local bannerHeight = 120
-        local bannerX = INITIALS_X_CENTER
-        local bannerY = initialsY 
-        _G.drawBanner.draw("", bannerX, bannerY + bannerHeight/2, nil, bannerWidth/2, 1) -- empty string, just for background
-        -- Draw initials input
-        gfx.setImageDrawMode(gfx.kDrawModeFillWhite) -- Ensure initials are drawn in white
-        gfx.setFont(_G.ui.titleText_font)
-        local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
-        for i = 1, INITIALS_COUNT do
-            local x = INITIALS_X_CENTER + (i-2)*INITIALS_X_SPACING
-            local char = self.initials[i]
-            gfx.drawTextAligned((char ~= '' and char or '_'), x, initialsY, kTextAlignment.center)
-        end
-        -- Draw lines under each character
-        for i = 1, INITIALS_COUNT do
-            local x = INITIALS_X_CENTER + (i-2)*INITIALS_X_SPACING
-            local lineY = initialsY + LINE_Y_OFFSET
-            if i == self.initialsIndex and blink then
-                -- Blinking underline
-                gfx.setColor(gfx.kColorWhite)
-            else
-                gfx.setColor(gfx.kColorWhite)
-                gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer8x8)
-            end
-            gfx.setLineWidth(LINE_THICKNESS)
-            gfx.drawLine(x - LINE_HALF_WIDTH, lineY, x + LINE_HALF_WIDTH, lineY)
-            gfx.setLineWidth(1)
-            gfx.setColor(gfx.kColorWhite)
-            gfx.setDitherPattern(1.0, gfx.image.kDitherTypeBayer8x8)
-        end
-        gfx.setImageDrawMode(gfx.kDrawModeCopy) -- Reset draw mode after initials
+        drawInitialsInput(INITIALS_X_CENTER, instrY + INITIALS_ENTRY_EXTRA_OFFSET, _G.ui.titleText_font, self.initials, self.initialsIndex, (math.floor((self.blinkTimer or 0)/20) % 2) == 0)
     else
         -- Instructions background and text, left/right aligned at bottom
         if _G.drawBanner and _G.drawBanner.drawAligned then
@@ -205,12 +217,10 @@ end
 -- Add basic error handling for HighScores
 function score_scene:AButtonDown()
     if self.enteringInitials then
-        if self.initialsIndex < 3 then
+        if self.initialsIndex < INITIALS_COUNT then
             self.initialsIndex = self.initialsIndex + 1
-            -- Pre-fill the next initial with the current one 
             self.initials[self.initialsIndex] = self.initials[self.initialsIndex - 1]
         else
-            -- Save initials with score
             if _G.HighScores then
                 local initialsStr = table.concat(self.initials)
                 local ok, entries = pcall(_G.HighScores.load)
@@ -251,7 +261,6 @@ function score_scene:BButtonDown()
             self.initialsIndex = self.initialsIndex - 1
         end
     else
-        -- Remove the current starfield instance
         _G.sharedStarfield = nil
         if _G.switchToMenuScene then
             _G.switchToMenuScene()
