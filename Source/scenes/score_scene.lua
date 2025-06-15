@@ -25,28 +25,6 @@ local LINE_HALF_WIDTH = 12 -- Half width for lines
 local LINE_THICKNESS = 3 -- Thickness for lines
 local CRANK_SENSITIVITY = 2 -- Sensitivity for crank input
 
-local TUNE_BASE_FREQS <const> = {523.25, 587.33, 659.25, 698.46, 783.99} -- C5, D5, E5, F5, G5
-local TUNE_DURATION <const> = 0.12 -- Duration of each note in the tune
-local TUNE_VOLUME <const> = 0.5 -- Volume of the tune
-local TUNE_OCTAVE_RATIO <const> = 2 -- One octave up for high score
-local TUNE_BASS_RATIO <const> = 0.25 -- Two octaves down for bass
-
---- Play the score scene tune, with octave shift for high scores.
--- @param isHighScore Boolean, true if new high score
-local function playScoreTune(isHighScore)
-    local melodySynth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
-    local bassSynth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
-    for i, f in ipairs(TUNE_BASE_FREQS) do
-        local melodyFreq = isHighScore and (f * TUNE_OCTAVE_RATIO) or f
-        local bassFreq = melodyFreq * TUNE_BASS_RATIO
-        local duration = (i == #TUNE_BASE_FREQS) and (TUNE_DURATION * 2) or TUNE_DURATION
-        playdate.timer.performAfterDelay((i-1)*TUNE_DURATION*1000, function()
-            melodySynth:playNote(melodyFreq, duration, TUNE_VOLUME)
-            bassSynth:playNote(bassFreq, duration, TUNE_VOLUME)
-        end)
-    end
-end
-
 function score_scene:enter(finalScore, caught, missed)
     
     self.starfield = _G.sharedStarfield
@@ -122,13 +100,13 @@ function score_scene:draw()
     local yOffset = (self.enteringInitials and self.isNewHighScore) and YOFFSET_INITIALS or 0
     -- Title background and text (match menu)
     local titleY = TITLE_Y + yOffset
-    _G.drawBanner.draw("GAME OVER", INITIALS_X_CENTER, titleY, _G.ui.titleText_font, _G.TITLE_BANNER_PAD)
+    _G.drawBanner.draw("GAME OVER", INITIALS_X_CENTER, titleY, _G.ui.titleText_font, _G.TITLE_BANNER_PAD, 3)
     if self.isNewHighScore then
         gfx.setFont(_G.ui.altText_font)
         local blink = (math.floor((self.blinkTimer or 0)/20) % 2) == 0
         local nhsText = "New High Score!"
         if blink then
-            _G.drawBanner.draw(nhsText, INITIALS_X_CENTER, titleY + 28, _G.ui.altText_font, _G.SUBTITLE_BANNER_PAD)
+            _G.drawBanner.draw(nhsText, INITIALS_X_CENTER, titleY + 40, _G.ui.altText_font, _G.SUBTITLE_BANNER_PAD,1)
         end
         -- Show initials at the bottom of the screen if initials have been entered
         if not self.enteringInitials then
@@ -152,18 +130,25 @@ function score_scene:draw()
     end
     -- Score/Stats background and text (single black rounded box)
     local statsFont = _G.ui.altText_font
-    local statsY = STATS_Y + yOffset
+    local statsY = STATS_Y + yOffset + 10 -- Move box and text 10 pixels lower
     local scoreStr = string.format("SCORE: %d", self.finalScore)
     local caughtStr = string.format("CAUGHT: %d", self.caught)
     local missedStr = string.format("MISSED: %d", self.missed)
     local statsSpacing = statsFont:getHeight() + 2
-    -- Calculate bounding box for all three lines
+    -- Calculate bounding box for all three lines (tight fit)
     local boxWidth = 128
-    local boxHeight = statsSpacing * 3 + 10
-    local boxX = INITIALS_X_CENTER - boxWidth/2 
-    local boxY = statsY - statsFont:getHeight()/2 
+    local boxHeight = statsFont:getHeight() * 4
+    local boxX = INITIALS_X_CENTER - boxWidth/2
+    local boxY = statsY - statsFont:getHeight()/2
+    -- Draw custom rounded rectangle for the stats box background with a 1px border
     gfx.setColor(gfx.kColorBlack)
-    gfx.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 12)
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    local radius = 8
+    gfx.fillRoundRect(boxX, boxY, boxWidth, boxHeight, radius)
+    gfx.setColor(gfx.kColorWhite)
+    gfx.setLineWidth(1)
+    gfx.drawRoundRect(boxX, boxY, boxWidth, boxHeight, radius)
+    gfx.setLineWidth(1)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.setFont(statsFont)
     gfx.drawTextAligned(scoreStr, INITIALS_X_CENTER, statsY, kTextAlignment.center)
@@ -173,14 +158,14 @@ function score_scene:draw()
         -- Enter initials UI
         local instr = "Enter Initials"
         local instrY = INSTR_Y + yOffset
-        _G.drawBanner.draw(instr, INITIALS_X_CENTER, instrY, _G.ui.altText_font, _G.SUBTITLE_BANNER_PAD)
+        _G.drawBanner.draw(instr, INITIALS_X_CENTER, instrY, _G.ui.altText_font, _G.SUBTITLE_BANNER_PAD, 1)
         -- Draw banner behind initials input using drawBanner
         local initialsY = instrY + INITIALS_Y_OFFSET
         local bannerWidth = (INITIALS_COUNT - 1) * INITIALS_X_SPACING + 48 -- 48 for padding and char width
         local bannerHeight = 120
         local bannerX = INITIALS_X_CENTER
         local bannerY = initialsY 
-        _G.drawBanner.draw("", bannerX, bannerY + bannerHeight/2, nil, bannerWidth/2) -- empty string, just for background
+        _G.drawBanner.draw("", bannerX, bannerY + bannerHeight/2, nil, bannerWidth/2, 1) -- empty string, just for background
         -- Draw initials input
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite) -- Ensure initials are drawn in white
         gfx.setFont(_G.ui.titleText_font)
@@ -211,8 +196,8 @@ function score_scene:draw()
     else
         -- Instructions background and text, left/right aligned at bottom
         if _G.drawBanner and _G.drawBanner.drawAligned then
-            _G.drawBanner.drawAligned("B: Main Menu", _G.INSTR_LEFT_X, _G.INSTR_Y, kTextAlignment.left, _G.ui.altText_font, _G.INSTR_BANNER_PAD)
-            _G.drawBanner.drawAligned("A: Play Again", _G.INSTR_RIGHT_X, _G.INSTR_Y, kTextAlignment.right, _G.ui.altText_font, _G.INSTR_BANNER_PAD)
+            _G.drawBanner.drawAligned("B: Main Menu", _G.INSTR_LEFT_X, _G.INSTR_Y, kTextAlignment.left, _G.ui.altText_font, _G.INSTR_BANNER_PAD,1)
+            _G.drawBanner.drawAligned("A: Play Again", _G.INSTR_RIGHT_X, _G.INSTR_Y, kTextAlignment.right, _G.ui.altText_font, _G.INSTR_BANNER_PAD,1)
         end
     end
 end
