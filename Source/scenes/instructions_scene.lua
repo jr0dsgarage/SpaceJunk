@@ -6,10 +6,6 @@
 --   local InstructionsScene = require("scenes.instructions_scene")
 --   InstructionsScene:draw()
 
-local gfx <const> = playdate.graphics -- Playdate graphics module
-local scene_manager = _G.scene_manager -- Reference to global scene manager
-local slide_transition_scene = _G.slide_transition_scene -- Reference to global slide transition scene
-
 local titleText = "Instructions" -- Title text for the instructions scene
 local lineText = { -- Array of instruction lines to display
     "Use the D-pad to move the beam focal point!!",
@@ -26,12 +22,6 @@ local lineText = { -- Array of instruction lines to display
 }
 
 local InstructionsScene = {} -- Table for instructions scene methods and state
-
---- Initialize the instructions scene (no-op).
-function InstructionsScene.init() end
-
---- Update the instructions scene (no-op).
-function InstructionsScene.update() end
 
 --- Draw the instructions scene, with optional x offset for transitions.
 -- @param xOffset X offset for transition animation
@@ -63,12 +53,7 @@ function InstructionsScene:draw(xOffset, hideInstructions)
     end
 end
 
-function InstructionsScene.cranked(change, accelerated) end
-
-function InstructionsScene.upButtonDown() end
-
-function InstructionsScene.downButtonDown() end
-
+-- Handle button press to switch to the menu scene.
 function InstructionsScene.rightButtonDown()
     if _G.scene_manager and _G.slide_transition_scene then
         _G.scene_manager.setScene(_G.slide_transition_scene, -3)
