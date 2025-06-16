@@ -24,6 +24,7 @@ local RESET_MSG_Y = 136 -- Y position for reset message
 local SCORE_LIST_PAD = 8 -- Padding around the score list
 
 --- Enter the highscore scene and load scores.
+-- Initializes or resets the scene state and loads high scores from storage.
 function highscore_scene:enter()
     -- Initialize/reset scene state
     self.scores = _G.HighScores and _G.HighScores.load() or {}
@@ -71,6 +72,9 @@ function highscore_scene:draw(xOffset, hideInstructions)
     end
 end
 
+---
+-- Draw the list of high scores, handling scrolling and column layout.
+-- @param xOffset X offset for transition animation
 function highscore_scene:drawScoreList(xOffset)
     local firstIdx = math.floor(self.scrollOffset or 0) + 1
     local scores = self.scores or {}
@@ -100,6 +104,8 @@ function highscore_scene:drawScoreList(xOffset)
     end
 end
 
+---
+-- Update the highscore scene, handling crank-based scrolling and reset logic.
 function highscore_scene:update()
     -- Crank-based scrolling for the score list
     local crankChange = playdate.getCrankChange()
@@ -124,6 +130,8 @@ function highscore_scene:update()
     end
 end
 
+---
+-- Handle A button press. Confirms and performs high score reset if in confirmation state.
 function highscore_scene:AButtonDown()
     if self.confirmingReset then
         if _G.HighScores and _G.HighScores.reset then
@@ -145,7 +153,8 @@ function highscore_scene:AButtonDown()
     end
 end
 
-
+---
+-- Handle left button press. Cancels reset confirmation or transitions to menu scene.
 function highscore_scene:leftButtonDown()
     if self.confirmingReset then
         self.confirmingReset = false
@@ -160,6 +169,8 @@ function highscore_scene:leftButtonDown()
     end
 end
 
+---
+-- Handle B button press. Cancels reset confirmation or clears reset message.
 function highscore_scene:BButtonDown()
     if self.confirmingReset then
         self.confirmingReset = false
