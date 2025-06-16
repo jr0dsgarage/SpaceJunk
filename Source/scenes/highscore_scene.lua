@@ -15,7 +15,6 @@ local TITLE_X = 200 -- X position for the title
 local LIST_W = 90 -- Width of the score list
 local LIST_X = 200 -- X position for the score list
 local LIST_Y0 = 80 -- Y position for the score list
-local LIST_OFFSET = 22 -- Offset between score entries
 local LIST_RECT_Y_OFFSET = -12-- Y offset for the list rectangle
 local MAX_SCORES_SHOWN = 5 -- Maximum number of scores to show
 local SCORE_HEIGHT = 25 -- Height of each score entry
