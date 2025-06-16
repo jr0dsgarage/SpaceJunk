@@ -20,7 +20,7 @@ local LIST_RECT_Y_OFFSET = -12-- Y offset for the list rectangle
 local MAX_SCORES_SHOWN = 5 -- Maximum number of scores to show
 local SCORE_HEIGHT = 25 -- Height of each score entry
 local RESET_CONFIRM_Y = 136 -- Y position for reset confirmation
-local RESET_CONFIRM2_Y = 156 -- Y position for second reset confirmation
+local RESET_CONFIRM2_Y = 166 -- Y position for second reset confirmation
 local RESET_MSG_Y = 136 -- Y position for reset message
 local SCORE_LIST_PAD = 8 -- Padding around the score list
 
