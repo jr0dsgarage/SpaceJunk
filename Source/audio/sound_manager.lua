@@ -54,6 +54,10 @@ function SoundManager:playCountdownBeep()
     end
 end
 
+---
+-- Play a score tune based on whether it's a high score.
+-- Plays a simple melody with bass notes.
+-- @param isHighScore Boolean indicating if it's a high score
 function SoundManager:playScoreTune(isHighScore)
     local TUNE_BASE_FREQS = {
         nf.C5,
@@ -75,6 +79,39 @@ function SoundManager:playScoreTune(isHighScore)
         playdate.timer.performAfterDelay((i-1)*TUNE_DURATION*1000, function()
             melodySynth:playNote(melodyFreq, duration, TUNE_VOLUME)
             bassSynth:playNote(bassFreq, duration, TUNE_VOLUME)
+        end)
+    end
+end
+
+---
+-- Play a note from the C major scale based on a normalized value (0..1).
+-- @param scaleValue Number between 0 and 1 (e.g., match/score ratio)
+-- @param duration Duration of the note
+-- @param velocity Velocity/volume of the note
+function SoundManager:playCMajorNote(scaleValue, duration, velocity)
+    local cMajor = {
+        nf.C4, nf.D4, nf.E4, nf.F4, nf.G4, nf.A4, nf.B4
+    }
+    local idx = math.floor((scaleValue or 0) * (#cMajor - 1) + 1)
+    local note = cMajor[idx]
+    if note then
+        self.captureSynth:playNote(note, duration or 0.2, velocity or 0.2)
+    end
+end
+
+---
+-- Play a beep with a linear fade out.
+-- @param freq Frequency in Hz
+-- @param duration Duration in seconds
+-- @param startVolume Initial volume (0..1)
+function SoundManager:playBeepWithFade(freq, duration, startVolume)
+    local synth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
+    synth:playNote(freq, duration, startVolume)
+    local steps = 10
+    for i = 1, steps do
+        playdate.timer.performAfterDelay(duration * 1000 * (i/steps), function()
+            local v = startVolume * (1 - i/steps)
+            synth:setVolume(math.max(0, v))
         end)
     end
 end

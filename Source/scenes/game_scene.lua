@@ -8,7 +8,6 @@
 
 local gfx <const> = playdate.graphics -- Playdate graphics module
 local snd = playdate.sound -- Playdate sound module
-local captureSynth = snd.synth.new(snd.kWaveSquare) -- Synth for capture sound
 
 local game_scene = {} -- Table for game scene methods and state
 
@@ -32,29 +31,19 @@ local MOVE_SPEED_DIV <const> = 5 -- Speed divisor for movement
 -- Crank indicator constants
 local CRANK_INDICATOR_HEIGHT <const> = 32 -- Height of the crank indicator
 
--- C Major scale notes in Hz
--- C4, D4, E4, F4, G4, A4, B4
-local C_MAJOR_NOTES <const> = {261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88} -- Frequencies for C major scale
+-- C Major scale notes using note_frequency.lua
+local nf = _G.NoteFrequency
+local C_MAJOR_NOTES <const> = {
+    nf.C4,
+    nf.D4,
+    nf.E4,
+    nf.F4,
+    nf.G4,
+    nf.A4,
+    nf.B4
+}
 local NOTE_DURATION <const> = 0.2 -- Duration of each note
 local NOTE_VELOCITY <const> = 0.2 -- Velocity of each note
-
----
--- Helper to play a beep with a linear fade out.
--- @param freq Frequency in Hz
--- @param duration Duration in seconds
--- @param startVolume Initial volume (0..1)
-local function playBeepWithFade(freq, duration, startVolume)
-    local synth = playdate.sound.synth.new(playdate.sound.kWaveSquare)
-    synth:playNote(freq, duration, startVolume)
-    -- Schedule a timer to fade out the volume to 0 over the duration
-    local steps = 10
-    for i = 1, steps do
-        playdate.timer.performAfterDelay(duration * 1000 * (i/steps), function()
-            local v = startVolume * (1 - i/steps)
-            synth:setVolume(math.max(0, v))
-        end)
-    end
-end
 
 --- 
 -- Resets the game state variables for a new game session
@@ -181,15 +170,10 @@ local function handleObjectRemoval(self, i, obj, caught)
         self.score = self.score + score
         self.scorePopups:add(obj.x, obj.y, score)
         -- Play a note from the C major scale based on score (lower score = lower note)
-        if self.cMajorNotes then
+        if self.soundManager and self.soundManager.playCMajorNote then
             local clampedScore = math.max(minScore, math.min(maxScore, score))
-            local scaleIdx = math.floor(((clampedScore - minScore) / (maxScore - minScore)) * (#self.cMajorNotes - 1) + 1)
-            local note = self.cMajorNotes[scaleIdx]
-            if captureSynth and note then
-                captureSynth:playNote(note, NOTE_DURATION, NOTE_VELOCITY)
-            end
-        elseif self.soundManager and self.soundManager.playCapture then
-            self.soundManager:playCapture(match * earlyBonus)
+            local scaleIdx = ((clampedScore - minScore) / (maxScore - minScore))
+            self.soundManager:playCMajorNote(scaleIdx, NOTE_DURATION, NOTE_VELOCITY)
         end
     else
         self.missed = self.missed + 1
@@ -201,7 +185,6 @@ local function handleObjectRemoval(self, i, obj, caught)
             gfx.pushContext(self.cracksImage)
             self.flyingObjectSpawner:drawCrack(obj.x, obj.y)
             gfx.popContext()
-            -- Update cracksSprite image
             if self.cracksSpriteObj then
                 self.cracksSpriteObj:setImage(self.cracksImage)
             end
