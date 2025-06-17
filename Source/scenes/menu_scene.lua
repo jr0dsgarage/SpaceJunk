@@ -15,36 +15,27 @@ local TITLE_X = 200 -- X position for the title text
 local START_SUBTITLE_Y = 140 -- Y position for the "PRESS A TO START" subtitle
 local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 
---- Enter the menu scene and initialize starfield reference.
-function menu_scene:enter()
-    -- Use the globally initialized starfield
-    self.starfield = _G.sharedStarfield
-end
-
 --- Draw the menu scene, with optional x offset for transitions.
 -- @param xOffset X offset for transition animation
 -- @param hideInstructions Boolean to hide instructions
 function menu_scene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
-    local titleX = TITLE_X
-    local titleY = TITLE_Y
-    local startSubtitleY = START_SUBTITLE_Y
-    local aCharIndex = A_CHAR_INDEX
+    -- Use constants directly, not local copies
     local statsFont = _G.ui and _G.ui.altText_font or gfx.getFont()
 
     if _G.drawBanner and _G.drawBanner.draw then
-        _G.drawBanner.draw("SPACE JUNK", titleX + xOffset, titleY, ui and ui.titleText_font or nil, _G.TITLE_BANNER_PAD, 5)
+        _G.drawBanner.draw("SPACE JUNK", TITLE_X + xOffset, TITLE_Y, ui and ui.titleText_font or nil, _G.TITLE_BANNER_PAD, 5)
     end
     local startSubtitle = "PRESS   A   TO START"
     if _G.drawBanner and _G.drawBanner.draw then
-        _G.drawBanner.draw(startSubtitle, titleX + xOffset, startSubtitleY, statsFont, _G.SUBTITLE_BANNER_PAD,1)
+        _G.drawBanner.draw(startSubtitle, TITLE_X + xOffset, START_SUBTITLE_Y, statsFont, _G.SUBTITLE_BANNER_PAD,1)
     end
-    local prefix = string.sub(startSubtitle, 1, aCharIndex - 1)
+    local prefix = string.sub(startSubtitle, 1, A_CHAR_INDEX - 1)
     local prefixW, _ = gfx.getTextSize(prefix)
     local aW, _ = gfx.getTextSize("A")
     local startSubtitleW, _ = gfx.getTextSize(startSubtitle)
-    local aX = titleX - (startSubtitleW / 2) + prefixW + aW / 2 + xOffset
-    local aY = startSubtitleY + (statsFont and statsFont.getHeight and statsFont:getHeight() or 0) / 2
+    local aX = TITLE_X - (startSubtitleW / 2) + prefixW + aW / 2 + xOffset
+    local aY = START_SUBTITLE_Y + (statsFont and statsFont.getHeight and statsFont:getHeight() or 0) / 2
     gfx.setColor(gfx.kColorWhite)
     gfx.setLineWidth(2)
     gfx.drawCircleAtPoint(aX, aY, aW)
