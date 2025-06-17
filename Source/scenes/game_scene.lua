@@ -1,10 +1,6 @@
 ---
 -- Game scene module for main gameplay loop, logic, and rendering.
 -- Handles game state, scoring, flying objects, and input.
--- @module game_scene
--- @usage
---   local game_scene = require("scenes.game_scene")
---   game_scene:enter()
 
 local gfx <const> = playdate.graphics -- Playdate graphics module
 local snd = playdate.sound -- Playdate sound module
@@ -152,9 +148,8 @@ local function calculateScore(beamRadius, objRadius)
     local objPercent = (objRadius - MIN_BEAM_RADIUS) / (MAX_BEAM_RADIUS - MIN_BEAM_RADIUS)
     local match = 1 - math.abs(beamPercent - objPercent)
     local earlyBonus = 1 - objPercent
-    local baseScore = BASE_SCORE
     local minScore, maxScore = MIN_SCORE, MAX_SCORE
-    local score = math.floor(baseScore * match * earlyBonus + minScore)
+    local score = math.floor(BASE_SCORE * match * earlyBonus + minScore)
     return math.max(minScore, math.min(maxScore, score)), match, earlyBonus, minScore, maxScore
 end
 
