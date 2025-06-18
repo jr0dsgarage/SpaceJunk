@@ -26,6 +26,7 @@ _G.ZINDEX = {
     STARFIELD = 0,           -- starfield is always at the bottom
     FLYING_OBJECT_BASE = 50, -- flying objects will be 50 + i
     BEAM = 100,              -- beam and related effects
+    CRT_MONITOR = 3000,      -- CRT monitor overlay
     SHIP_IMAGE = 5000,         -- background image below flying objects and beam
     SCOREBOARD = 9999,
     CRANK_INDICATOR = 10000,
