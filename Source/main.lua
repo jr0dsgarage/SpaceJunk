@@ -28,6 +28,7 @@ _G.PaperBG = import("graphics/paper")
 _G.BackgroundSprite = import "graphics/background_sprite.lua"
 _G.CracksSprite = import "graphics/cracks_sprite.lua"
 _G.BeamZoomSprite = import "graphics/beam_zoom_sprite.lua"
+_G.CrtOverlay = import "graphics/crt_overlay.lua"
 
 -- Import scene management and scenes
 local scene_manager = import "scenes/scene_manager"

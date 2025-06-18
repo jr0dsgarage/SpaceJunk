@@ -137,22 +137,8 @@ function game_scene:enter()
     self.beamZoomSprite = _G.BeamZoomSprite.new(self)
 
     -- CRT monitor overlay sprite (centered and stretched to play-field)
-    local crtImg = gfx.image.new("sprites/ship_backgrounds/CRT_monitor_resized_cropped_transp.png")
-    local playfieldY = _G.TIMERBAR_HEIGHT
-    local playfieldHeight = _G.SCREEN_HEIGHT - (_G.TIMERBAR_HEIGHT + _G.SCOREBOARD_HEIGHT)
-    local playfieldWidth = _G.SCREEN_WIDTH
-    local imgW, imgH = 400, 240
-    if crtImg and crtImg.getSize then
-        imgW, imgH = crtImg:getSize()
-    end
-    local scaleX = playfieldWidth / imgW
-    local scaleY = playfieldHeight / imgH
-    self.crtMonitorSprite = gfx.sprite.new(crtImg)
-    self.crtMonitorSprite:setCenter(0.5, 0.5)
-    self.crtMonitorSprite:moveTo(_G.SCREEN_WIDTH/2, playfieldY + playfieldHeight/2)
-    self.crtMonitorSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.CRT_MONITOR or 3000)
-    self.crtMonitorSprite:setScale(scaleX, scaleY)
-    self.crtMonitorSprite:add()
+    if self.crtOverlay then self.crtOverlay:remove() end
+    self.crtOverlay = _G.CrtOverlay.new(self)
 end
 
 -- Spawns a new flying object using the spawner
@@ -325,9 +311,9 @@ function game_scene:leave()
         self.bgMusicPlayer:stop()
         self.bgMusicPlayer = nil
     end
-    if self.crtMonitorSprite then
-        self.crtMonitorSprite:remove()
-        self.crtMonitorSprite = nil
+    if self.crtOverlay then
+        self.crtOverlay:remove()
+        self.crtOverlay = nil
     end
 end
 
