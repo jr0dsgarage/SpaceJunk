@@ -146,7 +146,15 @@ end
 local function calculateScore(beamRadius, objRadius)
     local beamPercent = (beamRadius - MIN_BEAM_RADIUS) / (MAX_BEAM_RADIUS - MIN_BEAM_RADIUS)
     local objPercent = (objRadius - MIN_BEAM_RADIUS) / (MAX_BEAM_RADIUS - MIN_BEAM_RADIUS)
-    local match = 1 - math.abs(beamPercent - objPercent)
+    local diff = beamPercent - objPercent
+    -- Apply a steeper penalty if the beam is larger than the object
+    local penalty
+    if diff > 0 then
+        penalty = math.exp(2.5 * diff) - 1  -- Exponential dropoff for oversize
+    else
+        penalty = math.abs(diff)          -- Linear penalty for undersize
+    end
+    local match = math.max(0, 1 - penalty)
     local earlyBonus = 1 - objPercent
     local minScore, maxScore = MIN_SCORE, MAX_SCORE
     local score = math.floor(BASE_SCORE * match * earlyBonus + minScore)
