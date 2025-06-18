@@ -35,7 +35,7 @@ function menu_scene:draw(xOffset, hideInstructions)
     local aW, _ = gfx.getTextSize("A")
     local startSubtitleW, _ = gfx.getTextSize(startSubtitle)
     local aX = TITLE_X - (startSubtitleW / 2) + prefixW + aW / 2 + xOffset
-    local aY = START_SUBTITLE_Y + (statsFont and statsFont.getHeight and statsFont:getHeight() or 0) / 2
+    local aY = START_SUBTITLE_Y - 1 + (statsFont and statsFont.getHeight and statsFont:getHeight() or 0) / 2
     gfx.setColor(gfx.kColorWhite)
     gfx.setLineWidth(2)
     gfx.drawCircleAtPoint(aX, aY, aW)
