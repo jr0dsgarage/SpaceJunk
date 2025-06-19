@@ -102,9 +102,19 @@ function game_scene:enter()
     self.beamSprite = BeamSprite.new(self)
     self.crankIndicator = CrankIndicatorSprite.new(self, _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
 
+        -- Beam Zoom Sprite (right side, between titlebar and scoreboard)
+    if self.beamZoomSprite then
+        self.beamZoomSprite:remove()
+        self.beamZoomSprite = nil
+    end
+    self.beamZoomSprite = _G.BeamZoomSprite.new(self)
+
+    -- CRT monitor overlay sprite (centered and stretched to play-field)
+    if self.crtOverlay then self.crtOverlay:remove() end
+    self.crtOverlay = _G.CrtOverlay.new(self)
+
     -- Capture synth setup
     self.cMajorNotes = C_MAJOR_NOTES
-
 
     -- Background music
     local ok, bgMusicPlayer = pcall(function()
@@ -129,16 +139,7 @@ function game_scene:enter()
     -- Reset game state
     self:resetGameState()
 
-    -- Beam Zoom Sprite (right side, between titlebar and scoreboard)
-    if self.beamZoomSprite then
-        self.beamZoomSprite:remove()
-        self.beamZoomSprite = nil
-    end
-    self.beamZoomSprite = _G.BeamZoomSprite.new(self)
 
-    -- CRT monitor overlay sprite (centered and stretched to play-field)
-    if self.crtOverlay then self.crtOverlay:remove() end
-    self.crtOverlay = _G.CrtOverlay.new(self)
 end
 
 -- Spawns a new flying object using the spawner

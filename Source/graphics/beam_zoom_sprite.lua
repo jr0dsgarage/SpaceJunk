@@ -23,8 +23,8 @@ function BeamZoomSprite.new(parentScene)
     self.largeTickPadding = 2 -- extra length for the larger tick
     self.largeTickSpacing = 5 -- draw a larger tick mark every nth tick
     self.height = _G.SCREEN_HEIGHT - (_G.TIMERBAR_HEIGHT + _G.SCOREBOARD_HEIGHT) - 8 - 20 -- 10px shorter on top and bottom
-    self.x = _G.SCREEN_WIDTH - self.tickBarWidth - 5 - self.maxLeftShift -- move left so right edge stays in same place
-    self.y = _G.TIMERBAR_HEIGHT + 4 + 10 -- move 10px down to keep centered
+    self.x = _G.SCREEN_WIDTH - self.tickBarWidth - 30 - self.maxLeftShift -- move left so right edge stays in same place
+    self.y = _G.TIMERBAR_HEIGHT + 4 + 15 -- move 10px down to keep centered
     self.sprite = gfx.sprite.new()
     self.sprite:setCenter(0, 0)
     self.sprite:moveTo(self.x, self.y)
