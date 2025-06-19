@@ -49,7 +49,7 @@ function InstructionsScene:draw(xOffset, hideInstructions)
         }
     )
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("Main Menu >", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, (_G.ui and _G.ui.altText_font) or nil, _G.INSTR_BANNER_PAD, 1)
+        _G.drawBanner.drawAligned("Main Menu >>", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, (_G.ui and _G.ui.altText_font) or nil, _G.INSTR_BANNER_PAD, 1)
     end
 end
 

@@ -59,7 +59,7 @@ function highscore_scene:draw(xOffset, hideInstructions)
         _G.drawBanner.draw("HIGH SCORES", TITLE_X + xOffset, TITLE_Y, ui.titleText_font, _G.TITLE_BANNER_PAD,3)
     end
     if not hideInstructions and _G.drawBanner and _G.drawBanner.drawAligned then
-        _G.drawBanner.drawAligned("< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, ui.altText_font, _G.INSTR_BANNER_PAD,1)
+        _G.drawBanner.drawAligned("<< Main Menu", _G.INSTR_LEFT_X + xOffset, _G.INSTR_Y, kTextAlignment.left, ui.altText_font, _G.INSTR_BANNER_PAD,1)
         _G.drawBanner.drawAligned("Crank for more scores!", _G.INSTR_RIGHT_X + xOffset, _G.INSTR_Y, kTextAlignment.right, ui.altText_font, _G.INSTR_BANNER_PAD,1)
     end
     if self.confirmingReset then
