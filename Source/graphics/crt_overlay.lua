@@ -24,8 +24,8 @@ function CrtOverlay.new(parentScene)
     if crtImg and crtImg.getSize then
         imgW, imgH = crtImg:getSize()
     end
-    local scaleX = playfieldWidth / imgW
-    local scaleY = playfieldHeight / imgH
+    local scaleX = (playfieldWidth / imgW) * 1.05-- slightly smaller in x
+    local scaleY = (playfieldHeight / imgH) * 0.95 -- slightly smaller in y
     self.sprite = gfx.sprite.new(crtImg)
     self.sprite:setCenter(0.5, 0.5)
     self.sprite:moveTo(_G.SCREEN_WIDTH/2, playfieldY + playfieldHeight/2)
