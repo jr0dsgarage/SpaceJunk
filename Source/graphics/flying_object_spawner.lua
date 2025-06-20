@@ -25,8 +25,8 @@ end
 --- Spawn a new flying object at a random position.
 -- @return The new flying object.
 function FlyingObjectSpawner:spawnFlyingObject()
-    local x = math.random(0, self.screenWidth)
-    local y = math.random(_G.TIMERBAR_HEIGHT, self.screenHeight - _G.SCOREBOARD_HEIGHT) -- leave space for timer and scoreboard
+    local x = math.random(15, self.screenWidth-15)
+    local y = math.random(_G.TIMERBAR_HEIGHT+5, self.screenHeight - _G.SCOREBOARD_HEIGHT -5) -- leave space for timer and scoreboard
     local size = 8
     local speed = math.random(1, 3) / 5
     local img = self.flyingObjectImgs[math.random(1, #self.flyingObjectImgs)]
