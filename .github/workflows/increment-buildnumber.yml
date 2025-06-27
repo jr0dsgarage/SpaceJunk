@@ -1,0 +1,32 @@
+name: Auto Increment Build Number
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  increment-buildnumber:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Increment buildnumber in pdxinfo
+        run: |
+          file="Source/pdxinfo"
+          current=$(grep '^buildnumber=' "$file" | cut -d= -f2)
+          next=$((current + 1))
+          sed -i "" "s/^buildnumber=.*/buildnumber=$next/" "$file"
+          cat "$file"
+
+      - name: Commit and push if changed
+        run: |
+          git add Source/pdxinfo
+          git diff --cached --quiet || git commit -m "ci: increment buildnumber [skip ci]"
+          git push
