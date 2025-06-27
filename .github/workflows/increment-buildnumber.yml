@@ -22,7 +22,7 @@ jobs:
           file="Source/pdxinfo"
           current=$(grep '^buildnumber=' "$file" | cut -d= -f2)
           next=$((current + 1))
-          sed -i "" "s/^buildnumber=.*/buildnumber=$next/" "$file"
+          sed -i "s/^buildnumber=.*/buildnumber=$next/" "$file"
           cat "$file"
 
       - name: Commit and push if changed
