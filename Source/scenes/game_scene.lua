@@ -5,7 +5,14 @@
 local gfx <const> = playdate.graphics -- Playdate graphics module
 local snd = playdate.sound -- Playdate sound module
 
-local game_scene = {} -- Table for game scene methods and state
+local Scene = import "scenes/scene" or _G.Scene
+local GameSceneBase = Scene:extend()
+-- Provide a constructor that enables sprites for this scene
+function GameSceneBase.new()
+    local self = Scene.new{ name = "Game", usesSprites = true }
+    return setmetatable(self, GameSceneBase)
+end
+local game_scene = GameSceneBase.new()
 
 -- Constants for game configuration and layout
 local BASE_SCORE <const> = 250 -- Base score for perfect match
@@ -66,28 +73,8 @@ function game_scene:enter()
 
     -- Use the globally initialized starfield
     self.starfield = _G.sharedStarfield
-
-    -- Background sprite for drawing the starfield and score popups
-    self.bgSprite = gfx.sprite.new()
-    self.bgSprite:setCenter(0, 0)
-    self.bgSprite:moveTo(0, 0)
-    self.bgSprite:setZIndex(_G.ZINDEX and _G.ZINDEX.STARFIELD or 0)
-    self.bgSprite:setSize(_G.SCREEN_WIDTH, _G.SCREEN_HEIGHT)
-    self.bgSprite.draw = function(_)
-        gfx.clear(gfx.kColorBlack) -- this line prevents the starfield bgImg from being drawn
-        -- Draw starfield in the same position as menu_scene for seamless transition
-        local baseX = (_G.SCREEN_WIDTH or 400)/2
-        local baseY = (_G.SCREEN_HEIGHT or 240)/2
-        local width = (_G.SCREEN_WIDTH or 400)
-        local height = (_G.SCREEN_HEIGHT or 240)
-        if self.starfield and self.starfield.draw then
-            -- Calculate gameplay parallax based on beam position
-            local px = (self.beamX - width/2) * 0.005
-            self.starfield:draw(baseX, baseY, 3*width, height, (self.starfield.parallaxX or 0) + px, 0)
-        end
-        self.scorePopups:draw()
-    end
-    self.bgSprite:add()
+    -- Reset starfield X parallax for gameplay; Y is driven by crank in scene_manager
+    if self.starfield then self.starfield.parallaxX = 0 end
 
     -- Create a sprite for the background_ship image
     local shipImg = gfx.image.new(_G.SHIP_IMAGE_PATH)
@@ -256,6 +243,11 @@ function game_scene:update()
     local t = 1 - math.abs((crankPos % 360) / 180 - 1)
     self.beamRadius = self.minBeamRadius + (self.maxBeamRadius - self.minBeamRadius) * t
 
+    -- Drive starfield X parallax from beam position each frame
+    local width = (_G.SCREEN_WIDTH or 400)
+    local px = (self.beamX - width/2) * 0.005
+    if _G.sharedStarfield then _G.sharedStarfield.parallaxX = px end
+
     -- Flying objects (caught)
     for i = #self.flyingObjectSpawner.flyingObjects, 1, -1 do
         local obj = self.flyingObjectSpawner.flyingObjects[i]
@@ -304,6 +296,9 @@ function game_scene:draw()
     -- No manual draw for background_ship; sprite system handles it
     if _G.ui and _G.ui.drawTimerBar then _G.ui.drawTimerBar(self.timeLeft or GAME_DURATION_MS / 1000) end
     if _G.ui and _G.ui.drawScore then _G.ui.drawScore(self.caught, self.missed, self.score) end
+    if self.scorePopups and self.scorePopups.draw then
+        self.scorePopups:draw()
+    end
 end
 
 -- Cleans up resources and stops music when leaving the game scene
@@ -318,9 +313,8 @@ function game_scene:leave()
     end
 end
 
--- Indicates that this scene uses Playdate sprites
-function game_scene:usesSprites()
-    return true
-end
-
-return game_scene
+return (function()
+    local inst = GameSceneBase.new()
+    for k, v in pairs(game_scene) do inst[k] = v end
+    return inst
+end)()

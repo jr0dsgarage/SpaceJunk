@@ -30,6 +30,9 @@ _G.CracksSprite = import "graphics/cracks_sprite.lua"
 _G.BeamZoomSprite = import "graphics/beam_zoom_sprite.lua"
 _G.CrtOverlay = import "graphics/crt_overlay.lua"
 
+-- Ensure base Scene class is loaded first so _G.Scene exists for all scenes
+import "scenes/scene"
+
 -- Import scene management and scenes
 local scene_manager = import "scenes/scene_manager"
 local menu_scene = import "scenes/menu_scene"
@@ -56,13 +59,13 @@ function playdate.update()
     scene_manager.update()
     scene_manager.draw()
     
-    if scene_manager.usesSprites() then
-        playdate.graphics.sprite.update()
-    end
+    -- Always update sprites to ensure UI and gameplay sprites render
+    playdate.graphics.sprite.update()
 
     playdate.timer.updateTimers()
 end
 
+-- Button callbacks -> delegate to scene manager/current scene
 function playdate.AButtonDown()
     scene_manager.AButtonDown()
 end
@@ -71,14 +74,15 @@ function playdate.BButtonDown()
     scene_manager.BButtonDown()
 end
 
-function playdate.rightButtonDown()
-    scene_manager.rightButtonDown()
-end
-
 function playdate.leftButtonDown()
     scene_manager.leftButtonDown()
 end
 
+function playdate.rightButtonDown()
+    scene_manager.rightButtonDown()
+end
+
+-- Simplified navigation helpers
 function _G.switchToGameScene()
     scene_manager.setScene(game_scene)
 end

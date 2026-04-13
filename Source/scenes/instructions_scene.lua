@@ -6,6 +6,9 @@
 --   local InstructionsScene = require("scenes.instructions_scene")
 --   InstructionsScene:draw()
 
+local Scene = import "scenes/scene" or _G.Scene
+local InstructionsBase = Scene:extend()
+
 local titleText = "Instructions" -- Title text for the instructions scene
 local lineText = { -- Array of instruction lines to display
     "Use the D-pad to move the beam focal point!!",
@@ -22,6 +25,11 @@ local lineText = { -- Array of instruction lines to display
 }
 
 local InstructionsScene = {} -- Table for instructions scene methods and state
+
+function InstructionsBase.new()
+    local self = Scene.new{ name = "Instructions", usesSprites = true }
+    return setmetatable(self, InstructionsBase)
+end
 
 --- Draw the instructions scene, with optional x offset for transitions.
 -- @param xOffset X offset for transition animation
@@ -54,10 +62,14 @@ function InstructionsScene:draw(xOffset, hideInstructions)
 end
 
 -- Handle button press to switch to the menu scene.
-function InstructionsScene.rightButtonDown()
+function InstructionsScene:rightButtonDown()
     if _G.scene_manager and _G.slide_transition_scene then
         _G.scene_manager.setScene(_G.slide_transition_scene, -3)
     end
 end
 
-return InstructionsScene
+return (function()
+    local inst = InstructionsBase.new()
+    for k, v in pairs(InstructionsScene) do inst[k] = v end
+    return inst
+end)()

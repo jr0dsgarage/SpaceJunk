@@ -7,7 +7,15 @@
 --   menu_scene:enter()
 
 local gfx <const> = playdate.graphics -- Playdate graphics module
-local menu_scene = {} -- Table for menu scene methods and state
+local Scene = import "scenes/scene" or _G.Scene
+
+-- Create a MenuScene subclass of Scene
+local MenuScene = Scene:extend()
+
+function MenuScene.new()
+    local self = Scene.new{ name = "Menu", usesSprites = true }
+    return setmetatable(self, MenuScene)
+end
 
 -- Constants for layout and spacing
 local TITLE_Y = 80 -- Y position for the title text
@@ -18,7 +26,7 @@ local A_CHAR_INDEX = 9 -- position of 'A' in the string (1-based)
 --- Draw the menu scene, with optional x offset for transitions.
 -- @param xOffset X offset for transition animation
 -- @param hideInstructions Boolean to hide instructions
-function menu_scene:draw(xOffset, hideInstructions)
+function MenuScene:draw(xOffset, hideInstructions)
     xOffset = xOffset or 0
     -- Use constants directly, not local copies
     local statsFont = _G.ui and _G.ui.altText_font or gfx.getFont()
@@ -45,21 +53,22 @@ function menu_scene:draw(xOffset, hideInstructions)
     end
 end
 
-function menu_scene:AButtonDown()
+function MenuScene:AButtonDown()
     -- Switch to game scene
     if _G.switchToGameScene then
         _G.switchToGameScene()
     end
 end
 
-function menu_scene:rightButtonDown()
+function MenuScene:rightButtonDown()
     -- Trigger slide transition to high scores (menu -> highscore, slide right)
     _G.scene_manager.setScene(_G.slide_transition_scene, 1)
 end
 
-function menu_scene:leftButtonDown()
+function MenuScene:leftButtonDown()
     -- Trigger slide transition to instructions (menu -> instructions, slide left)
     _G.scene_manager.setScene(_G.slide_transition_scene, -2)
 end
 
-return menu_scene
+-- Export a singleton instance compatible with existing scene_manager usage
+return MenuScene.new()

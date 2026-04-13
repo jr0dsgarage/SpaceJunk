@@ -23,14 +23,14 @@ _G.SCREEN_WIDTH, _G.SCREEN_HEIGHT = playdate.display.getWidth(), playdate.displa
 
 -- Global z-indexes for layering
 _G.ZINDEX = {
-    STARFIELD = 0,           -- starfield is always at the bottom
-    FLYING_OBJECT_BASE = 50, -- flying objects will be 50 + i
-    BEAM = 100,              -- beam and related effects
-    CRT_MONITOR = 3000,      -- CRT monitor overlay
-    SHIP_IMAGE = 5000,         -- background image below flying objects and beam
-    SCOREBOARD = 9999,
-    CRANK_INDICATOR = 10000,
-    CRACKS = 500,
+    STARFIELD = 0,            -- starfield is always at the bottom
+    SHIP_IMAGE = 10,          -- background ship image, above starfield but below gameplay
+    FLYING_OBJECT_BASE = 50,  -- flying objects will be 50 + i
+    BEAM = 100,               -- beam and related effects
+    CRACKS = 500,             -- crack overlay above gameplay
+    CRT_MONITOR = 3000,       -- CRT monitor overlay
+    SCOREBOARD = 9999,        -- scoreboard UI topmost (except crank indicator)
+    CRANK_INDICATOR = 10000,  -- Playdate crank indicator
 }
 
 -- Banner padding constants for use in all scenes

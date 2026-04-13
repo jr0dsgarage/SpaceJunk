@@ -37,7 +37,7 @@ end
 function scene_manager.setScene(scene, ...)
     scene_manager.clear()
     if currentScene and currentScene.leave then
-        currentScene:leave()
+        currentScene:leave(scene)
     end
     
     -- Set starfield parallaxX for each scene type
