@@ -7,6 +7,8 @@
 --   highscore_scene:enter()
 
 local gfx <const> = playdate.graphics -- Playdate graphics module
+local Scene = import "scenes/scene" or _G.Scene
+local HighscoreScene = Scene:extend()
 local highscore_scene = {} -- Table for highscore scene methods and state
 
 -- Constants for layout and spacing
@@ -180,4 +182,13 @@ function highscore_scene:BButtonDown()
     end
 end
 
-return highscore_scene
+function HighscoreScene.new()
+    local self = Scene.new{ name = "HighScores", usesSprites = true }
+    return setmetatable(self, HighscoreScene)
+end
+
+return (function()
+    local inst = HighscoreScene.new()
+    for k, v in pairs(highscore_scene) do inst[k] = v end
+    return inst
+end)()

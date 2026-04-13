@@ -7,6 +7,8 @@
 --   score_scene:enter(finalScore, isHighScore)
 
 local gfx <const> = playdate.graphics -- Playdate graphics module
+local Scene = import "scenes/scene" or _G.Scene
+local ScoreSceneBase = Scene:extend()
 local score_scene = {} -- Table for score scene methods and state
 
 -- General display/screen
@@ -275,4 +277,13 @@ function score_scene:BButtonDown()
     end
 end
 
-return score_scene
+function ScoreSceneBase.new()
+    local self = Scene.new{ name = "Score", usesSprites = true }
+    return setmetatable(self, ScoreSceneBase)
+end
+
+return (function()
+    local inst = ScoreSceneBase.new()
+    for k, v in pairs(score_scene) do inst[k] = v end
+    return inst
+end)()
